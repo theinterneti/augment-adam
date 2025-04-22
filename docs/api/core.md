@@ -1,8 +1,14 @@
-# Dukat Core API Reference v0.2.0
+# Dukat Core API Reference v0.3.0
 
-_Last updated: 2025-04-25_
+_Last updated: 2025-04-27_
 
 This document provides reference information for the core API of Dukat.
+
+## Additional Documentation
+
+- [Parallel Execution](core/parallel_execution.md): Documentation for the parallel execution system
+- [Task Scheduling](core/task_scheduling.md): Documentation for the task scheduling system
+- [Circuit Breakers](core/circuit_breakers.md): Documentation for the circuit breaker pattern
 
 ## Assistant
 
@@ -347,12 +353,14 @@ async def main():
         ollama_host="http://localhost:11434",
         max_messages=100,
         conversation_id=None,
+        max_parallel_tasks=5,
     )
 
     # Or get an instance with the task queue started
     assistant = await get_async_assistant(
         model_name="llama3:8b",
         ollama_host="http://localhost:11434",
+        max_parallel_tasks=5,
     )
 
     # Use the assistant
@@ -370,6 +378,7 @@ asyncio.run(main())
 - `ollama_host` (str, optional): The host address for the Ollama API. Default: "http://localhost:11434"
 - `max_messages` (int, optional): Maximum number of messages to keep in memory. Default: 100
 - `conversation_id` (str, optional): The ID of the conversation to continue. Default: None (generates a new ID)
+- `max_parallel_tasks` (int, optional): Maximum number of tasks to execute in parallel. Default: 5
 
 ### Methods
 
@@ -589,6 +598,126 @@ stats = await assistant.get_queue_stats()
 **Returns:**
 
 - `Dict[str, Any]`: A dictionary with queue statistics.
+
+#### `execute_tasks_in_parallel(tasks, max_concurrency=None)`
+
+Execute multiple tasks in parallel.
+
+```python
+results = await assistant.execute_tasks_in_parallel([
+    {
+        "func": task_1,
+        "task_id": "task_1",
+        "description": "Task 1",
+    },
+    {
+        "func": task_2,
+        "task_id": "task_2",
+        "description": "Task 2",
+        "dependencies": ["task_1"],  # This task depends on task_1
+    },
+])
+```
+
+**Parameters:**
+
+- `tasks` (List[Dict[str, Any]]): List of task definitions. Each task should have:
+  - `func`: The function to execute
+  - `args`: List of positional arguments (optional)
+  - `kwargs`: Dictionary of keyword arguments (optional)
+  - `task_id`: Task ID (optional)
+  - `priority`: Task priority (optional)
+  - `timeout`: Task timeout (optional)
+  - `dependencies`: List of task IDs that this task depends on (optional)
+  - `resource_requirements`: List of resource requirements (optional)
+  - `circuit_breaker_name`: Name of the circuit breaker to use (optional)
+- `max_concurrency` (int, optional): Maximum number of tasks to execute concurrently. Default: None (uses self.max_parallel_tasks)
+
+**Returns:**
+
+- `Dict[str, Any]`: A dictionary mapping task IDs to results.
+
+#### `schedule_periodic_task(func, interval, args=None, kwargs=None, task_id=None, max_runs=None, priority=0, timeout=None, retry_count=0, retry_delay=1.0, description="", task_type="periodic_task")`
+
+Schedule a task to run periodically.
+
+```python
+task_id = await assistant.schedule_periodic_task(
+    func=my_function,
+    interval=timedelta(minutes=10),
+    args=[arg1, arg2],
+    kwargs={"key": "value"},
+    max_runs=5,
+    description="Run my_function every 10 minutes, 5 times",
+)
+```
+
+**Parameters:**
+
+- `func` (Union[Callable[..., Any], Callable[..., Awaitable[Any]]]): The function to execute.
+- `interval` (Union[float, timedelta]): The interval between runs.
+- `args` (List[Any], optional): Positional arguments to pass to the function. Default: None
+- `kwargs` (Dict[str, Any], optional): Keyword arguments to pass to the function. Default: None
+- `task_id` (str, optional): A unique identifier for the task. Default: None (generates a UUID)
+- `max_runs` (int, optional): Maximum number of times to run the task. Default: None (runs indefinitely)
+- `priority` (int, optional): The priority of the task. Higher values indicate higher priority. Default: 0
+- `timeout` (float, optional): Maximum time in seconds to wait for the task to complete. Default: None
+- `retry_count` (int, optional): Number of times to retry the task if it fails. Default: 0
+- `retry_delay` (float, optional): Delay in seconds between retries. Default: 1.0
+- `description` (str, optional): Description of the task. Default: ""
+- `task_type` (str, optional): Type of the task for tracking purposes. Default: "periodic_task"
+
+**Returns:**
+
+- `str`: The ID of the scheduled task.
+
+#### `schedule_task_at_time(func, schedule_time, args=None, kwargs=None, task_id=None, priority=0, timeout=None, retry_count=0, retry_delay=1.0, description="", task_type="scheduled_task")`
+
+Schedule a task to run at a specific time.
+
+```python
+task_id = await assistant.schedule_task_at_time(
+    func=my_function,
+    schedule_time=datetime.now() + timedelta(minutes=5),
+    args=[arg1, arg2],
+    kwargs={"key": "value"},
+    description="Run my_function in 5 minutes",
+)
+```
+
+**Parameters:**
+
+- `func` (Union[Callable[..., Any], Callable[..., Awaitable[Any]]]): The function to execute.
+- `schedule_time` (Union[float, datetime]): The time to run the task.
+- `args` (List[Any], optional): Positional arguments to pass to the function. Default: None
+- `kwargs` (Dict[str, Any], optional): Keyword arguments to pass to the function. Default: None
+- `task_id` (str, optional): A unique identifier for the task. Default: None (generates a UUID)
+- `priority` (int, optional): The priority of the task. Higher values indicate higher priority. Default: 0
+- `timeout` (float, optional): Maximum time in seconds to wait for the task to complete. Default: None
+- `retry_count` (int, optional): Number of times to retry the task if it fails. Default: 0
+- `retry_delay` (float, optional): Delay in seconds between retries. Default: 1.0
+- `description` (str, optional): Description of the task. Default: ""
+- `task_type` (str, optional): Type of the task for tracking purposes. Default: "scheduled_task"
+
+**Returns:**
+
+- `str`: The ID of the scheduled task.
+
+#### `cancel_scheduled_task(task_id)`
+
+Cancel a scheduled task.
+
+```python
+cancelled = await assistant.cancel_scheduled_task(task_id)
+```
+
+**Parameters:**
+
+- `task_id` (str): The ID of the task to cancel.
+
+**Returns:**
+
+- `bool`: True if the task was cancelled, False otherwise.
 
 ## TaskQueue
 

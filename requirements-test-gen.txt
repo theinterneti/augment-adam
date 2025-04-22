@@ -1,0 +1,24 @@
+# Core dependencies
+pytest>=7.4.0
+pytest-cov>=4.1.0
+coverage>=7.3.2
+hypothesis>=6.82.0
+pynguin>=0.33.0
+
+# LLM interaction
+requests>=2.31.0
+
+# Code parsing and analysis
+ast-comments>=1.0.1
+libcst>=1.1.0
+radon>=6.0.1
+
+# Utilities
+pydantic>=2.5.0
+typer>=0.9.0
+rich>=13.6.0
+tqdm>=4.66.0
+loguru>=0.7.0
+
+# Optional integrations
+wandb>=0.15.0  # For logging experiments

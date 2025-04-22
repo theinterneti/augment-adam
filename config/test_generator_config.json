@@ -1,0 +1,49 @@
+{
+  "model_name": "codellama:7b",
+  "ollama_host": "http://localhost:11434",
+  "temperature": 0.2,
+  "max_tokens": 2048,
+  "test_frameworks": ["pytest", "hypothesis"],
+  "use_pynguin": true,
+  "use_llm": true,
+  "max_retries": 3,
+  "timeout": 300,
+  "models": {
+    "small": {
+      "name": "tinyllama:1.1b",
+      "description": "Small model for simple test generation",
+      "min_ram": "4GB",
+      "recommended_ram": "8GB"
+    },
+    "medium": {
+      "name": "codellama:7b",
+      "description": "Medium-sized model with good code understanding",
+      "min_ram": "8GB",
+      "recommended_ram": "16GB"
+    },
+    "large": {
+      "name": "wizardcoder:15b",
+      "description": "Large model for complex test generation",
+      "min_ram": "24GB",
+      "recommended_ram": "32GB"
+    }
+  },
+  "test_types": {
+    "unit": {
+      "frameworks": ["pytest"],
+      "description": "Basic unit tests for functions and methods"
+    },
+    "property": {
+      "frameworks": ["hypothesis"],
+      "description": "Property-based tests using Hypothesis"
+    },
+    "integration": {
+      "frameworks": ["pytest"],
+      "description": "Tests for interactions between components"
+    }
+  },
+  "templates": {
+    "pytest": "templates/pytest_template.py",
+    "hypothesis": "templates/hypothesis_template.py"
+  }
+}

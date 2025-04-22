@@ -37,14 +37,14 @@ services:
     # Commented out to let the Dockerfile and devcontainer.json handle user setup
     # user: vscode
 
-    # GPU configuration - commented out as no NVIDIA GPU detected
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all
-    #           capabilities: [gpu]
+    # GPU configuration for NVIDIA GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
 
 volumes:
   # Define named volumes

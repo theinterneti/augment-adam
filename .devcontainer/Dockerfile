@@ -24,10 +24,18 @@ RUN curl -fsSL https://get.docker.com | sh
 # Install Ollama
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# Install Python packages for ML and development
+# Install CUDA dependencies
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    nvidia-cuda-toolkit \
+    nvidia-cuda-toolkit-gcc \
+    && apt-get clean -y \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python packages for ML and development with CUDA support
 RUN pip install --upgrade pip \
     && pip install \
-    torch \
+    torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
     transformers \
     datasets \
     accelerate \

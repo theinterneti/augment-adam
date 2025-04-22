@@ -1,0 +1,38 @@
+FROM python:3.10-slim
+
+WORKDIR /app
+
+# Install system dependencies including NVIDIA runtime libraries
+RUN apt-get update && apt-get install -y \
+    git \
+    make \
+    gcc \
+    curl \
+    wget \
+    gnupg \
+    software-properties-common \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install NVIDIA runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nvidia-cuda-runtime-cu12 \
+    libcudnn8 \
+    || echo "CUDA libraries not available, will use CPU only" \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY requirements-test-gen.txt .
+RUN pip install --no-cache-dir -r requirements-test-gen.txt \
+    && pip install pynguin hypothesis pytest pytest-cov \
+    && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Copy the test generation script and templates
+COPY scripts/auto_test_generator.py /app/scripts/
+COPY templates/ /app/templates/
+COPY config/ /app/config/
+
+# Create necessary directories
+RUN mkdir -p /app/models
+
+# Set the entrypoint
+ENTRYPOINT ["python", "-m", "scripts.auto_test_generator"]

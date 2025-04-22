@@ -37,6 +37,19 @@ if command -v ollama &> /dev/null; then
     curl -s http://localhost:11434/api/tags | grep -o '"name":"[^"]*"' || echo "No models found or Ollama not running"
 fi
 
+# Check for NVIDIA GPU availability
+echo "\nChecking for NVIDIA GPU:"
+if command -v nvidia-smi &> /dev/null; then
+    echo "NVIDIA GPU detected:"
+    nvidia-smi
+
+    # Check PyTorch CUDA availability
+    echo "\nChecking PyTorch CUDA availability:"
+    python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count()); print('CUDA device name:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')" || echo "Failed to check PyTorch CUDA availability"
+else
+    echo "NVIDIA GPU not detected or nvidia-smi not available"
+fi
+
 # Print volume information
 echo "\nVolume information:"
 docker volume ls | grep -E 'OllamaModels|model-cache|huggingface-cache' || echo "No relevant volumes found"

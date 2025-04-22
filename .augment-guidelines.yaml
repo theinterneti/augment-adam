@@ -30,12 +30,12 @@
 - Interface: Gradio/Streamlit (web), Rich (terminal)
 
 # Current Development Focus
-1. Implement task recovery from persisted state
-2. Create task queue dashboard for monitoring
-3. Enhance task dependencies management
-4. Improve error handling and reporting
-5. Add circuit breakers for external dependencies
-6. Implement comprehensive logging system
+1. Enhance parallel execution with more resource types
+2. Improve task scheduler with more scheduling options
+3. Create task queue dashboard for monitoring
+4. Implement comprehensive logging system
+5. Add more examples for parallel processing
+6. Improve test coverage for parallel execution
 
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
@@ -62,5 +62,9 @@
 8. Task queue persistence for resilience
 9. Enhanced error handling and reporting
 10. Improved test coverage (80%)
+11. Parallel task execution with dependencies
+12. Resource management for parallel execution
+13. Circuit breakers for external dependencies
+14. Task scheduling with periodic and one-time tasks
 
-# Last Updated: 2025-04-26
+# Last Updated: 2025-04-27
