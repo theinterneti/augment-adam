@@ -56,9 +56,10 @@
 - Pre-commit: Automated checks for all code changes
 
 # Development Workflow
-- Test-First Development: Write tests before implementation
 - Documentation-Driven: Document interfaces before implementation
-- Continuous Testing: Run tests on every change
+- Test-Driven Development: Write generic tests to mock desired functionality
+- Implementation Loop: Implement code, write unit tests, and document iteratively
+- Final Testing: Conduct integration and end-to-end tests after implementation
 - Regular Optimization: Periodically optimize prompts and weights
 
 # Author: Augment Code Team (2025-04-22)

@@ -40,7 +40,7 @@ def test_plugin_init(temp_dir):
         cache_dir=temp_dir,
         cache_expiry=7200,
     )
-    
+
     assert plugin.name == "web_search"
     assert plugin.description == "Plugin for web search operations"
     assert plugin.version == "0.1.0"
@@ -48,7 +48,7 @@ def test_plugin_init(temp_dir):
     assert plugin.user_agent == "Test User Agent"
     assert plugin.cache_dir == temp_dir
     assert plugin.cache_expiry == 7200
-    
+
     # Check that the cache directory was created
     assert os.path.exists(temp_dir)
 
@@ -60,7 +60,7 @@ def test_get_cache_path(plugin, temp_dir):
     assert cache_path.startswith(temp_dir)
     assert "test_" in cache_path
     assert cache_path.endswith(".json")
-    
+
     # Test with a complex key
     cache_path = plugin._get_cache_path("https://example.com/path?query=value")
     assert cache_path.startswith(temp_dir)
@@ -74,33 +74,34 @@ def test_cache_and_get_results(plugin, temp_dir):
     results = {
         "query": "test",
         "results": [
-            {"title": "Test Result", "url": "https://example.com", "snippet": "This is a test result."},
+            {"title": "Test Result", "url": "https://example.com",
+                "snippet": "This is a test result."},
         ],
         "timestamp": int(time.time()),
     }
-    
+
     # Cache the results
     success = plugin._cache_results("test", results)
     assert success is True
-    
+
     # Check that the cache file was created
     cache_path = plugin._get_cache_path("test")
     assert os.path.exists(cache_path)
-    
+
     # Get the cached results
     cached_results = plugin._get_cached_results("test")
     assert cached_results is not None
     assert cached_results["query"] == "test"
     assert len(cached_results["results"]) == 1
     assert cached_results["results"][0]["title"] == "Test Result"
-    
+
     # Test with expired cache
     expired_results = {
         "query": "expired",
         "results": [],
         "timestamp": int(time.time()) - plugin.cache_expiry - 1,
     }
-    
+
     plugin._cache_results("expired", expired_results)
     cached_results = plugin._get_cached_results("expired")
     assert cached_results is None
@@ -128,16 +129,16 @@ def test_search_duckduckgo(mock_get, plugin):
     </html>
     """
     mock_get.return_value = mock_response
-    
+
     # Search for a query
     results = plugin._search_duckduckgo("test query", 2)
-    
+
     # Check that the request was made correctly
     mock_get.assert_called_once()
     args, kwargs = mock_get.call_args
     assert "https://html.duckduckgo.com/html/" in args[0]
-    assert "test+query" in args[0]
-    
+    assert "test%20query" in args[0]  # URL encoded space
+
     # Check the results
     assert results["query"] == "test query"
     assert len(results["results"]) == 2
@@ -171,20 +172,20 @@ def test_search_google(mock_get, plugin):
     </html>
     """
     mock_get.return_value = mock_response
-    
+
     # Set the search engine to Google
     plugin.search_engine = "google"
-    
+
     # Search for a query
     results = plugin._search_google("test query", 2)
-    
+
     # Check that the request was made correctly
     mock_get.assert_called_once()
     args, kwargs = mock_get.call_args
     assert "https://www.google.com/search" in args[0]
-    assert "test+query" in args[0]
+    assert "test%20query" in args[0]  # URL encoded space
     assert "num=2" in args[0]
-    
+
     # Check the results
     assert results["query"] == "test query"
     assert len(results["results"]) == 2
@@ -217,17 +218,17 @@ def test_fetch_url(mock_get, plugin):
     </html>
     """
     mock_get.return_value = mock_response
-    
+
     # Fetch a URL
     result = plugin.fetch_url("https://example.com")
-    
+
     # Check that the request was made correctly
     mock_get.assert_called_once_with(
         "https://example.com",
         headers={"User-Agent": plugin.user_agent},
         timeout=10,
     )
-    
+
     # Check the result
     assert result["url"] == "https://example.com"
     assert result["title"] == "Example Page"
@@ -247,11 +248,12 @@ def test_execute_search(mock_search, plugin):
     mock_search.return_value = {
         "query": "test query",
         "results": [
-            {"title": "Test Result", "url": "https://example.com", "snippet": "This is a test result."},
+            {"title": "Test Result", "url": "https://example.com",
+                "snippet": "This is a test result."},
         ],
         "timestamp": int(time.time()),
     }
-    
+
     # Execute a search
     result = plugin.execute(
         action="search",
@@ -259,10 +261,10 @@ def test_execute_search(mock_search, plugin):
         num_results=5,
         use_cache=True,
     )
-    
+
     # Check that the search was called correctly
     mock_search.assert_called_once_with("test query", 5, True)
-    
+
     # Check the result
     assert result["query"] == "test query"
     assert len(result["results"]) == 1
@@ -280,17 +282,17 @@ def test_execute_fetch(mock_fetch, plugin):
         "links": [],
         "timestamp": int(time.time()),
     }
-    
+
     # Execute a fetch
     result = plugin.execute(
         action="fetch",
         query="https://example.com",
         use_cache=True,
     )
-    
+
     # Check that the fetch was called correctly
     mock_fetch.assert_called_once_with("https://example.com", True)
-    
+
     # Check the result
     assert result["url"] == "https://example.com"
     assert result["title"] == "Example Page"
@@ -303,6 +305,6 @@ def test_execute_invalid_action(plugin):
         action="invalid",
         query="test",
     )
-    
+
     assert "error" in result
     assert "Unknown action" in result["error"]

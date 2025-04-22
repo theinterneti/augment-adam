@@ -4,9 +4,14 @@ An open-source AI assistant focused on personal automation, built entirely with 
 
 _Last updated: 2025-04-22_
 
+[![Test Coverage: 69%](https://img.shields.io/badge/Test%20Coverage-69%25-yellow)](TESTING.md)
+[![Tests: 109 passing](https://img.shields.io/badge/Tests-109%20passing-brightgreen)](TESTING.md)
+
 ## Project Status
 
-Dukat is currently in active development. We have completed the foundation phase and are working on implementing core capabilities. See [TASKS.md](TASKS.md) for current progress and [PLANNING.md](PLANNING.md) for the overall development plan.
+Dukat is currently in active development. We have completed the foundation phase and are working on implementing core capabilities. The current test coverage is at 69% with all 109 tests passing.
+
+See [TASKS.md](TASKS.md) for current progress, [PLANNING.md](PLANNING.md) for the overall development plan, and [TESTING.md](TESTING.md) for testing status and approach.
 
 ## Overview
 
@@ -161,6 +166,18 @@ Models are run locally using [Ollama](https://ollama.ai/), which provides effici
 ## Development Status
 
 Dukat is currently in early development (v0.1.0). The project is following the development plan outlined in [PLANNING.md](PLANNING.md) and the tasks listed in [TASKS.md](TASKS.md).
+
+### Current Progress
+
+- ✅ Core memory systems (Working, Episodic, Semantic)
+- ✅ Plugin architecture with initial plugins (File Manager, Web Search, System Info)
+- ✅ Model management with DSPy integration
+- ✅ Prompt template management and optimization
+- 🔄 Testing framework (67% coverage)
+- 🔄 CLI interface
+- ⏳ Web interface
+- ⏳ Async processing
+- ⏳ Self-improvement capabilities
 
 ## Contributing
 
