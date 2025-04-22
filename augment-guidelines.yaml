@@ -1,0 +1,64 @@
+# Dukat: Open Source AI Assistant v0.3.0
+# Guidelines for building a self-improving AI assistant with DSPy
+
+# Core Principles
+- Open Source: Use only open source models and packages
+- Local-First: Run everything locally without external API dependencies
+- Self-Improving: Implement mechanisms to learn and improve over time
+- Quality-Focused: Prioritize automated testing, documentation, and code quality
+- Asynchronous: Leverage async processing for responsive performance
+- Modular: Build with a plugin architecture for extensibility
+
+# Technology Stack
+- Core Framework: DSPy for LLM programming and optimization
+- Model Hosting: Ollama for local model inference
+- Vector Storage: ChromaDB/FAISS for knowledge and memory
+- Development: Poetry, Pytest, Sphinx, Black, Ruff, Mypy, Pre-commit
+- Interface: Gradio/Streamlit (web), Rich (terminal)
+
+# Project Structure
+- dukat/
+  - core/
+    - model_manager.py: Model loading and inference
+    - memory.py: Memory management system
+    - tools.py: Tool calling capabilities
+    - prompt_manager.py: Prompt templates and optimization
+  - plugins/
+    - __init__.py: Plugin system initialization
+    - base.py: Base plugin class
+    - web_search.py: Web search plugin
+    - file_manager.py: File operations plugin
+  - memory/
+    - working.py: Short-term context management
+    - episodic.py: Interaction history storage
+    - semantic.py: Knowledge storage and retrieval
+    - procedural.py: Learned patterns and procedures
+  - cli.py: Command-line interface
+  - web.py: Web interface
+  - config.py: Configuration management
+
+# Memory Architecture
+- Working Memory: Short-term context for conversations
+- Episodic Memory: Record of past interactions and outcomes
+- Semantic Memory: Knowledge extracted from interactions
+- Procedural Memory: Learned patterns and procedures
+
+# Self-Improvement Mechanisms
+- Feedback Loop: Collect and process user feedback
+- Performance Monitoring: Track system performance metrics
+- Prompt Optimization: Use DSPy to optimize prompts based on outcomes
+- Knowledge Distillation: Transfer knowledge between models
+
+# Code Quality Standards
+- Documentation: Google-style docstrings with type hints
+- Testing: >90% test coverage with unit, integration, and e2e tests
+- Linting: Black for formatting, Ruff for linting, Mypy for type checking
+- Pre-commit: Automated checks for all code changes
+
+# Development Workflow
+- Test-First Development: Write tests before implementation
+- Documentation-Driven: Document interfaces before implementation
+- Continuous Testing: Run tests on every change
+- Regular Optimization: Periodically optimize prompts and weights
+
+# Author: Augment Code Team (2025-04-22)

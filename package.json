@@ -1,0 +1,170 @@
+{
+  "name": "dukat",
+  "displayName": "Dukat: Development Environment Assistant",
+  "description": "A specialized Linux assistant for Docker, WSL, and devcontainer development environments",
+  "version": "0.1.0",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets",
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:dukat.askQuestion",
+    "onCommand:dukat.explainDockerCommand",
+    "onCommand:dukat.generateDockerfile",
+    "onCommand:dukat.generateDevcontainer",
+    "onCommand:dukat.setupWSL",
+    "onCommand:dukat.optimizeVolumes",
+    "onLanguage:dockerfile",
+    "onLanguage:yaml",
+    "workspaceContains:**/.devcontainer/**"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "dukat.askQuestion",
+        "title": "Ask Dukat",
+        "category": "Dukat"
+      },
+      {
+        "command": "dukat.explainDockerCommand",
+        "title": "Explain Docker Command",
+        "category": "Dukat"
+      },
+      {
+        "command": "dukat.generateDockerfile",
+        "title": "Generate Dockerfile",
+        "category": "Dukat"
+      },
+      {
+        "command": "dukat.generateDevcontainer",
+        "title": "Generate Devcontainer Configuration",
+        "category": "Dukat"
+      },
+      {
+        "command": "dukat.setupWSL",
+        "title": "Setup WSL Environment",
+        "category": "Dukat"
+      },
+      {
+        "command": "dukat.optimizeVolumes",
+        "title": "Optimize Docker Volumes",
+        "category": "Dukat"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "dukat-assistant",
+          "title": "Dukat",
+          "icon": "resources/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "dukat-assistant": [
+        {
+          "id": "dukat.chatView",
+          "name": "Chat"
+        },
+        {
+          "id": "dukat.dockerView",
+          "name": "Docker Environment"
+        },
+        {
+          "id": "dukat.devcontainerView",
+          "name": "Devcontainer"
+        },
+        {
+          "id": "dukat.wslView",
+          "name": "WSL"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Dukat: Development Environment Assistant",
+      "properties": {
+        "dukat.enableAutoSuggestions": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable automatic suggestions for Docker and devcontainer configurations"
+        },
+        "dukat.modelType": {
+          "type": "string",
+          "enum": [
+            "local",
+            "remote"
+          ],
+          "default": "local",
+          "description": "Run the model locally or connect to a remote endpoint"
+        },
+        "dukat.volumeMountStrategy": {
+          "type": "string",
+          "enum": [
+            "auto",
+            "manual",
+            "hybrid"
+          ],
+          "default": "hybrid",
+          "description": "Strategy for suggesting volume mounts in devcontainers"
+        },
+        "dukat.preferredContainerRuntime": {
+          "type": "string",
+          "enum": [
+            "docker",
+            "podman"
+          ],
+          "default": "docker",
+          "description": "Preferred container runtime to use for suggestions and commands"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js",
+    "vscode:prepublish": "npm run esbuild-base -- --minify",
+    "esbuild-base": "esbuild ./src/extension.js --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "esbuild": "npm run esbuild-base -- --sourcemap",
+    "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/vscode": "^1.80.0",
+    "@vscode/test-electron": "^2.3.4",
+    "esbuild": "^0.19.2",
+    "eslint": "^8.47.0",
+    "glob": "^10.3.3",
+    "mocha": "^10.2.0",
+    "typescript": "^5.1.6",
+    "vsce": "^2.15.0"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "langchain": "^0.0.200",
+    "dockerode": "^4.0.0",
+    "yaml": "^2.3.4",
+    "node-fetch": "^3.3.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/dukat.git"
+  },
+  "keywords": [
+    "docker",
+    "wsl",
+    "devcontainer",
+    "development environment",
+    "container",
+    "linux"
+  ],
+  "license": "MIT"
+}
