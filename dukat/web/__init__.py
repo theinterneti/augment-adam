@@ -12,8 +12,15 @@ from dukat.web.interface import (
     launch_web_interface,
 )
 
+from dukat.web.plugin_manager import (
+    PluginManagerUI,
+    create_plugin_tab,
+)
+
 __all__ = [
     "WebInterface",
     "create_web_interface",
     "launch_web_interface",
+    "PluginManagerUI",
+    "create_plugin_tab",
 ]
