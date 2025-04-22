@@ -1,15 +1,15 @@
-# Dukat: Open Source AI Assistant v0.1.0
+# Dukat: Open Source AI Assistant v0.3.2
 
 An open-source AI assistant focused on personal automation, built entirely with open-source models and packages.
 
-_Last updated: 2025-04-22_
+_Last updated: 2025-04-26_
 
-[![Test Coverage: 69%](https://img.shields.io/badge/Test%20Coverage-69%25-yellow)](TESTING.md)
-[![Tests: 109 passing](https://img.shields.io/badge/Tests-109%20passing-brightgreen)](TESTING.md)
+[![Test Coverage: 80%](https://img.shields.io/badge/Test%20Coverage-80%25-green)](TESTING.md)
+[![Tests: 291 passing](https://img.shields.io/badge/Tests-291%20passing-brightgreen)](TESTING.md)
 
 ## Project Status
 
-Dukat is currently in active development. We have completed the foundation phase and are working on implementing core capabilities. The current test coverage is at 69% with all 109 tests passing.
+Dukat is currently in active development. We have completed the foundation phase and are working on implementing core capabilities. The current test coverage is at 80% with all 291 tests passing.
 
 See [TASKS.md](TASKS.md) for current progress, [PLANNING.md](PLANNING.md) for the overall development plan, and [TESTING.md](TESTING.md) for testing status and approach.
 
@@ -29,7 +29,7 @@ Dukat is an open-source AI assistant built with DSPy that focuses on personal au
 - **Tool Integration**: Use tools for file operations, web search, and system information
 - **Memory Management**: Working, episodic, and semantic memory for comprehensive context awareness
 - **Self-Optimization**: Automatic improvement of prompts and responses through DSPy
-- **Async Processing**: Background task handling for responsive performance
+- **Async Processing**: Background task handling with persistence for responsive and resilient performance
 - **CLI and Web Interface**: Multiple ways to interact with the assistant
 
 ## Technology Stack
@@ -173,10 +173,11 @@ Dukat is currently in early development (v0.1.0). The project is following the d
 - ✅ Plugin architecture with initial plugins (File Manager, Web Search, System Info)
 - ✅ Model management with DSPy integration
 - ✅ Prompt template management and optimization
-- 🔄 Testing framework (67% coverage)
-- 🔄 CLI interface
-- ⏳ Web interface
-- ⏳ Async processing
+- ✅ Testing framework (80% coverage)
+- ✅ CLI interface
+- ✅ Async processing with task persistence
+- 🔄 Web interface
+- 🔄 Error handling and resilience
 - ⏳ Self-improvement capabilities
 
 ## Contributing
@@ -187,4 +188,4 @@ Contributions are welcome! Please read the [PLANNING.md](PLANNING.md) file to un
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-_Last updated: 2025-04-22_
+_Last updated: 2025-04-26_

@@ -8,6 +8,7 @@ Created: 2025-04-22
 
 import pytest
 from typer.testing import CliRunner
+from unittest.mock import patch, MagicMock
 
 from dukat.cli import app
 
@@ -23,10 +24,16 @@ def test_app_exists():
     assert app is not None
 
 
-def test_main_command(runner):
+@patch('dukat.cli.Assistant')
+def test_main_command(mock_assistant, runner):
     """Test the main command."""
-    # Run the command
-    result = runner.invoke(app, ["main"])
+    # Mock the Assistant class
+    mock_instance = MagicMock()
+    mock_assistant.return_value = mock_instance
+    mock_instance.generate_response.return_value = "Test response"
+
+    # Run the command with a mock input to exit immediately
+    result = runner.invoke(app, ["main"], input="exit\n")
 
     # Check the result
     assert result.exit_code == 0
@@ -39,10 +46,17 @@ def test_main_command(runner):
     assert "Using model:" in result.stdout
 
 
-def test_main_command_with_model(runner):
+@patch('dukat.cli.Assistant')
+def test_main_command_with_model(mock_assistant, runner):
     """Test the main command with a custom model."""
-    # Run the command with a custom model
-    result = runner.invoke(app, ["main", "--model", "gpt-j:6b"])
+    # Mock the Assistant class
+    mock_instance = MagicMock()
+    mock_assistant.return_value = mock_instance
+    mock_instance.generate_response.return_value = "Test response"
+
+    # Run the command with a custom model and mock input to exit immediately
+    result = runner.invoke(
+        app, ["main", "--model", "gpt-j:6b"], input="exit\n")
 
     # Check the result
     assert result.exit_code == 0
@@ -51,10 +65,16 @@ def test_main_command_with_model(runner):
     assert "gpt-j:6b" in result.stdout
 
 
-def test_main_command_with_verbose(runner):
+@patch('dukat.cli.Assistant')
+def test_main_command_with_verbose(mock_assistant, runner):
     """Test the main command with verbose mode."""
-    # Run the command with verbose mode
-    result = runner.invoke(app, ["main", "--verbose"])
+    # Mock the Assistant class
+    mock_instance = MagicMock()
+    mock_assistant.return_value = mock_instance
+    mock_instance.generate_response.return_value = "Test response"
+
+    # Run the command with verbose mode and mock input to exit immediately
+    result = runner.invoke(app, ["main", "--verbose"], input="exit\n")
 
     # Check the result
     assert result.exit_code == 0
@@ -63,8 +83,12 @@ def test_main_command_with_verbose(runner):
     assert "Verbose mode enabled" in result.stdout
 
 
-def test_web_command(runner):
+@patch('dukat.cli.launch_web_interface')
+def test_web_command(mock_launch_web, runner):
     """Test the web command."""
+    # Mock the launch_web_interface function
+    mock_launch_web.return_value = None
+
     # Run the command
     result = runner.invoke(app, ["web"])
 
@@ -79,8 +103,12 @@ def test_web_command(runner):
     assert "127.0.0.1:7860" in result.stdout
 
 
-def test_web_command_with_custom_port(runner):
+@patch('dukat.cli.launch_web_interface')
+def test_web_command_with_custom_port(mock_launch_web, runner):
     """Test the web command with a custom port."""
+    # Mock the launch_web_interface function
+    mock_launch_web.return_value = None
+
     # Run the command with a custom port
     result = runner.invoke(app, ["web", "--port", "8080"])
 
@@ -91,8 +119,12 @@ def test_web_command_with_custom_port(runner):
     assert "127.0.0.1:8080" in result.stdout
 
 
-def test_web_command_with_custom_host(runner):
+@patch('dukat.cli.launch_web_interface')
+def test_web_command_with_custom_host(mock_launch_web, runner):
     """Test the web command with a custom host."""
+    # Mock the launch_web_interface function
+    mock_launch_web.return_value = None
+
     # Run the command with a custom host
     result = runner.invoke(app, ["web", "--host", "0.0.0.0"])
 

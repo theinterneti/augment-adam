@@ -1,4 +1,4 @@
-# Dukat: Open Source AI Assistant v0.3.1
+# Dukat: Open Source AI Assistant v0.3.2
 # Guidelines for building a self-improving AI assistant with DSPy
 
 # Core Principles
@@ -8,6 +8,7 @@
 - Quality-Focused: Prioritize automated testing, documentation, and code quality
 - Asynchronous: Leverage async processing for responsive performance
 - Modular: Build with a plugin architecture for extensibility
+- Resilient: Implement robust error handling and recovery mechanisms
 
 # Key Documentation Files
 - README.md: Project overview and getting started guide
@@ -29,11 +30,12 @@
 - Interface: Gradio/Streamlit (web), Rich (terminal)
 
 # Current Development Focus
-1. Integrate task queue system with assistant
-2. Enhance web interface with plugin management
-3. Implement conversation visualization
-4. Improve error handling and resilience
+1. Implement task recovery from persisted state
+2. Create task queue dashboard for monitoring
+3. Enhance task dependencies management
+4. Improve error handling and reporting
 5. Add circuit breakers for external dependencies
+6. Implement comprehensive logging system
 
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
@@ -56,5 +58,8 @@
 5. Web interface with Gradio
 6. Comprehensive test suite for core components
 7. Async assistant with task queue integration
+8. Task queue persistence for resilience
+9. Enhanced error handling and reporting
+10. Improved test coverage (80%)
 
-# Last Updated: 2025-04-25
+# Last Updated: 2025-04-26

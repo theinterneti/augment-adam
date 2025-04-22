@@ -82,6 +82,7 @@ class DukatError(Exception):
             A dictionary representation of the exception.
         """
         result = {
+            "message": self.message,  # Used by tests
             "error_message": self.message,  # Renamed to avoid conflict with LogRecord
             "category": self.category.value,
             "details": self.details,
