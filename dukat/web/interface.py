@@ -10,6 +10,7 @@ import asyncio
 import logging
 import os
 import time
+import traceback
 from typing import Dict, List, Optional, Tuple, Any, Callable
 
 import gradio as gr
@@ -18,6 +19,11 @@ from dukat.core.assistant import Assistant
 from dukat.core.model_manager import ModelManager
 from dukat.memory.working import Message
 from dukat.config import Config
+from dukat.core.errors import (
+    DukatError, ModelError, NetworkError, ResourceError, NotFoundError,
+    wrap_error, log_error, ErrorCategory
+)
+from dukat.core.settings import get_settings
 from dukat.web.plugin_manager import create_plugin_tab
 from dukat.web.settings_manager import create_settings_tab
 
@@ -107,29 +113,70 @@ class WebInterface:
         Returns:
             A tuple of (empty string, updated history, formatted conversation).
         """
-        if not message.strip():
+        try:
+            if not message.strip():
+                return "", history, self._format_conversation(self.conversation_history)
+
+            # Add the user message to the conversation history
+            user_message = {"role": "user", "content": message}
+            self.conversation_history.append(user_message)
+
+            # Add the message to the assistant's working memory
+            self.assistant.add_message(Message(role="user", content=message))
+
+            # Generate a response
+            start_time = time.time()
+            response = self.assistant.generate_response(
+                system_prompt=system_prompt)
+            generation_time = time.time() - start_time
+
+            logger.info(f"Generated response in {generation_time:.2f}s")
+
+            # Add the assistant's response to the conversation history
+            assistant_message = {"role": "assistant", "content": response}
+            self.conversation_history.append(assistant_message)
+
+            # Update the history for Gradio
+            history.append((message, response))
+
+            # Return the updated state
             return "", history, self._format_conversation(self.conversation_history)
 
-        # Add the user message to the conversation history
-        user_message = {"role": "user", "content": message}
-        self.conversation_history.append(user_message)
+        except Exception as e:
+            # Wrap the exception in a DukatError
+            error = wrap_error(
+                e,
+                message="Error generating response",
+                category=ErrorCategory.MODEL,
+                details={
+                    "message_length": len(message),
+                    "system_prompt_length": len(system_prompt),
+                },
+            )
 
-        # Add the message to the assistant's working memory
-        self.assistant.add_message(Message(role="user", content=message))
+            # Log the error with context
+            log_error(
+                error,
+                logger=logger,
+                context={
+                    "message_preview": message[:50] + "..." if len(message) > 50 else message,
+                    "system_prompt_preview": system_prompt[:50] + "..." if len(system_prompt) > 50 else system_prompt,
+                },
+            )
 
-        # Generate a response
-        response = self.assistant.generate_response(
-            system_prompt=system_prompt)
+            # Add an error message to the conversation history
+            error_message = {
+                "role": "system",
+                "content": f"Error: {str(error)}",
+            }
+            self.conversation_history.append(error_message)
 
-        # Add the assistant's response to the conversation history
-        assistant_message = {"role": "assistant", "content": response}
-        self.conversation_history.append(assistant_message)
+            # Update the history for Gradio
+            error_response = f"I'm sorry, but I encountered an error: {str(error)}"
+            history.append((message, error_response))
 
-        # Update the history for Gradio
-        history.append((message, response))
-
-        # Return the updated state
-        return "", history, self._format_conversation(self.conversation_history)
+            # Return the updated state
+            return "", history, self._format_conversation(self.conversation_history)
 
     def _clear_conversation_callback(
         self,
@@ -138,14 +185,32 @@ class WebInterface:
         """Callback for clearing the conversation.
 
         Args:
-            history: The conversation history.
+            history: The conversation history (not used, but required by Gradio).
 
         Returns:
             A tuple of (empty history, empty conversation).
         """
-        self.conversation_history = []
-        self.assistant.clear_messages()
-        return [], self._format_conversation(self.conversation_history)
+        try:
+            # Clear the conversation history
+            self.conversation_history = []
+            self.assistant.clear_messages()
+
+            logger.info("Conversation cleared")
+            return [], self._format_conversation(self.conversation_history)
+
+        except Exception as e:
+            # Wrap the exception in a DukatError
+            error = wrap_error(
+                e,
+                message="Error clearing conversation",
+                category=ErrorCategory.UNKNOWN,
+            )
+
+            # Log the error with context
+            log_error(error, logger=logger)
+
+            # Return an empty history but with an error message
+            return [], f"<div class='system-message'><strong>Error:</strong> {str(error)}</div>"
 
     def _save_conversation_callback(
         self,
@@ -173,10 +238,26 @@ class WebInterface:
             # Save the conversation
             self.assistant.save_conversation(save_path)
 
+            logger.info(f"Conversation saved to {save_path}")
             return f"Conversation saved to {save_path}"
+
         except Exception as e:
-            logger.exception(f"Error saving conversation: {str(e)}")
-            return f"Error saving conversation: {str(e)}"
+            # Wrap the exception in a ResourceError
+            error = wrap_error(
+                e,
+                message=f"Error saving conversation to {save_path}",
+                category=ErrorCategory.RESOURCE,
+                details={
+                    "save_path": save_path,
+                    "conversation_length": len(self.conversation_history),
+                },
+            )
+
+            # Log the error with context
+            log_error(error, logger=logger)
+
+            # Return an error message
+            return f"Error saving conversation: {str(error)}"
 
     def _load_conversation_callback(
         self,
@@ -213,10 +294,35 @@ class WebInterface:
                     assistant_message = self.conversation_history[i + 1]["content"]
                     history.append((user_message, assistant_message))
 
+            logger.info(f"Conversation loaded from {load_path}")
             return history, self._format_conversation(self.conversation_history)
+
         except Exception as e:
-            logger.exception(f"Error loading conversation: {str(e)}")
-            return [], f"Error loading conversation: {str(e)}"
+            # Wrap the exception in a ResourceError or NotFoundError
+            if isinstance(e, FileNotFoundError):
+                error = wrap_error(
+                    e,
+                    message=f"File not found: {load_path}",
+                    category=ErrorCategory.NOT_FOUND,
+                    details={
+                        "load_path": load_path,
+                    },
+                )
+            else:
+                error = wrap_error(
+                    e,
+                    message=f"Error loading conversation from {load_path}",
+                    category=ErrorCategory.RESOURCE,
+                    details={
+                        "load_path": load_path,
+                    },
+                )
+
+            # Log the error with context
+            log_error(error, logger=logger)
+
+            # Return an error message
+            return [], f"Error loading conversation: {str(error)}"
 
     def _change_model_callback(
         self,
@@ -238,10 +344,26 @@ class WebInterface:
             self.assistant.model_manager = model_manager
             self.model_name = model_name
 
+            logger.info(f"Model changed to {model_name}")
             return f"Model changed to {model_name}"
+
         except Exception as e:
-            logger.exception(f"Error changing model: {str(e)}")
-            return f"Error changing model: {str(e)}"
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message=f"Error changing model to {model_name}",
+                category=ErrorCategory.MODEL,
+                details={
+                    "model_name": model_name,
+                    "current_model": self.model_name,
+                },
+            )
+
+            # Log the error with context
+            log_error(error, logger=logger)
+
+            # Return an error message
+            return f"Error changing model: {str(error)}"
 
     def _get_available_models_callback(self) -> List[str]:
         """Callback for getting available models.
@@ -253,8 +375,19 @@ class WebInterface:
             # Get available models
             models = self.assistant.model_manager.get_available_models()
             return models
+
         except Exception as e:
-            logger.exception(f"Error getting available models: {str(e)}")
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message="Error getting available models",
+                category=ErrorCategory.MODEL,
+            )
+
+            # Log the error with context
+            log_error(error, logger=logger)
+
+            # Return a default model list
             return ["llama3:8b"]  # Default model
 
     def create_interface(self) -> gr.Blocks:
@@ -347,10 +480,12 @@ class WebInterface:
                             load_button = gr.Button("Load Conversation")
 
                 # Plugin tab
-                plugin_tab, plugin_event_handlers = create_plugin_tab()
+                with create_plugin_tab()[0]:
+                    pass  # Tab content is created by create_plugin_tab
 
                 # Settings tab
-                settings_tab, settings_event_handlers = create_settings_tab()
+                with create_settings_tab()[0]:
+                    pass  # Tab content is created by create_settings_tab
 
             # Set up event handlers for chat tab
             send_button.click(
