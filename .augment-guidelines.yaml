@@ -14,6 +14,12 @@
 - PLANNING.md: Development roadmap and architecture
 - TASKS.md: Current development tasks and progress
 - TESTING.md: Testing approach, coverage, and next steps
+- docs/architecture.md: System architecture and component interactions
+- docs/api/core.md: Core API documentation
+- docs/api/plugins.md: Plugin system documentation
+- docs/api/memory.md: Memory systems documentation
+- docs/api/web.md: Web interface documentation
+- docs/development.md: Development guidelines and best practices
 
 # Technology Stack
 - Core Framework: DSPy for LLM programming and optimization
@@ -49,5 +55,6 @@
 4. Async task queue system for background processing
 5. Web interface with Gradio
 6. Comprehensive test suite for core components
+7. Async assistant with task queue integration
 
-# Last Updated: 2025-04-24
+# Last Updated: 2025-04-25
