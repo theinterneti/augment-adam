@@ -7,7 +7,7 @@ Version: 0.1.0
 Created: 2025-04-22
 """
 
-from typing import Dict, Any, List, Optional, Union
+from typing import Dict, Any, List, Optional, Set
 import logging
 import os
 import json
@@ -20,6 +20,8 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
+from dukat.core.circuit_breaker import circuit_breaker
+from dukat.core.errors import CircuitBreakerError, ErrorCategory, wrap_error, log_error
 from dukat.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
@@ -107,10 +109,38 @@ class WebSearchPlugin(Plugin):
                 logger.error(error_msg)
                 return {"error": error_msg}
 
+        except CircuitBreakerError as e:
+            # Handle circuit breaker errors specifically
+            error = wrap_error(
+                e,
+                message=f"Service unavailable for {action} with query {query}",
+                category=ErrorCategory.DEPENDENCY,
+                details={
+                    "action": action,
+                    "query": query,
+                    "circuit_breaker": e.details.get("circuit_breaker", {}),
+                },
+            )
+            log_error(error, logger=logger)
+            return {
+                "error": str(error),
+                "circuit_breaker": e.details.get("circuit_breaker", {}),
+                "status": "service_unavailable",
+            }
+
         except Exception as e:
-            error_msg = f"Error performing {action} with query {query}: {str(e)}"
-            logger.error(error_msg)
-            return {"error": error_msg}
+            # Handle other exceptions
+            error = wrap_error(
+                e,
+                message=f"Error performing {action} with query {query}",
+                category=ErrorCategory.PLUGIN,
+                details={
+                    "action": action,
+                    "query": query,
+                },
+            )
+            log_error(error, logger=logger)
+            return {"error": str(error)}
 
     def search(
         self,
@@ -151,6 +181,12 @@ class WebSearchPlugin(Plugin):
 
         return results
 
+    @circuit_breaker(
+        name="web_fetch_url",
+        failure_threshold=3,
+        timeout_seconds=300.0,  # 5 minutes
+        excluded_exceptions={requests.exceptions.ConnectionError}
+    )
     def fetch_url(
         self,
         url: str,
@@ -254,6 +290,12 @@ class WebSearchPlugin(Plugin):
             logger.error(error_msg)
             return {"error": error_msg}
 
+    @circuit_breaker(
+        name="web_search_duckduckgo",
+        failure_threshold=3,
+        timeout_seconds=300.0,  # 5 minutes
+        excluded_exceptions={requests.exceptions.ConnectionError}
+    )
     def _search_duckduckgo(
         self,
         query: str,
@@ -322,6 +364,12 @@ class WebSearchPlugin(Plugin):
             logger.error(error_msg)
             return {"error": error_msg}
 
+    @circuit_breaker(
+        name="web_search_google",
+        failure_threshold=3,
+        timeout_seconds=300.0,  # 5 minutes
+        excluded_exceptions={requests.exceptions.ConnectionError}
+    )
     def _search_google(
         self,
         query: str,

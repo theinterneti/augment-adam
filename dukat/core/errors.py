@@ -40,6 +40,7 @@ class ErrorCategory(Enum):
     API = "api"  # External API-related errors
     MODEL = "model"  # AI model-related errors
     PLUGIN = "plugin"  # Plugin-related errors
+    DEPENDENCY = "dependency"  # External dependency errors
 
     # Other errors
     UNKNOWN = "unknown"  # Unknown or unclassified errors
@@ -701,8 +702,7 @@ class CircuitBreakerError(DukatError):
     def __init__(
         self,
         message: str,
-        circuit_name: str,
-        state: CircuitBreakerState,
+        category: ErrorCategory = ErrorCategory.DEPENDENCY,
         original_error: Optional[Exception] = None,
         details: Optional[Dict[str, Any]] = None,
     ):
@@ -710,20 +710,13 @@ class CircuitBreakerError(DukatError):
 
         Args:
             message: The error message.
-            circuit_name: The name of the circuit breaker.
-            state: The state of the circuit breaker.
+            category: The error category.
             original_error: The original exception that caused this error.
             details: Additional details about the error.
         """
-        details = details or {}
-        details.update({
-            "circuit_name": circuit_name,
-            "circuit_state": state.value,
-        })
-
         super().__init__(
             message=message,
-            category=ErrorCategory.SYSTEM,
+            category=category,
             original_error=original_error,
             details=details,
         )

@@ -21,8 +21,13 @@ from dukat.core.errors import (
     NetworkError, TimeoutError, ResourceError,
     ValidationError, AuthenticationError, AuthorizationError, NotFoundError,
     DatabaseError, ApiError, ModelError, PluginError,
-    CircuitBreaker, CircuitBreakerState, CircuitBreakerError,
+    CircuitBreakerError,
     retry, classify_error, wrap_error, log_error
+)
+from dukat.core.circuit_breaker import (
+    CircuitBreaker, CircuitState,
+    circuit_breaker, register_circuit_breaker, get_circuit_breaker,
+    get_all_circuit_breakers, reset_all_circuit_breakers, get_circuit_breaker_stats
 )
 from dukat.core.settings import (
     Settings, SettingsScope, SettingsManager, SettingsError,
@@ -67,8 +72,14 @@ __all__ = [
     "ModelError",
     "PluginError",
     "CircuitBreaker",
-    "CircuitBreakerState",
+    "CircuitState",
     "CircuitBreakerError",
+    "circuit_breaker",
+    "register_circuit_breaker",
+    "get_circuit_breaker",
+    "get_all_circuit_breakers",
+    "reset_all_circuit_breakers",
+    "get_circuit_breaker_stats",
     "retry",
     "classify_error",
     "wrap_error",
