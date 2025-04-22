@@ -1,4 +1,4 @@
-# Dukat: Open Source AI Assistant v0.3.0
+# Dukat: Open Source AI Assistant v0.3.1
 # Guidelines for building a self-improving AI assistant with DSPy
 
 # Core Principles
@@ -9,6 +9,12 @@
 - Asynchronous: Leverage async processing for responsive performance
 - Modular: Build with a plugin architecture for extensibility
 
+# Key Documentation Files
+- README.md: Project overview and getting started guide
+- PLANNING.md: Development roadmap and architecture
+- TASKS.md: Current development tasks and progress
+- TESTING.md: Testing approach, coverage, and next steps
+
 # Technology Stack
 - Core Framework: DSPy for LLM programming and optimization
 - Model Hosting: Ollama for local model inference
@@ -16,38 +22,12 @@
 - Development: Poetry, Pytest, Sphinx, Black, Ruff, Mypy, Pre-commit
 - Interface: Gradio/Streamlit (web), Rich (terminal)
 
-# Project Structure
-- dukat/
-  - core/
-    - model_manager.py: Model loading and inference
-    - memory.py: Memory management system
-    - tools.py: Tool calling capabilities
-    - prompt_manager.py: Prompt templates and optimization
-  - plugins/
-    - __init__.py: Plugin system initialization
-    - base.py: Base plugin class
-    - web_search.py: Web search plugin
-    - file_manager.py: File operations plugin
-  - memory/
-    - working.py: Short-term context management
-    - episodic.py: Interaction history storage
-    - semantic.py: Knowledge storage and retrieval
-    - procedural.py: Learned patterns and procedures
-  - cli.py: Command-line interface
-  - web.py: Web interface
-  - config.py: Configuration management
-
-# Memory Architecture
-- Working Memory: Short-term context for conversations
-- Episodic Memory: Record of past interactions and outcomes
-- Semantic Memory: Knowledge extracted from interactions
-- Procedural Memory: Learned patterns and procedures
-
-# Self-Improvement Mechanisms
-- Feedback Loop: Collect and process user feedback
-- Performance Monitoring: Track system performance metrics
-- Prompt Optimization: Use DSPy to optimize prompts based on outcomes
-- Knowledge Distillation: Transfer knowledge between models
+# Current Development Focus
+1. Improve test coverage for CLI module (dukat/cli.py)
+2. Enhance base plugin class tests (dukat/plugins/base.py)
+3. Implement integration tests for memory systems
+4. Develop async processing capabilities
+5. Create web interface with Gradio
 
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
@@ -57,9 +37,8 @@
 
 # Development Workflow
 - Documentation-Driven: Document interfaces before implementation
-- Test-Driven Development: Write generic tests to mock desired functionality
-- Implementation Loop: Implement code, write unit tests, and document iteratively
-- Final Testing: Conduct integration and end-to-end tests after implementation
+- Test-Driven Development: Write tests before implementation
+- Implementation Loop: Implement code, test, and document iteratively
 - Regular Optimization: Periodically optimize prompts and weights
 
-# Author: Augment Code Team (2025-04-22)
+# Last Updated: 2025-04-22
