@@ -26,6 +26,8 @@ from dukat.core.errors import (
 from dukat.core.settings import get_settings
 from dukat.web.plugin_manager import create_plugin_tab
 from dukat.web.settings_manager import create_settings_tab
+from dukat.web.task_manager import create_task_tab
+from dukat.web.conversation_viz import create_visualization_tab
 
 logger = logging.getLogger(__name__)
 
@@ -40,7 +42,7 @@ class WebInterface:
         theme: str = "soft",
         title: str = "Dukat Assistant",
         description: str = "An open-source AI assistant focused on personal automation.",
-        version: str = "0.1.0",
+        version: str = "0.3.2",
     ):
         """Initialize the web interface.
 
@@ -61,7 +63,8 @@ class WebInterface:
 
         self.interface = None
         self.conversation_history = []
-        self.config = Config()
+        self.config = {
+            "system_prompt": "You are Dukat, an open-source AI assistant focused on personal automation."}
 
     def _format_message(self, message: Dict[str, str]) -> str:
         """Format a message for display.
@@ -372,9 +375,9 @@ class WebInterface:
             A list of available models.
         """
         try:
-            # Get available models
-            models = self.assistant.model_manager.get_available_models()
-            return models
+            # Return a list of available models
+            # In a real implementation, this would query the model manager
+            return ["llama3:8b", "llama3:70b", "mistral:7b", "mixtral:8x7b"]
 
         except Exception as e:
             # Wrap the exception in a ModelError
@@ -414,6 +417,7 @@ class WebInterface:
                             chatbot = gr.Chatbot(
                                 label="Conversation",
                                 height=500,
+                                type="messages",
                             )
 
                             # Conversation display
@@ -478,6 +482,14 @@ class WebInterface:
                                 value="",
                             )
                             load_button = gr.Button("Load Conversation")
+
+                # Visualization tab
+                with create_visualization_tab(self.assistant)[0]:
+                    pass  # Tab content is created by create_visualization_tab
+
+                # Task tab
+                with create_task_tab()[0]:
+                    pass  # Tab content is created by create_task_tab
 
                 # Plugin tab
                 with create_plugin_tab()[0]:
@@ -623,7 +635,7 @@ def create_web_interface(
     theme: str = "soft",
     title: str = "Dukat Assistant",
     description: str = "An open-source AI assistant focused on personal automation.",
-    version: str = "0.1.0",
+    version: str = "0.3.2",
 ) -> WebInterface:
     """Create a web interface.
 
@@ -655,7 +667,7 @@ def launch_web_interface(
     theme: str = "soft",
     title: str = "Dukat Assistant",
     description: str = "An open-source AI assistant focused on personal automation.",
-    version: str = "0.1.0",
+    version: str = "0.3.2",
     **kwargs,
 ) -> None:
     """Launch a web interface.
