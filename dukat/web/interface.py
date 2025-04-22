@@ -19,6 +19,7 @@ from dukat.core.model_manager import ModelManager
 from dukat.memory.working import Message
 from dukat.config import Config
 from dukat.web.plugin_manager import create_plugin_tab
+from dukat.web.settings_manager import create_settings_tab
 
 logger = logging.getLogger(__name__)
 
@@ -347,6 +348,9 @@ class WebInterface:
 
                 # Plugin tab
                 plugin_tab, plugin_event_handlers = create_plugin_tab()
+
+                # Settings tab
+                settings_tab, settings_event_handlers = create_settings_tab()
 
             # Set up event handlers for chat tab
             send_button.click(

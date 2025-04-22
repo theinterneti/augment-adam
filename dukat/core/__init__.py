@@ -24,6 +24,12 @@ from dukat.core.errors import (
     CircuitBreaker, CircuitBreakerState, CircuitBreakerError,
     retry, classify_error, wrap_error, log_error
 )
+from dukat.core.settings import (
+    Settings, SettingsScope, SettingsManager, SettingsError,
+    ModelSettings, MemorySettings, UISettings, PluginSettings,
+    LoggingSettings, SecuritySettings, NetworkSettings,
+    get_settings, get_settings_manager, update_settings, reset_settings
+)
 
 __all__ = [
     # Assistant components
@@ -67,4 +73,21 @@ __all__ = [
     "classify_error",
     "wrap_error",
     "log_error",
+
+    # Settings management components
+    "Settings",
+    "SettingsScope",
+    "SettingsManager",
+    "SettingsError",
+    "ModelSettings",
+    "MemorySettings",
+    "UISettings",
+    "PluginSettings",
+    "LoggingSettings",
+    "SecuritySettings",
+    "NetworkSettings",
+    "get_settings",
+    "get_settings_manager",
+    "update_settings",
+    "reset_settings",
 ]

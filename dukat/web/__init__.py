@@ -17,10 +17,17 @@ from dukat.web.plugin_manager import (
     create_plugin_tab,
 )
 
+from dukat.web.settings_manager import (
+    SettingsManagerUI,
+    create_settings_tab,
+)
+
 __all__ = [
     "WebInterface",
     "create_web_interface",
     "launch_web_interface",
     "PluginManagerUI",
     "create_plugin_tab",
+    "SettingsManagerUI",
+    "create_settings_tab",
 ]
