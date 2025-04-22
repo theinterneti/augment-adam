@@ -1,4 +1,4 @@
-# Dukat Development Plan v0.1.0 (2025-04-22)
+# Dukat Development Plan v0.3.2 (2025-04-26)
 
 ## Vision
 

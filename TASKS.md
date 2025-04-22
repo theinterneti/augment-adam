@@ -1,4 +1,4 @@
-# Dukat Development Tasks v0.1.0 (2025-04-22)
+# Dukat Development Tasks v0.3.2 (2025-04-26)
 
 ## Phase 1: Foundation
 
@@ -96,16 +96,18 @@
 
 ### Async Processing
 
-15. **Build Task Queue**
+15. **Build Task Queue** ✅
 
-    - Implement async task management
-    - Create priority-based scheduling
-    - Set up task status tracking
+    - ✅ Implement async task management
+    - ✅ Create priority-based scheduling
+    - ✅ Set up task status tracking
+    - ✅ Implement task persistence for resilience
 
-16. **Implement Non-Blocking Operations**
-    - Convert I/O operations to async
-    - Implement timeouts and circuit breakers
-    - Create progress reporting
+16. **Implement Non-Blocking Operations** ✅
+    - ✅ Convert I/O operations to async
+    - ✅ Implement timeouts and retries
+    - ✓ Implement circuit breakers
+    - ✓ Create progress reporting
 
 ### Self-Improvement
 
