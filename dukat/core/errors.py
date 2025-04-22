@@ -82,7 +82,7 @@ class DukatError(Exception):
             A dictionary representation of the exception.
         """
         result = {
-            "message": self.message,
+            "error_message": self.message,  # Renamed to avoid conflict with LogRecord
             "category": self.category.value,
             "details": self.details,
         }
@@ -413,9 +413,24 @@ def log_error(
     """
     context = context or {}
 
+    # Create a safe copy of context without reserved keys
+    safe_context = {}
+    reserved_keys = {"message", "asctime"}
+
+    for key, value in context.items():
+        if key not in reserved_keys:
+            safe_context[key] = value
+
     if isinstance(error, DukatError):
         error_dict = error.to_dict()
-        error_dict.update(context)
+
+        # Remove reserved keys from error_dict
+        for key in reserved_keys:
+            if key in error_dict:
+                error_dict[f"error_{key}"] = error_dict.pop(key)
+
+        # Update with safe context
+        error_dict.update(safe_context)
 
         if include_traceback:
             logger.log(level, f"Error: {error}",
@@ -425,11 +440,13 @@ def log_error(
     else:
         error_category = classify_error(error)
         error_dict = {
-            "message": str(error),
+            "error_message": str(error),  # Renamed to avoid conflict
             "category": error_category.value,
             "error_type": type(error).__name__,
         }
-        error_dict.update(context)
+
+        # Update with safe context
+        error_dict.update(safe_context)
 
         if include_traceback:
             logger.log(level, f"Error: {error}",

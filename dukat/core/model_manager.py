@@ -9,8 +9,15 @@ Created: 2025-04-22
 
 from typing import Dict, Any, Optional, List, Union, Callable
 import logging
+import time
 
 import dspy
+
+from dukat.core.errors import (
+    ModelError, NetworkError, TimeoutError, ResourceError,
+    wrap_error, log_error, retry, CircuitBreaker
+)
+from dukat.core.settings import get_settings
 
 logger = logging.getLogger(__name__)
 
@@ -49,6 +56,7 @@ class ModelManager:
 
         logger.info(f"Initialized ModelManager with model: {model_name}")
 
+    @retry(max_attempts=3, delay=2.0, backoff_factor=2.0)
     def _load_model(
         self, model_name: str, ollama_host: str, api_key: str
     ) -> dspy.LM:
@@ -61,6 +69,11 @@ class ModelManager:
 
         Returns:
             A DSPy language model instance.
+
+        Raises:
+            ModelError: If the model cannot be loaded.
+            NetworkError: If there is a network error connecting to the model server.
+            TimeoutError: If the connection to the model server times out.
         """
         logger.info(f"Loading model: {model_name} from {ollama_host}")
 
@@ -79,9 +92,39 @@ class ModelManager:
             return lm
 
         except Exception as e:
-            logger.error(f"Failed to load model {model_name}: {str(e)}")
-            raise RuntimeError(f"Failed to load model {model_name}: {str(e)}")
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message=f"Failed to load model {model_name}",
+                category=None,  # Auto-classify the error
+                details={
+                    "model_name": model_name,
+                    "ollama_host": ollama_host,
+                },
+            )
 
+            # Log the error with context
+            log_error(
+                error,
+                logger=logger,
+                context={
+                    "model_name": model_name,
+                    "ollama_host": ollama_host,
+                },
+            )
+
+            # Re-raise the wrapped error
+            raise error
+
+    # Create a circuit breaker for model generation
+    _generate_circuit = CircuitBreaker(
+        name="model_generation",
+        failure_threshold=5,
+        recovery_timeout=60.0,
+    )
+
+    @retry(max_attempts=2, delay=1.0, backoff_factor=2.0)
+    @_generate_circuit
     def generate_response(self, prompt: str, **kwargs) -> str:
         """Generate a response from the language model.
 
@@ -91,17 +134,63 @@ class ModelManager:
 
         Returns:
             The generated response as a string.
+
+        Raises:
+            ModelError: If there is an error generating the response.
+            NetworkError: If there is a network error connecting to the model server.
+            TimeoutError: If the model generation times out.
+            CircuitBreakerError: If the circuit breaker is open due to too many failures.
         """
+        # Get settings for model generation
+        settings = get_settings()
+        model_settings = settings.model
+
+        # Apply settings if not overridden in kwargs
+        if "temperature" not in kwargs:
+            kwargs["temperature"] = model_settings.temperature
+        if "max_tokens" not in kwargs:
+            kwargs["max_tokens"] = model_settings.max_tokens
+
         logger.debug(f"Generating response for prompt: {prompt[:50]}...")
 
         try:
+            # Set a timeout for the model generation
+            start_time = time.time()
             response = self.lm(prompt, **kwargs)
+            generation_time = time.time() - start_time
+
+            logger.debug(
+                f"Generated response in {generation_time:.2f} seconds")
+
             return response[0] if isinstance(response, list) else response
 
         except Exception as e:
-            logger.error(f"Error generating response: {str(e)}")
-            return f"Error generating response: {str(e)}"
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message="Error generating response",
+                category=None,  # Auto-classify the error
+                details={
+                    "prompt_length": len(prompt),
+                    "model_name": self.model_name,
+                },
+            )
 
+            # Log the error with context
+            log_error(
+                error,
+                logger=logger,
+                context={
+                    "prompt_preview": prompt[:100] + "..." if len(prompt) > 100 else prompt,
+                    "model_name": self.model_name,
+                    "kwargs": kwargs,
+                },
+            )
+
+            # Return a user-friendly error message
+            return f"I'm sorry, but I encountered an error while generating a response. Please try again later."
+
+    @retry(max_attempts=2, delay=1.0)
     def create_module(self, signature: str, **kwargs) -> dspy.Module:
         """Create a DSPy module with the specified signature.
 
@@ -111,6 +200,9 @@ class ModelManager:
 
         Returns:
             A DSPy module instance.
+
+        Raises:
+            ModelError: If there is an error creating the module.
         """
         logger.debug(f"Creating module with signature: {signature}")
 
@@ -118,9 +210,30 @@ class ModelManager:
             return dspy.ChainOfThought(signature, **kwargs)
 
         except Exception as e:
-            logger.error(f"Error creating module: {str(e)}")
-            raise RuntimeError(f"Error creating module: {str(e)}")
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message="Error creating DSPy module",
+                category=None,  # Auto-classify the error
+                details={
+                    "signature": signature,
+                },
+            )
 
+            # Log the error with context
+            log_error(
+                error,
+                logger=logger,
+                context={
+                    "signature": signature,
+                    "kwargs": kwargs,
+                },
+            )
+
+            # Re-raise the wrapped error
+            raise error
+
+    @retry(max_attempts=2, delay=1.0)
     def optimize_module(
         self,
         module: dspy.Module,
@@ -138,6 +251,9 @@ class ModelManager:
 
         Returns:
             The optimized module.
+
+        Raises:
+            ModelError: If there is an error optimizing the module.
         """
         logger.debug(f"Optimizing module: {module.__class__.__name__}")
 
@@ -157,8 +273,32 @@ class ModelManager:
             return optimized_module
 
         except Exception as e:
-            logger.error(f"Error optimizing DSPy module: {str(e)}")
-            return module  # Return the original module on error
+            # Wrap the exception in a ModelError
+            error = wrap_error(
+                e,
+                message="Error optimizing DSPy module",
+                category=None,  # Auto-classify the error
+                details={
+                    "module_type": module.__class__.__name__,
+                    "examples_count": len(examples),
+                },
+            )
+
+            # Log the error with context
+            log_error(
+                error,
+                logger=logger,
+                context={
+                    "module_type": module.__class__.__name__,
+                    "examples_count": len(examples),
+                    "metric": metric.__name__ if metric else None,
+                },
+            )
+
+            # Return the original module on error, but log the issue
+            logger.warning(
+                "Returning unoptimized module due to optimization error")
+            return module
 
 
 # Singleton instance for easy access
@@ -166,23 +306,64 @@ default_model_manager: Optional[ModelManager] = None
 
 
 def get_model_manager(
-    model_name: str = "llama3:8b",
-    ollama_host: str = "http://localhost:11434",
-    api_key: str = "",
+    model_name: str = None,
+    ollama_host: str = None,
+    api_key: str = None,
 ) -> ModelManager:
     """Get or create the default model manager instance.
 
     Args:
-        model_name: The name of the model to use.
-        ollama_host: The host address for the Ollama API.
-        api_key: The API key for the model provider (not needed for Ollama).
+        model_name: The name of the model to use. If None, uses the value from settings.
+        ollama_host: The host address for the Ollama API. If None, uses the value from settings.
+        api_key: The API key for the model provider. If None, uses the value from settings.
 
     Returns:
         The default model manager instance.
+
+    Raises:
+        ModelError: If there is an error creating the model manager.
     """
     global default_model_manager
 
-    if default_model_manager is None:
-        default_model_manager = ModelManager(model_name, ollama_host, api_key)
+    try:
+        if default_model_manager is None:
+            # Get settings for model configuration
+            settings = get_settings()
+            model_settings = settings.model
+            network_settings = settings.network
 
-    return default_model_manager
+            # Use provided values or defaults from settings
+            model_name = model_name or model_settings.default_model
+            ollama_host = ollama_host or "http://localhost:11434"
+            api_key = api_key or ""
+
+            logger.info(f"Creating model manager with model: {model_name}")
+            default_model_manager = ModelManager(
+                model_name, ollama_host, api_key)
+
+        return default_model_manager
+
+    except Exception as e:
+        # Wrap the exception in a ModelError
+        error = wrap_error(
+            e,
+            message="Error creating model manager",
+            category=None,  # Auto-classify the error
+            details={
+                "model_name": model_name,
+                "ollama_host": ollama_host,
+            },
+        )
+
+        # Log the error with context
+        log_error(
+            error,
+            logger=logger,
+            context={
+                "model_name": model_name,
+                "ollama_host": ollama_host,
+            },
+        )
+
+        # Re-raise the wrapped error
+        raise error
