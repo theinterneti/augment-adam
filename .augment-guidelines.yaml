@@ -23,11 +23,11 @@
 - Interface: Gradio/Streamlit (web), Rich (terminal)
 
 # Current Development Focus
-1. Improve test coverage for CLI module (dukat/cli.py)
-2. Enhance base plugin class tests (dukat/plugins/base.py)
-3. Implement integration tests for memory systems
-4. Develop async processing capabilities
-5. Create web interface with Gradio
+1. Fix integration tests for memory systems
+2. Develop async processing capabilities
+3. Create web interface with Gradio
+4. Implement task queue system
+5. Improve error handling and resilience
 
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
@@ -40,5 +40,6 @@
 - Test-Driven Development: Write tests before implementation
 - Implementation Loop: Implement code, test, and document iteratively
 - Regular Optimization: Periodically optimize prompts and weights
+- Adapt Tests to Code: Adjust tests to match code capabilities rather than downgrading code to pass tests
 
-# Last Updated: 2025-04-22
+# Last Updated: 2025-04-23

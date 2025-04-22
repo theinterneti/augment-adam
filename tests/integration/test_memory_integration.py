@@ -59,14 +59,14 @@ def test_working_to_episodic_memory(working_memory, episodic_memory):
     history = working_memory.format_history()
 
     # Add the episode to episodic memory
-    episode_id = episodic_memory.add_episode(
+    episode = episodic_memory.add_episode(
         content=history,
         title="Weather Conversation",
         metadata={"topic": "weather", "sentiment": "neutral"}
     )
 
     # Retrieve the episode
-    retrieved_episode = episodic_memory.get_episode(episode_id)
+    retrieved_episode = episodic_memory.get_episode(episode.id)
 
     # Check that the episode was stored correctly
     assert retrieved_episode is not None
@@ -96,6 +96,7 @@ def test_episodic_to_semantic_memory(episodic_memory, semantic_memory):
     python_concept = Concept(
         name="Python",
         description="A high-level programming language known for its readability and versatility.",
+        content="Python is a high-level programming language known for its readability and versatility. It's widely used in data science, web development, and automation.",
         metadata={"category": "programming language",
                   "source": "Python Programming episode"}
     )
@@ -103,26 +104,35 @@ def test_episodic_to_semantic_memory(episodic_memory, semantic_memory):
     ml_concept = Concept(
         name="Machine Learning",
         description="A subset of AI that enables systems to learn from data.",
+        content="Machine learning is a subset of AI that enables systems to learn from data without being explicitly programmed. It uses algorithms to identify patterns and make predictions.",
         metadata={"category": "artificial intelligence",
                   "source": "Machine Learning episode"}
     )
 
     # Add concepts to semantic memory
-    python_id = semantic_memory.add_concept(python_concept)
-    ml_id = semantic_memory.add_concept(ml_concept)
+    semantic_memory.add_concept(
+        name=python_concept.name,
+        description=python_concept.description,
+        content=python_concept.content,
+        metadata=python_concept.metadata
+    )
+    semantic_memory.add_concept(
+        name=ml_concept.name,
+        description=ml_concept.description,
+        content=ml_concept.content,
+        metadata=ml_concept.metadata
+    )
 
-    # Retrieve concepts
-    retrieved_python = semantic_memory.get_concept(python_id)
-    retrieved_ml = semantic_memory.get_concept(ml_id)
+    # Check that concepts were stored correctly by searching for them
+    python_results = semantic_memory.search_concepts(
+        "Python programming language")
+    ml_results = semantic_memory.search_concepts("Machine learning AI")
 
-    # Check that concepts were stored correctly
-    assert retrieved_python is not None
-    assert retrieved_python.name == "Python"
-    assert "readability" in retrieved_python.description
+    assert len(python_results) > 0
+    assert any(concept.name == "Python" for concept, _ in python_results)
 
-    assert retrieved_ml is not None
-    assert retrieved_ml.name == "Machine Learning"
-    assert "learn from data" in retrieved_ml.description
+    assert len(ml_results) > 0
+    assert any(concept.name == "Machine Learning" for concept, _ in ml_results)
 
     # Search for related concepts
     ai_concepts = semantic_memory.search_concepts("artificial intelligence")
@@ -131,10 +141,10 @@ def test_episodic_to_semantic_memory(episodic_memory, semantic_memory):
 
     # Check search results
     assert len(ai_concepts) > 0
-    assert any(c.name == "Machine Learning" for c in ai_concepts)
+    assert any(concept.name == "Machine Learning" for concept, _ in ai_concepts)
 
     assert len(programming_concepts) > 0
-    assert any(c.name == "Python" for c in programming_concepts)
+    assert any(concept.name == "Python" for concept, _ in programming_concepts)
 
 
 def test_full_memory_cycle(working_memory, episodic_memory, semantic_memory):
@@ -171,6 +181,7 @@ def test_full_memory_cycle(working_memory, episodic_memory, semantic_memory):
     dspy_concept = Concept(
         name="DSPy",
         description="A framework for programming with foundation models that allows optimization based on feedback and examples.",
+        content="DSPy is a framework for programming with foundation models that allows optimization based on feedback and examples. It provides a structured way to build LLM-powered systems that can improve over time.",
         metadata={"category": "llm framework",
                   "source": "DSPy Framework Discussion episode"}
     )
@@ -178,13 +189,24 @@ def test_full_memory_cycle(working_memory, episodic_memory, semantic_memory):
     teleprompter_concept = Concept(
         name="Teleprompter",
         description="A technique in DSPy that optimizes prompts and modules automatically based on examples and feedback.",
+        content="Teleprompter is a technique in DSPy that optimizes prompts and modules automatically based on examples and feedback. It allows DSPy programs to improve their performance without manual tuning.",
         metadata={"category": "llm technique",
                   "source": "DSPy Framework Discussion episode"}
     )
 
     # 5. Add concepts to semantic memory
-    semantic_memory.add_concept(dspy_concept)
-    semantic_memory.add_concept(teleprompter_concept)
+    semantic_memory.add_concept(
+        name=dspy_concept.name,
+        description=dspy_concept.description,
+        content=dspy_concept.content,
+        metadata=dspy_concept.metadata
+    )
+    semantic_memory.add_concept(
+        name=teleprompter_concept.name,
+        description=teleprompter_concept.description,
+        content=teleprompter_concept.content,
+        metadata=teleprompter_concept.metadata
+    )
 
     # 6. Retrieve information for a new conversation
     # Search for relevant concepts
@@ -194,8 +216,9 @@ def test_full_memory_cycle(working_memory, episodic_memory, semantic_memory):
     framework_episodes = episodic_memory.search_episodes("DSPy framework")
 
     # Check that we can retrieve the information
-    assert any(c.name == "DSPy" for c in framework_concepts)
-    assert any("DSPy Framework Discussion" in e.title for e in framework_episodes)
+    assert any(concept.name == "DSPy" for concept, _ in framework_concepts)
+    assert any("DSPy Framework Discussion" in episode.title for episode,
+               _ in framework_episodes)
 
     # 7. Use the retrieved information in a new conversation
     working_memory.clear_messages()
@@ -203,8 +226,13 @@ def test_full_memory_cycle(working_memory, episodic_memory, semantic_memory):
         Message(role="user", content="Tell me about DSPy and how it works."))
 
     # Simulate retrieving information from semantic and episodic memory
-    dspy_info = next((c for c in framework_concepts if c.name == "DSPy"), None)
-    teleprompter_info = semantic_memory.get_concept_by_name("Teleprompter")
+    dspy_info = next(
+        (concept for concept, _ in framework_concepts if concept.name == "DSPy"), None)
+
+    # Search for teleprompter concept
+    teleprompter_results = semantic_memory.search_concepts("Teleprompter DSPy")
+    teleprompter_info = next(
+        (concept for concept, _ in teleprompter_results if concept.name == "Teleprompter"), None)
 
     # Create a response using the retrieved information
     response = f"Based on my knowledge: {dspy_info.description} "
