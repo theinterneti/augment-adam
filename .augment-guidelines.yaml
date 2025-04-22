@@ -40,6 +40,7 @@
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
 - Testing: >90% test coverage with unit, integration, and e2e tests
+- Mocking: Tag mocked methods in code with '# @mocked-in-tests' comment to identify potential issues
 - Linting: Black for formatting, Ruff for linting, Mypy for type checking
 - Pre-commit: Automated checks for all code changes
 
