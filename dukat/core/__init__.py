@@ -16,8 +16,17 @@ from dukat.core.task_queue import (
     add_task, get_task, cancel_task, wait_for_task,
     get_queue_stats, get_task_queue
 )
+from dukat.core.errors import (
+    DukatError, ErrorCategory,
+    NetworkError, TimeoutError, ResourceError,
+    ValidationError, AuthenticationError, AuthorizationError, NotFoundError,
+    DatabaseError, ApiError, ModelError, PluginError,
+    CircuitBreaker, CircuitBreakerState, CircuitBreakerError,
+    retry, classify_error, wrap_error, log_error
+)
 
 __all__ = [
+    # Assistant components
     "Assistant",
     "AsyncAssistant",
     "get_async_assistant",
@@ -25,6 +34,8 @@ __all__ = [
     "get_model_manager",
     "Memory",
     "get_memory",
+
+    # Task queue components
     "Task",
     "TaskQueue",
     "TaskStatus",
@@ -34,4 +45,26 @@ __all__ = [
     "wait_for_task",
     "get_queue_stats",
     "get_task_queue",
+
+    # Error handling components
+    "DukatError",
+    "ErrorCategory",
+    "NetworkError",
+    "TimeoutError",
+    "ResourceError",
+    "ValidationError",
+    "AuthenticationError",
+    "AuthorizationError",
+    "NotFoundError",
+    "DatabaseError",
+    "ApiError",
+    "ModelError",
+    "PluginError",
+    "CircuitBreaker",
+    "CircuitBreakerState",
+    "CircuitBreakerError",
+    "retry",
+    "classify_error",
+    "wrap_error",
+    "log_error",
 ]
