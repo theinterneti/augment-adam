@@ -15,6 +15,11 @@ import os
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Union, Awaitable
 
+from dukat.core.progress import (
+    ProgressTracker, ProgressState,
+    create_progress_tracker, get_progress_tracker, remove_progress_tracker
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,6 +46,8 @@ class Task:
         retry_count: int = 0,
         retry_delay: float = 1.0,
         dependencies: List[str] = None,
+        total_steps: Optional[int] = None,
+        description: str = "",
     ):
         """Initialize a task.
 
@@ -54,6 +61,8 @@ class Task:
             retry_count: Number of times to retry the task if it fails.
             retry_delay: Delay in seconds between retries.
             dependencies: List of task IDs that must complete before this task can run.
+            total_steps: Total number of steps for progress tracking.
+            description: Description of the task for progress tracking.
         """
         self.func = func
         self.args = args or []
@@ -64,6 +73,8 @@ class Task:
         self.retry_count = retry_count
         self.retry_delay = retry_delay
         self.dependencies = dependencies or []
+        self.total_steps = total_steps
+        self.description = description
 
         self.status = TaskStatus.PENDING
         self.result = None
@@ -73,6 +84,7 @@ class Task:
         self.completed_at = None
         self.retries_left = retry_count
         self.future = None  # Will be set when the task is scheduled
+        self.progress_tracker = None  # Will be set when the task is executed
 
     def __lt__(self, other):
         """Compare tasks by priority for the priority queue."""
@@ -92,26 +104,50 @@ class Task:
         self.status = TaskStatus.RUNNING
         self.started_at = time.time()
 
+        # Create a progress tracker for this task
+        self.progress_tracker = create_progress_tracker(
+            task_id=self.task_id,
+            total_steps=self.total_steps,
+            description=self.description or f"Task {self.task_id}",
+        )
+        self.progress_tracker.start(message="Starting task execution")
+
         try:
+            # Add progress tracking to kwargs if the function accepts it
+            kwargs = self.kwargs.copy()
+            if "progress_tracker" in kwargs:
+                kwargs["progress_tracker"] = self.progress_tracker
+
             # Check if the function is a coroutine function
             if asyncio.iscoroutinefunction(self.func):
-                result = await self.func(*self.args, **self.kwargs)
+                result = await self.func(*self.args, **kwargs)
             else:
                 # Run synchronous functions in a thread pool
                 loop = asyncio.get_event_loop()
                 result = await loop.run_in_executor(
-                    None, lambda: self.func(*self.args, **self.kwargs)
+                    None, lambda: self.func(*self.args, **kwargs)
                 )
 
             self.result = result
             self.status = TaskStatus.COMPLETED
             self.completed_at = time.time()
+
+            # Mark progress as complete
+            if self.progress_tracker:
+                self.progress_tracker.complete(
+                    message="Task completed successfully")
+
             return result
 
         except Exception as e:
             self.error = str(e)
             self.status = TaskStatus.FAILED
             self.completed_at = time.time()
+
+            # Mark progress as failed
+            if self.progress_tracker:
+                self.progress_tracker.fail(message=f"Task failed: {str(e)}")
+
             raise
 
     def to_dict(self) -> Dict[str, Any]:
@@ -120,7 +156,7 @@ class Task:
         Returns:
             A dictionary representation of the task.
         """
-        return {
+        task_dict = {
             "task_id": self.task_id,
             "status": self.status.value,
             "created_at": self.created_at,
@@ -133,7 +169,14 @@ class Task:
             "retry_count": self.retry_count,
             "retries_left": self.retries_left,
             "dependencies": self.dependencies,
+            "description": self.description,
         }
+
+        # Add progress information if available
+        if self.progress_tracker:
+            task_dict["progress"] = self.progress_tracker.get_progress()
+
+        return task_dict
 
 
 class TaskQueue:
@@ -244,6 +287,8 @@ class TaskQueue:
         retry_count: int = 0,
         retry_delay: float = 1.0,
         dependencies: List[str] = None,
+        total_steps: Optional[int] = None,
+        description: str = "",
     ) -> Task:
         """Add a task to the queue.
 
@@ -257,6 +302,8 @@ class TaskQueue:
             retry_count: Number of times to retry the task if it fails.
             retry_delay: Delay in seconds between retries.
             dependencies: List of task IDs that must complete before this task can run.
+            total_steps: Total number of steps for progress tracking.
+            description: Description of the task for progress tracking.
 
         Returns:
             The created task.
@@ -278,6 +325,8 @@ class TaskQueue:
             retry_count=retry_count,
             retry_delay=retry_delay,
             dependencies=dependencies,
+            total_steps=total_steps,
+            description=description,
         )
 
         # Check if a task with the same ID already exists
@@ -405,6 +454,10 @@ class TaskQueue:
                     if self.enable_persistence and self.persistence and task.status == TaskStatus.COMPLETED:
                         await asyncio.to_thread(self.persistence.save_queue, self)
 
+                    # Clean up progress tracker after task is done
+                    if task.progress_tracker and task.status == TaskStatus.COMPLETED:
+                        remove_progress_tracker(task.task_id)
+
                 except asyncio.TimeoutError:
                     logger.warning(f"Task {task.task_id} timed out")
                     task.error = "Task timed out"
@@ -437,6 +490,10 @@ class TaskQueue:
 
                         if not task.future.done():
                             task.future.set_exception(e)
+
+                        # Clean up progress tracker after task is done
+                        if task.progress_tracker and task.status == TaskStatus.FAILED:
+                            remove_progress_tracker(task.task_id)
 
                 finally:
                     # Mark the task as done in the queue
@@ -535,6 +592,8 @@ async def add_task(
     retry_count: int = 0,
     retry_delay: float = 1.0,
     dependencies: List[str] = None,
+    total_steps: Optional[int] = None,
+    description: str = "",
 ) -> Task:
     """Add a task to the default queue.
 
@@ -548,6 +607,8 @@ async def add_task(
         retry_count: Number of times to retry the task if it fails.
         retry_delay: Delay in seconds between retries.
         dependencies: List of task IDs that must complete before this task can run.
+        total_steps: Total number of steps for progress tracking.
+        description: Description of the task for progress tracking.
 
     Returns:
         The created task.
@@ -566,6 +627,8 @@ async def add_task(
         retry_count=retry_count,
         retry_delay=retry_delay,
         dependencies=dependencies,
+        total_steps=total_steps,
+        description=description,
     )
 
 
