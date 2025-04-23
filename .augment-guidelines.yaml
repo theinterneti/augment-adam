@@ -21,6 +21,8 @@
 - docs/api/memory.md: Memory systems documentation
 - docs/api/web.md: Web interface documentation
 - docs/development.md: Development guidelines and best practices
+- docs/model-context-protocol.md: MCP overview and integration
+- docs/docker-mcp-tools.md: Docker MCP tools documentation
 
 # Technology Stack
 - Core Framework: DSPy for LLM programming and optimization
@@ -28,6 +30,18 @@
 - Vector Storage: ChromaDB/FAISS for knowledge and memory
 - Development: Poetry, Pytest, Sphinx, Black, Ruff, Mypy, Pre-commit
 - Interface: Gradio/Streamlit (web), Rich (terminal)
+- Integration: Model Context Protocol (MCP) for tool access
+
+# Model Context Protocol (MCP) Integration
+- Serve as an expert on all aspects of MCP, including client integration, server development, and containerization
+- Use MCP for standardized access to tools and data sources
+- Leverage Docker MCP server for knowledge graph and GitHub integration
+- Implement MCP clients for connecting to various MCP servers
+- Build and containerize custom MCP servers for deployment
+- Follow MCP security best practices for controlled data access
+- Document MCP tool usage in code comments
+- Monitor the MCP ecosystem daily for new developments, especially open-source and free/freemium services
+- Integrate with Supabase and other useful services through MCP
 
 # Current Development Focus
 1. Enhance parallel execution with more resource types
@@ -36,6 +50,12 @@
 4. Implement comprehensive logging system
 5. Add more examples for parallel processing
 6. Improve test coverage for parallel execution
+7. Integrate MCP tools for knowledge graph management
+8. Implement GitHub integration through MCP
+9. Build custom MCP servers for project-specific functionality
+10. Containerize MCP servers for easy deployment
+11. Integrate with Supabase through MCP for database functionality
+12. Develop automated monitoring for new MCP developments
 
 # Code Quality Standards
 - Documentation: Google-style docstrings with type hints
@@ -50,6 +70,7 @@
 - Implementation Loop: Implement code, test, and document iteratively
 - Regular Optimization: Periodically optimize prompts and weights
 - Adapt Tests to Code: Adjust tests to match code capabilities rather than downgrading code to pass tests
+- Tool Integration: Use MCP for integrating external tools and data sources
 
 # Completed Milestones
 1. Basic memory systems (working, episodic, semantic)
@@ -66,5 +87,6 @@
 12. Resource management for parallel execution
 13. Circuit breakers for external dependencies
 14. Task scheduling with periodic and one-time tasks
+15. Initial MCP integration for tool access
 
-# Last Updated: 2025-04-27
+# Last Updated: 2025-04-29
