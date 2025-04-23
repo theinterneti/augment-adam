@@ -18,6 +18,7 @@ from dukat.core.progress import (
     create_progress_tracker, get_progress_tracker
 )
 from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from dukat.core.errors import CircuitBreakerError, ErrorCategory, TimeoutError
 
 logger = logging.getLogger(__name__)
 
@@ -443,6 +444,9 @@ class ParallelTaskExecutor:
                 progress_tracker.complete(message="No tasks to execute")
                 return {}
 
+            # Sort tasks by priority (higher priority first)
+            tasks_to_execute.sort(key=lambda t: t.priority, reverse=True)
+
             coroutines = [self._execute_task_with_resources(
                 task) for task in tasks_to_execute]
             task_results = await asyncio.gather(*coroutines, return_exceptions=True)
@@ -505,30 +509,38 @@ class ParallelTaskExecutor:
             results: Dictionary to store results in.
             progress_tracker: Progress tracker for the execution.
         """
+        # Get tasks that are ready to execute and not cancelled
+        tasks_to_execute = [self.tasks[task_id] for task_id in ready_tasks
+                           if self.tasks[task_id].status != TaskStatus.CANCELLED]
+
+        # Sort tasks by priority (higher priority first)
+        tasks_to_execute.sort(key=lambda t: t.priority, reverse=True)
+
         # Create coroutines for each ready task
         coroutines = []
-        for task_id in ready_tasks:
-            task = self.tasks[task_id]
+        task_ids = []
 
+        for task in tasks_to_execute:
             # Add a child progress tracker
             weight = 1.0 / len(self.tasks)
             child_tracker = progress_tracker.add_child(
-                child_id=task_id,
+                child_id=task.task_id,
                 weight=weight,
                 total_steps=task.total_steps,
-                description=task.description or f"Task {task_id}",
+                description=task.description or f"Task {task.task_id}",
             )
             task.progress_tracker = child_tracker
 
             # Create a coroutine to execute the task
             coroutine = self._execute_task_with_resources(task)
             coroutines.append(coroutine)
+            task_ids.append(task.task_id)
 
         # Execute all coroutines concurrently
         task_results = await asyncio.gather(*coroutines, return_exceptions=True)
 
         # Process results
-        for task_id, result in zip(ready_tasks, task_results):
+        for task_id, result in zip(task_ids, task_results):
             task = self.tasks[task_id]
 
             if isinstance(result, Exception):
@@ -552,8 +564,23 @@ class ParallelTaskExecutor:
         Returns:
             The result of the task.
         """
+        # Check if the task is cancelled before starting
+        if task.status == TaskStatus.CANCELLED:
+            logger.info(f"Task {task.task_id} is cancelled, skipping execution")
+            return None
+
+        # Track the running task
+        self.running_tasks[task.task_id] = asyncio.current_task()
+
         # Acquire semaphore to limit concurrency
         async with self.semaphore:
+            # Check again if the task is cancelled after acquiring the semaphore
+            if task.status == TaskStatus.CANCELLED:
+                logger.info(f"Task {task.task_id} is cancelled, skipping execution")
+                if task.task_id in self.running_tasks:
+                    del self.running_tasks[task.task_id]
+                return None
+
             # Allocate resources if needed
             resource_requirements = getattr(task, "resource_requirements", [])
             if resource_requirements:
@@ -570,11 +597,25 @@ class ParallelTaskExecutor:
                     circuit_breaker = self.circuit_breakers.get(
                         circuit_breaker_name)
                     if circuit_breaker and circuit_breaker.state == CircuitBreakerState.OPEN:
-                        raise ValueError(
-                            f"Circuit breaker {circuit_breaker_name} is open")
+                        raise CircuitBreakerError(
+                            f"Circuit breaker {circuit_breaker_name} is open",
+                            category=ErrorCategory.DEPENDENCY,
+                            details={"circuit_breaker": circuit_breaker.get_state()}
+                        )
 
-                # Execute the task
-                result = await task.execute()
+                # Execute the task with timeout if specified
+                if task.timeout:
+                    try:
+                        result = await asyncio.wait_for(task.execute(), timeout=task.timeout)
+                    except asyncio.TimeoutError:
+                        # Create a custom error message
+                        error_msg = f"Task {task.task_id} timed out after {task.timeout} seconds"
+                        # Set the error on the task
+                        task.error = error_msg
+                        # Raise a standard TimeoutError that will be caught by execute_all
+                        raise asyncio.TimeoutError(error_msg)
+                else:
+                    result = await task.execute()
 
                 # Close circuit breaker if needed
                 if circuit_breaker_name and circuit_breaker:
@@ -590,6 +631,10 @@ class ParallelTaskExecutor:
                 raise
 
             finally:
+                # Remove from running tasks
+                if task.task_id in self.running_tasks:
+                    del self.running_tasks[task.task_id]
+
                 # Release resources
                 if resource_requirements:
                     await self.resource_pool.release(task.task_id)
@@ -677,11 +722,29 @@ class ParallelTaskExecutor:
         Returns:
             A dictionary with task metrics.
         """
+        # Count tasks by status
+        failed_tasks = 0
+        cancelled_tasks = 0
+        pending_tasks = 0
+        completed_tasks = 0
+
+        for task in self.tasks.values():
+            if task.status == TaskStatus.FAILED:
+                failed_tasks += 1
+            elif task.status == TaskStatus.CANCELLED:
+                cancelled_tasks += 1
+            elif task.status == TaskStatus.PENDING:
+                pending_tasks += 1
+            elif task.status == TaskStatus.COMPLETED:
+                completed_tasks += 1
+
         metrics = {
             "total_tasks": len(self.tasks),
-            "completed_tasks": len(self.completed_tasks),
+            "completed_tasks": completed_tasks,
             "running_tasks": len(self.running_tasks),
-            "pending_tasks": len(self.tasks) - len(self.completed_tasks) - len(self.running_tasks),
+            "pending_tasks": pending_tasks,
+            "failed_tasks": failed_tasks,
+            "cancelled_tasks": cancelled_tasks,
             "resource_usage": {
                 resource_type: 1.0 - amount
                 for resource_type, amount in self.resource_pool.get_available_resources().items()

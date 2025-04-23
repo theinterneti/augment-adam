@@ -75,7 +75,7 @@ class CircuitBreaker:
         self.half_open_max_calls = half_open_max_calls
         self.excluded_exceptions = excluded_exceptions or set()
 
-        self.state = CircuitState.CLOSED
+        self._state = CircuitState.CLOSED
         self.failure_count = 0
         self.last_failure_time = 0.0
         self.last_success_time = 0.0
@@ -95,7 +95,7 @@ class CircuitBreaker:
 
     def reset(self) -> None:
         """Reset the circuit breaker to its initial state."""
-        self.state = CircuitState.CLOSED
+        self._state = CircuitState.CLOSED
         self.failure_count = 0
         self.last_failure_time = 0.0
         self.last_success_time = 0.0
@@ -112,7 +112,7 @@ class CircuitBreaker:
             # If we're in half-open state and a call succeeds, close the circuit
             logger.info(
                 f"Circuit breaker '{self.name}' closing after successful test")
-            self.state = CircuitState.CLOSED
+            self._state = CircuitState.CLOSED
             self.failure_count = 0
             self.half_open_calls = 0
 
@@ -141,14 +141,45 @@ class CircuitBreaker:
                 logger.warning(
                     f"Circuit breaker '{self.name}' opening after {self.failure_count} failures"
                 )
-                self.state = CircuitState.OPEN
+                self._state = CircuitState.OPEN
 
         elif self.state == CircuitState.HALF_OPEN:
             # If we're testing the service and it fails, open the circuit again
             logger.warning(
                 f"Circuit breaker '{self.name}' opening after failed test")
-            self.state = CircuitState.OPEN
+            self._state = CircuitState.OPEN
             self.half_open_calls = 0
+
+    @property
+    def state(self) -> CircuitBreakerState:
+        """Get the current state of the circuit breaker.
+
+        This property automatically transitions from OPEN to HALF_OPEN
+        when the timeout has elapsed.
+
+        Returns:
+            The current state of the circuit breaker.
+        """
+        # Check if we should transition from OPEN to HALF_OPEN
+        if self._state == CircuitState.OPEN:
+            if time.time() - self.last_failure_time >= self.timeout_seconds:
+                # Timeout elapsed, transition to half-open
+                logger.info(
+                    f"Circuit breaker '{self.name}' transitioning to half-open after timeout"
+                )
+                self._state = CircuitState.HALF_OPEN
+                self.half_open_calls = 0
+
+        return self._state
+
+    @state.setter
+    def state(self, value: CircuitBreakerState) -> None:
+        """Set the state of the circuit breaker.
+
+        Args:
+            value: The new state.
+        """
+        self._state = value
 
     def allow_request(self) -> bool:
         """Check if a request should be allowed through the circuit breaker.
@@ -156,25 +187,17 @@ class CircuitBreaker:
         Returns:
             True if the request should be allowed, False otherwise
         """
-        if self.state == CircuitState.CLOSED:
+        current_state = self.state  # This will check for auto-transition
+
+        if current_state == CircuitState.CLOSED:
             # Circuit is closed, allow the request
             return True
 
-        elif self.state == CircuitState.OPEN:
-            # Check if the timeout has elapsed
-            if time.time() - self.last_failure_time >= self.timeout_seconds:
-                # Timeout elapsed, transition to half-open
-                logger.info(
-                    f"Circuit breaker '{self.name}' transitioning to half-open after timeout"
-                )
-                self.state = CircuitState.HALF_OPEN
-                self.half_open_calls = 0
-                return self._check_half_open()
-
-            # Circuit is open and timeout hasn't elapsed, reject the request
+        elif current_state == CircuitState.OPEN:
+            # Circuit is open, reject the request
             return False
 
-        elif self.state == CircuitState.HALF_OPEN:
+        elif current_state == CircuitState.HALF_OPEN:
             # In half-open state, allow limited requests to test the service
             return self._check_half_open()
 

@@ -10,9 +10,6 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.10"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "version": "lts"
     }
   },
 
@@ -45,7 +42,7 @@
   },
 
   // Use 'postCreateCommand' to run commands after the container is created
-  "postCreateCommand": "pip install --upgrade pip && pip install -r requirements.txt && chmod +x scripts/*.py || echo 'Setup completed with warnings'",
+  "postCreateCommand": "pip install --upgrade pip && pip install -r /workspace/requirements.txt && chmod +x /workspace/scripts/*.py || echo 'Setup completed with warnings'",
 
   // Forward ports for services
   "forwardPorts": [11434, 8888],

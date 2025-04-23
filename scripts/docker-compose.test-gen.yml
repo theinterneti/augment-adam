@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  ai-test-ollama:
+    image: ollama/ollama:latest
+    container_name: ai-test-ollama
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+        reservations:
+          memory: 8G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  dukat-test-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-gen
+    container_name: dukat-test-generator
+    volumes:
+      - ./:/project  # Mount the current project
+      - ./test_config.yml:/app/config/project_config.yml  # Project-specific config
+      - ./test_templates:/app/templates/project  # Project-specific templates
+      - test-results:/app/test_results
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+    depends_on:
+      ai-test-ollama:
+        condition: service_healthy
+    environment:
+      - OLLAMA_HOST=http://ai-test-ollama:11434
+      - PYTHONUNBUFFERED=1
+      - CUDA_VISIBLE_DEVICES=0
+      - PROJECT_PATH=/project
+      - CONFIG_PATH=/app/config/project_config.yml
+      - TEMPLATE_PATH=/app/templates/project
+      - RESULTS_PATH=/app/test_results
+      - PROJECT_NAME=dukat
+    command: >
+      bash -c "cd /app &&
+      python -m scripts.auto_test_generator --project-path /project --config /app/config/project_config.yml --project dukat"
+
+volumes:
+  ollama-models:
+    external: true
+  test-results:
+  pip-cache:
+    name: dukat-pip-cache
+    external: true
+  apt-cache:
+    name: dukat-apt-cache
+    external: true
+  torch-cache:
+    name: dukat-torch-cache
+    external: true

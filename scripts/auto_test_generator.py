@@ -60,17 +60,17 @@ class ModuleAnalyzer:
         self.classes = []
         self.functions = []
         self.imports = []
-        
+
         self._parse_source()
-    
+
     def _parse_source(self):
         """Parse the source file and extract information."""
         try:
             with open(self.source_file, "r") as f:
                 source = f.read()
-            
+
             self.ast_tree = ast.parse(source)
-            
+
             # Extract classes, functions, and imports
             for node in ast.walk(self.ast_tree):
                 if isinstance(node, ast.ClassDef):
@@ -89,14 +89,14 @@ class ModuleAnalyzer:
                     self.imports.extend([n.name for n in node.names])
                 elif isinstance(node, ast.ImportFrom):
                     self.imports.append(f"{node.module}.{node.names[0].name}")
-            
+
             logger.info(f"Successfully parsed {self.source_file}")
             logger.info(f"Found {len(self.classes)} classes and {len(self.functions)} functions")
-        
+
         except Exception as e:
             logger.error(f"Error parsing {self.source_file}: {str(e)}")
             raise
-    
+
     def get_module_summary(self) -> Dict[str, Any]:
         """Get a summary of the module for test generation."""
         return {
@@ -106,7 +106,7 @@ class ModuleAnalyzer:
             "functions": self.functions,
             "imports": self.imports,
         }
-    
+
     def load_module(self):
         """Dynamically load the module for inspection."""
         try:
@@ -121,7 +121,7 @@ class ModuleAnalyzer:
 
 class LLMTestGenerator:
     """Generates tests using a local LLM."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize the LLM test generator with configuration."""
         self.config = config
@@ -129,29 +129,29 @@ class LLMTestGenerator:
         self.ollama_host = config.get("ollama_host", "http://localhost:11434")
         self.temperature = config.get("temperature", 0.2)
         self.max_tokens = config.get("max_tokens", 2048)
-    
+
     def generate_tests(self, source_file: str, module_summary: Dict[str, Any]) -> str:
         """Generate tests for a module using a local LLM."""
         try:
             # Read the source file
             with open(source_file, "r") as f:
                 source_code = f.read()
-            
+
             # Create the prompt
             prompt = self._create_prompt(source_code, module_summary)
-            
+
             # Call the LLM
             response = self._call_llm(prompt)
-            
+
             # Extract the test code from the response
             test_code = self._extract_test_code(response)
-            
+
             return test_code
-        
+
         except Exception as e:
             logger.error(f"Error generating tests with LLM: {str(e)}")
             return ""
-    
+
     def _create_prompt(self, source_code: str, module_summary: Dict[str, Any]) -> str:
         """Create a prompt for the LLM to generate tests."""
         prompt = f"""
@@ -182,14 +182,34 @@ The test file should be named test_{module_summary['module_name']}.py.
 Return only the Python code for the test file, without any additional explanations.
 """
         return prompt
-    
+
     def _call_llm(self, prompt: str) -> str:
         """Call the local LLM using Ollama."""
         import requests
         import json
-        
+        import time
+        import subprocess
+
+        # Check if Ollama is running, if not start it
+        try:
+            # Try to connect to Ollama
+            test_url = f"{self.ollama_host}/api/tags"
+            requests.get(test_url, timeout=2)
+        except requests.exceptions.ConnectionError:
+            logger.info("Ollama not running. Attempting to start Ollama...")
+            try:
+                # Start Ollama in the background
+                subprocess.Popen(["ollama", "serve"],
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+                # Wait for Ollama to start
+                time.sleep(5)
+            except Exception as e:
+                logger.error(f"Failed to start Ollama: {str(e)}")
+                raise
+
         url = f"{self.ollama_host}/api/generate"
-        
+
         payload = {
             "model": self.model_name,
             "prompt": prompt,
@@ -197,17 +217,25 @@ Return only the Python code for the test file, without any additional explanatio
             "max_tokens": self.max_tokens,
             "stream": False,
         }
-        
+
+        # Add GPU-specific parameters if available
+        if self.config.get("use_gpu", True):
+            payload["options"] = {"num_gpu": 1}
+
         try:
+            logger.info(f"Calling LLM model {self.model_name}...")
+            start_time = time.time()
             response = requests.post(url, json=payload)
             response.raise_for_status()
             result = response.json()
+            end_time = time.time()
+            logger.info(f"LLM response received in {end_time - start_time:.2f} seconds")
             return result.get("response", "")
-        
+
         except Exception as e:
             logger.error(f"Error calling LLM: {str(e)}")
             raise
-    
+
     def _extract_test_code(self, response: str) -> str:
         """Extract the test code from the LLM response."""
         # If the response contains code blocks, extract them
@@ -215,7 +243,7 @@ Return only the Python code for the test file, without any additional explanatio
             code_blocks = []
             lines = response.split("\n")
             in_code_block = False
-            
+
             for line in lines:
                 if line.strip() == "```python":
                     in_code_block = True
@@ -223,29 +251,29 @@ Return only the Python code for the test file, without any additional explanatio
                 elif line.strip() == "```" and in_code_block:
                     in_code_block = False
                     continue
-                
+
                 if in_code_block:
                     code_blocks.append(line)
-            
+
             return "\n".join(code_blocks)
-        
+
         # Otherwise, return the entire response
         return response
 
 
 class PynguinTestGenerator:
     """Generates tests using Pynguin."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize the Pynguin test generator with configuration."""
         self.config = config
-    
+
     def generate_tests(self, source_file: str, output_dir: str) -> bool:
         """Generate tests using Pynguin."""
         try:
             project_root = str(Path(source_file).parent)
             module_name = Path(source_file).stem
-            
+
             cmd = [
                 "pynguin",
                 "--project-path", project_root,
@@ -256,24 +284,24 @@ class PynguinTestGenerator:
                 "--population", "50",
                 "--budget", "60",
             ]
-            
+
             logger.info(f"Running Pynguin: {' '.join(cmd)}")
-            
+
             result = subprocess.run(
                 cmd,
                 check=False,
                 capture_output=True,
                 text=True,
             )
-            
+
             if result.returncode != 0:
                 logger.warning(f"Pynguin exited with code {result.returncode}")
                 logger.warning(f"Pynguin stderr: {result.stderr}")
                 return False
-            
+
             logger.info(f"Pynguin successfully generated tests in {output_dir}")
             return True
-        
+
         except Exception as e:
             logger.error(f"Error generating tests with Pynguin: {str(e)}")
             return False
@@ -281,32 +309,32 @@ class PynguinTestGenerator:
 
 class HypothesisTestGenerator:
     """Generates property-based tests using Hypothesis."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize the Hypothesis test generator with configuration."""
         self.config = config
-    
+
     def generate_tests(self, source_file: str, module_summary: Dict[str, Any]) -> str:
         """Generate property-based tests using Hypothesis."""
         try:
             test_code = []
-            
+
             # Add imports
             test_code.append("import pytest")
             test_code.append("from hypothesis import given, strategies as st")
             test_code.append(f"from {module_summary['module_name']} import *")
             test_code.append("")
-            
+
             # Generate tests for each class
             for class_info in module_summary["classes"]:
                 class_name = class_info["name"]
                 test_code.append(f"class Test{class_name}:")
-                
+
                 # Generate tests for each method
                 for method_name in class_info["methods"]:
                     if method_name.startswith("__"):
                         continue
-                    
+
                     test_code.append(f"    @given(st.integers(), st.integers())")
                     test_code.append(f"    def test_{method_name}_properties(self, a, b):")
                     test_code.append(f"        \"\"\"Test properties of {method_name} using Hypothesis.\"\"\"")
@@ -319,13 +347,13 @@ class HypothesisTestGenerator:
                     test_code.append(f"            # Handle expected exceptions")
                     test_code.append(f"            pass")
                     test_code.append("")
-            
+
             # Generate tests for each function
             for func_info in module_summary["functions"]:
                 func_name = func_info["name"]
                 if func_name.startswith("_"):
                     continue
-                
+
                 test_code.append(f"@given(st.integers(), st.integers())")
                 test_code.append(f"def test_{func_name}_properties(a, b):")
                 test_code.append(f"    \"\"\"Test properties of {func_name} using Hypothesis.\"\"\"")
@@ -337,9 +365,9 @@ class HypothesisTestGenerator:
                 test_code.append(f"        # Handle expected exceptions")
                 test_code.append(f"        pass")
                 test_code.append("")
-            
+
             return "\n".join(test_code)
-        
+
         except Exception as e:
             logger.error(f"Error generating Hypothesis tests: {str(e)}")
             return ""
@@ -347,60 +375,60 @@ class HypothesisTestGenerator:
 
 class TestGenerator:
     """Main class for generating tests using multiple approaches."""
-    
+
     def __init__(self, config: Dict[str, Any]):
         """Initialize the test generator with configuration."""
         self.config = config
         self.llm_generator = LLMTestGenerator(config)
         self.pynguin_generator = PynguinTestGenerator(config)
         self.hypothesis_generator = HypothesisTestGenerator(config)
-    
+
     def generate_tests(self, source_file: str, output_dir: str) -> Dict[str, str]:
         """Generate tests for a source file using multiple approaches."""
         results = {}
-        
+
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-        
+
         # Analyze the module
         analyzer = ModuleAnalyzer(source_file)
         module_summary = analyzer.get_module_summary()
-        
+
         # Generate tests using LLM
         if self.config.get("use_llm", True):
             logger.info(f"Generating tests using LLM for {source_file}")
             llm_tests = self.llm_generator.generate_tests(source_file, module_summary)
-            
+
             if llm_tests:
                 output_file = os.path.join(output_dir, f"test_{module_summary['module_name']}_llm.py")
                 with open(output_file, "w") as f:
                     f.write(llm_tests)
-                
+
                 results["llm"] = output_file
                 logger.info(f"LLM tests written to {output_file}")
-        
+
         # Generate tests using Pynguin
         if self.config.get("use_pynguin", True):
             logger.info(f"Generating tests using Pynguin for {source_file}")
             pynguin_success = self.pynguin_generator.generate_tests(source_file, output_dir)
-            
+
             if pynguin_success:
                 results["pynguin"] = os.path.join(output_dir, f"test_{module_summary['module_name']}_pynguin.py")
                 logger.info(f"Pynguin tests generated in {output_dir}")
-        
+
         # Generate tests using Hypothesis
         if "hypothesis" in self.config.get("test_frameworks", []):
             logger.info(f"Generating property-based tests for {source_file}")
             hypothesis_tests = self.hypothesis_generator.generate_tests(source_file, module_summary)
-            
+
             if hypothesis_tests:
                 output_file = os.path.join(output_dir, f"test_{module_summary['module_name']}_hypothesis.py")
                 with open(output_file, "w") as f:
                     f.write(hypothesis_tests)
-                
+
                 results["hypothesis"] = output_file
                 logger.info(f"Hypothesis tests written to {output_file}")
-        
+
         return results
 
 
@@ -415,39 +443,39 @@ def main():
     parser.add_argument("--no-hypothesis", action="store_true", help="Skip Hypothesis test generation")
     parser.add_argument("--model", help="LLM model to use (default: codellama:7b)")
     parser.add_argument("--ollama-host", help="Ollama host URL (default: http://localhost:11434)")
-    
+
     args = parser.parse_args()
-    
+
     # Load configuration
     config = DEFAULT_CONFIG.copy()
-    
+
     if args.config:
         try:
             with open(args.config, "r") as f:
                 config.update(json.load(f))
         except Exception as e:
             logger.error(f"Error loading configuration: {str(e)}")
-    
+
     # Override configuration with command-line arguments
     if args.no_llm:
         config["use_llm"] = False
-    
+
     if args.no_pynguin:
         config["use_pynguin"] = False
-    
+
     if args.no_hypothesis and "hypothesis" in config["test_frameworks"]:
         config["test_frameworks"].remove("hypothesis")
-    
+
     if args.model:
         config["model_name"] = args.model
-    
+
     if args.ollama_host:
         config["ollama_host"] = args.ollama_host
-    
+
     # Generate tests
     generator = TestGenerator(config)
     results = generator.generate_tests(args.source_file, args.output_dir)
-    
+
     # Print results
     logger.info("Test generation completed")
     logger.info(f"Generated test files: {list(results.values())}")

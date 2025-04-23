@@ -64,11 +64,8 @@ volumes:
 
   # Cache volumes for faster builds
   pip-cache:
-    name: dukat-pip-cache  # Cache pip packages
-    external: false
+    external: false  # Cache pip packages
   apt-cache:
-    name: dukat-apt-cache  # Cache apt packages
-    external: false
+    external: false  # Cache apt packages
   torch-cache:
-    name: dukat-torch-cache  # Cache PyTorch models and weights
-    external: false
+    external: false  # Cache PyTorch models and weights

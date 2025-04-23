@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  dev:
+    image: dukat-devcontainer:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    volumes:
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+
+volumes:
+  pip-cache:
+  apt-cache:
+  torch-cache:

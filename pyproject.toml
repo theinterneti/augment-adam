@@ -72,4 +72,5 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 python_classes = "Test*"
-addopts = "--cov=dukat --cov-report=term-missing"
+# Commented out coverage options to make tests run
+# addopts = "--cov=dukat --cov-report=term-missing"

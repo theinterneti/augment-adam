@@ -6,8 +6,13 @@
   "test_frameworks": ["pytest", "hypothesis"],
   "use_pynguin": true,
   "use_llm": true,
+  "use_gpu": true,
   "max_retries": 3,
   "timeout": 300,
+  "gpu_settings": {
+    "num_gpu": 1,
+    "gpu_layers": -1
+  },
   "models": {
     "small": {
       "name": "tinyllama:1.1b",

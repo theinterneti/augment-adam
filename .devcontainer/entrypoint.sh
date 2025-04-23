@@ -45,7 +45,11 @@ if command -v nvidia-smi &> /dev/null; then
 
     # Check PyTorch CUDA availability
     echo "\nChecking PyTorch CUDA availability:"
-    python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count()); print('CUDA device name:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')" || echo "Failed to check PyTorch CUDA availability"
+    if [ -f /workspace/scripts/verify_pytorch_gpu.py ]; then
+        python /workspace/scripts/verify_pytorch_gpu.py || echo "GPU verification script completed with errors"
+    else
+        python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count()); print('CUDA device name:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')" || echo "Failed to check PyTorch CUDA availability"
+    fi
 else
     echo "NVIDIA GPU not detected or nvidia-smi not available"
 fi

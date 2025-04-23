@@ -104,13 +104,17 @@ class Task:
         self.status = TaskStatus.RUNNING
         self.started_at = time.time()
 
-        # Create a progress tracker for this task
-        self.progress_tracker = create_progress_tracker(
-            task_id=self.task_id,
-            total_steps=self.total_steps,
-            description=self.description or f"Task {self.task_id}",
-        )
-        self.progress_tracker.start(message="Starting task execution")
+        # Create a progress tracker for this task if it doesn't exist
+        if not self.progress_tracker:
+            self.progress_tracker = create_progress_tracker(
+                task_id=self.task_id,
+                total_steps=self.total_steps,
+                description=self.description or f"Task {self.task_id}",
+            )
+            self.progress_tracker.start(message="Starting task execution")
+        elif self.progress_tracker.state == ProgressState.FAILED:
+            # Reset progress tracker if retrying
+            self.progress_tracker.start(message="Retrying task execution")
 
         try:
             # Add progress tracking to kwargs if the function accepts it
@@ -141,14 +145,35 @@ class Task:
 
         except Exception as e:
             self.error = str(e)
-            self.status = TaskStatus.FAILED
-            self.completed_at = time.time()
 
-            # Mark progress as failed
-            if self.progress_tracker:
-                self.progress_tracker.fail(message=f"Task failed: {str(e)}")
+            # Check if we should retry
+            if self.retries_left > 0:
+                self.retries_left -= 1
+                logger.info(f"Task {self.task_id} failed, retrying ({self.retry_count - self.retries_left}/{self.retry_count}): {str(e)}")
 
-            raise
+                # Mark progress as retrying
+                if self.progress_tracker:
+                    self.progress_tracker.update(
+                        message=f"Task failed, retrying: {str(e)}",
+                        state=ProgressState.RUNNING
+                    )
+
+                # Wait before retrying if retry_delay is specified
+                if self.retry_delay > 0:
+                    await asyncio.sleep(self.retry_delay)
+
+                # Retry the task
+                return await self.execute()
+            else:
+                # No more retries, mark as failed
+                self.status = TaskStatus.FAILED
+                self.completed_at = time.time()
+
+                # Mark progress as failed
+                if self.progress_tracker:
+                    self.progress_tracker.fail(message=f"Task failed: {str(e)}")
+
+                raise
 
     def to_dict(self) -> Dict[str, Any]:
         """Convert the task to a dictionary.

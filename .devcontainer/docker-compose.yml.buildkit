@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
       args:
         BUILDKIT_INLINE_CACHE: 1
+      cache_from:
+        - type=registry,ref=localhost:5000/dukat-dev:cache
+      cache_to:
+        - type=registry,ref=localhost:5000/dukat-dev:cache,mode=max
     volumes:
       # Mount the root folder that contains .devcontainer folder
       - ..:/workspace:cached
@@ -18,11 +22,6 @@ services:
       - OllamaModels:/root/.ollama:cached
       - model-cache:/workspace/.cache/models:cached
       - huggingface-cache:/workspace/.cache/huggingface:cached
-
-      # Cache volumes for faster builds and package installations
-      - pip-cache:/root/.cache/pip:cached
-      - apt-cache:/var/cache/apt:cached
-      - torch-cache:/root/.cache/torch:cached
 
       # Mount Git config
       - ~/.gitconfig:/home/vscode/.gitconfig:ro
@@ -39,10 +38,6 @@ services:
     environment:
       - PYTHONPATH=/workspace
       - HF_HOME=/workspace/.cache/huggingface
-
-    # Use the "remoteUser" property in devcontainer.json to specify a non-root user
-    # Commented out to let the Dockerfile and devcontainer.json handle user setup
-    # user: vscode
 
     # GPU configuration for NVIDIA GPU
     deploy:
@@ -61,14 +56,3 @@ volumes:
     external: false  # Will be created if it doesn't exist
   huggingface-cache:
     external: false  # Will be created if it doesn't exist
-
-  # Cache volumes for faster builds
-  pip-cache:
-    name: dukat-pip-cache  # Cache pip packages
-    external: false
-  apt-cache:
-    name: dukat-apt-cache  # Cache apt packages
-    external: false
-  torch-cache:
-    name: dukat-torch-cache  # Cache PyTorch models and weights
-    external: false

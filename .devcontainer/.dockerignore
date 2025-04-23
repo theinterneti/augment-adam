@@ -1,0 +1,5 @@
+# Exclude everything except what's needed for the build
+*
+!Dockerfile
+!entrypoint.sh
+!post-start.sh
