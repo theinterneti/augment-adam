@@ -21,9 +21,11 @@ The main class for task scheduling.
 ```python
 from dukat.core.task_scheduler import TaskScheduler
 from datetime import datetime, timedelta
+import asyncio
 
-# Create a scheduler
-scheduler = TaskScheduler()
+# Create a scheduler with the current event loop
+loop = asyncio.get_event_loop()
+scheduler = TaskScheduler(loop=loop)
 
 # Schedule a one-time task
 task_id = await scheduler.schedule_task(
@@ -54,6 +56,8 @@ task_info = await scheduler.get_task(task_id)
 # Get information about all scheduled tasks
 all_tasks = await scheduler.get_all_tasks()
 ```
+
+> **Note on Event Loops**: The `TaskScheduler` class uses the event loop provided during initialization for all asynchronous operations. If no loop is provided, it gets the current event loop using `asyncio.get_event_loop()`. For more information on working with event loops, see the [Asynchronous Programming and Event Loops](async_event_loops.md) documentation.
 
 ### ScheduledTask
 

@@ -10,7 +10,18 @@ import pytest
 from typer.testing import CliRunner
 from unittest.mock import patch, MagicMock
 
-from dukat.cli import app
+import sys
+import os
+import importlib.util
+
+# Directly import the module from the file path
+spec = importlib.util.spec_from_file_location("dukat.cli_module", os.path.abspath(os.path.join(os.path.dirname(__file__), '../../dukat/cli.py')))
+module = importlib.util.module_from_spec(spec)
+sys.modules["dukat.cli_module"] = module
+spec.loader.exec_module(module)
+
+# Get the app from the module
+app = module.app
 
 
 @pytest.fixture
@@ -24,7 +35,7 @@ def test_app_exists():
     assert app is not None
 
 
-@patch('dukat.cli.Assistant')
+@patch('dukat.cli_module.Assistant')
 def test_main_command(mock_assistant, runner):
     """Test the main command."""
     # Mock the Assistant class
@@ -46,7 +57,7 @@ def test_main_command(mock_assistant, runner):
     assert "Using model:" in result.stdout
 
 
-@patch('dukat.cli.Assistant')
+@patch('dukat.cli_module.Assistant')
 def test_main_command_with_model(mock_assistant, runner):
     """Test the main command with a custom model."""
     # Mock the Assistant class
@@ -65,7 +76,7 @@ def test_main_command_with_model(mock_assistant, runner):
     assert "gpt-j:6b" in result.stdout
 
 
-@patch('dukat.cli.Assistant')
+@patch('dukat.cli_module.Assistant')
 def test_main_command_with_verbose(mock_assistant, runner):
     """Test the main command with verbose mode."""
     # Mock the Assistant class
@@ -83,7 +94,7 @@ def test_main_command_with_verbose(mock_assistant, runner):
     assert "Verbose mode enabled" in result.stdout
 
 
-@patch('dukat.cli.launch_web_interface')
+@patch('dukat.cli_module.launch_web_interface')
 def test_web_command(mock_launch_web, runner):
     """Test the web command."""
     # Mock the launch_web_interface function
@@ -103,7 +114,7 @@ def test_web_command(mock_launch_web, runner):
     assert "127.0.0.1:7860" in result.stdout
 
 
-@patch('dukat.cli.launch_web_interface')
+@patch('dukat.cli_module.launch_web_interface')
 def test_web_command_with_custom_port(mock_launch_web, runner):
     """Test the web command with a custom port."""
     # Mock the launch_web_interface function
@@ -119,7 +130,7 @@ def test_web_command_with_custom_port(mock_launch_web, runner):
     assert "127.0.0.1:8080" in result.stdout
 
 
-@patch('dukat.cli.launch_web_interface')
+@patch('dukat.cli_module.launch_web_interface')
 def test_web_command_with_custom_host(mock_launch_web, runner):
     """Test the web command with a custom host."""
     # Mock the launch_web_interface function

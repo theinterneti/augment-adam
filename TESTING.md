@@ -94,6 +94,107 @@ The Dukat project uses a comprehensive testing approach:
    - Test the entire system
    - Verify correct behavior from user perspective
 
+## Testing Asynchronous Code
+
+Dukat makes extensive use of asynchronous programming with `asyncio`. Testing asynchronous code requires special consideration:
+
+### Event Loop Management
+
+1. **Use pytest-asyncio**: We use the pytest-asyncio plugin to handle event loops in tests. This plugin provides fixtures for working with event loops and running asynchronous tests.
+
+2. **Configure Event Loop Scope**: Set the event loop scope in conftest.py to ensure proper event loop handling:
+
+   ```python
+   # In conftest.py
+   import pytest
+
+   @pytest.fixture(scope="function")
+   def event_loop():
+       """Create an instance of the default event loop for each test case."""
+       loop = asyncio.get_event_loop_policy().new_event_loop()
+       yield loop
+       loop.close()
+   ```
+
+3. **Mark Async Tests**: Use the `@pytest.mark.asyncio` decorator to mark tests that use async/await syntax:
+
+   ```python
+   import pytest
+
+   @pytest.mark.asyncio
+   async def test_async_function():
+       result = await my_async_function()
+       assert result == expected_result
+   ```
+
+### Testing Async Components
+
+1. **TaskQueue Testing**: When testing the TaskQueue, ensure that you're using the same event loop for creating the queue and waiting for tasks:
+
+   ```python
+   @pytest.mark.asyncio
+   async def test_task_queue():
+       # Get the current event loop
+       loop = asyncio.get_event_loop()
+
+       # Create a task queue with the current event loop
+       queue = TaskQueue(loop=loop)
+       await queue.start()
+
+       # Add a task
+       task = await queue.add_task(my_function)
+
+       # Wait for the task to complete
+       result = await queue.wait_for_task(task.task_id)
+
+       # Stop the queue
+       await queue.stop()
+
+       assert result == expected_result
+   ```
+
+2. **AsyncAssistant Testing**: When testing the AsyncAssistant, ensure that you're properly handling futures and callbacks:
+
+   ```python
+   @pytest.mark.asyncio
+   async def test_async_assistant():
+       # Create an assistant
+       assistant = await get_async_assistant()
+
+       # Add a message
+       await assistant.add_message("Hello")
+
+       # Generate a response
+       response = await assistant.generate_response()
+
+       assert response is not None
+   ```
+
+3. **Mocking Async Functions**: Use AsyncMock to mock async functions:
+
+   ```python
+   from unittest.mock import AsyncMock
+
+   @pytest.mark.asyncio
+   async def test_with_async_mock():
+       # Create an async mock
+       mock_function = AsyncMock(return_value="mocked result")
+
+       # Use the mock
+       result = await mock_function()
+
+       assert result == "mocked result"
+       mock_function.assert_called_once()
+   ```
+
+### Common Issues and Solutions
+
+1. **Event Loop Already Running**: If you get an error about the event loop already running, ensure you're not trying to run a new event loop inside an existing one.
+
+2. **Task Got Future Attached to a Different Loop**: If you get this error, ensure you're creating futures using the current event loop.
+
+3. **Task Was Destroyed But It Is Pending**: Always await tasks or store them in a list to prevent them from being garbage collected while still pending.
+
 ## Next Steps
 
 ### 1. Improve Test Coverage

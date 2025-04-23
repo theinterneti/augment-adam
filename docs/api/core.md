@@ -372,6 +372,8 @@ async def main():
 asyncio.run(main())
 ```
 
+> **Note on Event Loops**: The `AsyncAssistant` class uses the current event loop for all asynchronous operations. When creating an instance, it automatically gets the current event loop using `asyncio.get_event_loop()`. For more information on working with event loops, see the [Asynchronous Programming and Event Loops](core/async_event_loops.md) documentation.
+
 ### Parameters
 
 - `model_name` (str, optional): The name of the model to use. Default: "llama3:8b"

@@ -1,0 +1,7 @@
+redis==5.0.1
+neo4j==5.13.0
+numpy==1.26.0
+sentence-transformers==2.2.2
+python-dotenv==1.0.0
+httpx==0.25.0
+asyncio==3.4.3

@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # Redis for vector search - optimized for real-time queries
+  redis-vector:
+    image: redis/redis-stack:latest
+    container_name: redis-vector
+    ports:
+      - "6379:6379"
+      - "8001:8001"  # RedisInsight
+    volumes:
+      - redis-vector-data:/data
+    command: >
+      redis-server 
+      --loadmodule /opt/redis-stack/lib/redisearch.so
+      --loadmodule /opt/redis-stack/lib/rejson.so
+      --save 60 1
+      --appendonly yes
+      --threads 6
+      --io-threads 2
+    environment:
+      - REDIS_ARGS=--requirepass redispassword
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  # Neo4j for graph database with vector capabilities
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: neo4j-vector
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+      - neo4j-conf:/conf
+    environment:
+      - NEO4J_AUTH=neo4j/neopassword
+      - NEO4J_dbms_memory_heap_initial__size=1G
+      - NEO4J_dbms_memory_heap_max__size=4G
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*,gds.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*,algo.*,gds.*
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  # API service for the context engine
+  context-engine-api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: context-engine-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis-vector
+      - neo4j
+    environment:
+      - REDIS_HOST=redis-vector
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redispassword
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=neopassword
+      - LOG_LEVEL=info
+    volumes:
+      - ./api:/app
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+  # Worker service for background processing
+  context-engine-worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    container_name: context-engine-worker
+    depends_on:
+      - redis-vector
+      - neo4j
+    environment:
+      - REDIS_HOST=redis-vector
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redispassword
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=neopassword
+      - LOG_LEVEL=info
+      - WORKER_CONCURRENCY=4
+    volumes:
+      - ./worker:/app
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+
+volumes:
+  redis-vector-data:
+  neo4j-data:
+  neo4j-logs:
+  neo4j-conf:
