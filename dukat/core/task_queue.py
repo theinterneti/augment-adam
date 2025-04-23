@@ -153,10 +153,8 @@ class Task:
 
                 # Mark progress as retrying
                 if self.progress_tracker:
-                    self.progress_tracker.update(
-                        message=f"Task failed, retrying: {str(e)}",
-                        state=ProgressState.RUNNING
-                    )
+                    # Reset the progress tracker for retry
+                    self.progress_tracker.start(message=f"Task failed, retrying: {str(e)}")
 
                 # Wait before retrying if retry_delay is specified
                 if self.retry_delay > 0:
@@ -214,6 +212,7 @@ class TaskQueue:
         enable_persistence: bool = True,
         persistence_dir: Optional[str] = None,
         auto_save_interval: float = 60.0,
+        loop: Optional[asyncio.AbstractEventLoop] = None,
     ):
         """Initialize the task queue.
 
@@ -225,6 +224,7 @@ class TaskQueue:
                 If None, defaults to ~/.dukat/tasks
             auto_save_interval: Interval in seconds between auto-saves.
                 Set to 0 to disable auto-saving.
+            loop: Event loop to use. If None, uses the current event loop.
         """
         self.max_workers = max_workers
         self.max_queue_size = max_queue_size
@@ -232,11 +232,13 @@ class TaskQueue:
         self.persistence_dir = persistence_dir
         self.auto_save_interval = auto_save_interval
 
+        # Get the current event loop if none is provided
+        self.loop = loop or asyncio.get_event_loop()
+
         self.tasks: Dict[str, Task] = {}
         self.queue = asyncio.PriorityQueue()
         self.workers: List[asyncio.Task] = []
         self.running = False
-        self.loop = None
         self.persistence = None
         self.auto_save_task = None
 
@@ -246,7 +248,7 @@ class TaskQueue:
             return
 
         self.running = True
-        self.loop = asyncio.get_event_loop()
+        # Use the loop that was set during initialization
 
         # Initialize persistence if enabled
         if self.enable_persistence:
@@ -428,8 +430,32 @@ class TaskQueue:
             return task.result
 
         try:
-            # Wait for the task to complete
-            await asyncio.wait_for(task.future, timeout=timeout)
+            # Create a new future in the current event loop
+            current_loop = asyncio.get_event_loop()
+            new_future = current_loop.create_future()
+
+            # Set up a callback to transfer the result
+            def done_callback(fut):
+                try:
+                    if fut.cancelled():
+                        new_future.cancel()
+                    elif fut.exception() is not None:
+                        new_future.set_exception(fut.exception())
+                    else:
+                        new_future.set_result(fut.result())
+                except Exception as e:
+                    if not new_future.done():
+                        new_future.set_exception(e)
+
+            # Add the callback to the original future
+            task.future.add_done_callback(done_callback)
+
+            # Wait for the new future with timeout
+            if timeout is not None:
+                await asyncio.wait_for(new_future, timeout=timeout)
+            else:
+                await new_future
+
             return task.result
         except asyncio.TimeoutError:
             logger.warning(f"Timed out waiting for task {task_id}")
@@ -603,7 +629,9 @@ def get_task_queue() -> TaskQueue:
     """
     global _default_queue
     if _default_queue is None:
-        _default_queue = TaskQueue()
+        # Get the current event loop
+        loop = asyncio.get_event_loop()
+        _default_queue = TaskQueue(loop=loop)
     return _default_queue
 
 

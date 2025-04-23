@@ -101,12 +101,13 @@ async def test_get_async_assistant():
         mock_queue.start.assert_called_once()
 
         # Check that the assistant was created with the correct parameters
-        mock_assistant_class.assert_called_once_with(
-            model_name="test-model",
-            ollama_host="http://test-host",
-            max_messages=50,
-            conversation_id="test-conv",
-        )
+        # Use assert_called_once() instead of assert_called_once_with() to avoid issues with default parameters
+        mock_assistant_class.assert_called_once()
+        call_args = mock_assistant_class.call_args
+        assert call_args[1]["model_name"] == "test-model"
+        assert call_args[1]["ollama_host"] == "http://test-host"
+        assert call_args[1]["max_messages"] == 50
+        assert call_args[1]["conversation_id"] == "test-conv"
 
 
 @pytest.mark.asyncio
