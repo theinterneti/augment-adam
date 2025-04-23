@@ -1,3 +1,5 @@
+# Each task must reference a planning item in PLANNING.md and a related test in TESTING.md.
+
 # Dukat Development Tasks v0.3.3 (2025-04-27)
 
 ## Phase 1: Foundation

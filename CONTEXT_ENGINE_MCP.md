@@ -135,6 +135,37 @@ result = client.call_tool(
 )
 ```
 
+# MCP Server vs. Context Engine: Clarification
+
+## Overview
+This project uses both a Model Context Protocol (MCP) server and a context engine for memory and knowledge management. While they are related, they serve distinct roles and should not be confused.
+
+## MCP Server
+- The docker-mcp server provides a standardized API (Model Context Protocol) for accessing tools, memory, and knowledge graphs across different services and containers.
+- It acts as a bridge, allowing external clients (including other containers, services, or agents) to connect and interact with the memory system via a well-defined protocol.
+- The MCP server is typically started using `simple_mcp_server.py` or via Docker using `Dockerfile.mcp-context-engine` and the appropriate docker-compose file (e.g., `mcp-context-engine-docker-compose.yml`).
+- **How to connect:**
+  - From another container or service, connect to the MCP server using the network address and port defined in your docker-compose file (e.g., `localhost:8080` or the service name in Docker).
+  - Use the MCP client (e.g., `mcp_context_engine_client.py`) to send requests following the MCP API (see `MCP_CONTEXT_ENGINE.md` for details).
+
+## Context Engine
+- The context engine is the core logic for managing memory, context, and knowledge within this project.
+- It provides APIs and internal logic for storing, retrieving, and updating memory elements (e.g., working memory, episodic memory, semantic memory).
+- The context engine is used directly by the assistant (Dukat), plugins, and other internal modules.
+- It is not itself a network service, but can be exposed via the MCP server for remote access.
+- Key files: `context_engine/` (core logic), `context_engine_client.py` (local client), `CONTEXT_ENGINE.md` (documentation).
+
+## Memory Elements
+- **Working Memory:** Short-term, session-based context (e.g., current conversation).
+- **Episodic Memory:** Stores past interactions or events.
+- **Semantic Memory:** Stores knowledge, facts, and embeddings (often using ChromaDB).
+- These memory types are managed by the context engine and can be accessed locally or via the MCP server.
+
+## Key Distinctions
+- The **context engine** is the implementation of memory logic; the **MCP server** is a protocol/API layer for remote access.
+- Use the context engine for direct, internal memory operations; use the MCP server for standardized, remote, or cross-container access.
+- Keep configuration, documentation, and code for each clearly separated to avoid confusion.
+
 ## Performance Considerations
 
 ### Redis Configuration

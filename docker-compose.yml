@@ -56,6 +56,26 @@ services:
           cpus: '2'
           memory: 4G
 
+  # Sphinx for auto documentation
+  sphinx-docs:
+    image: sphinxdoc/sphinx
+    container_name: sphinx-docs
+    working_dir: /docs
+    volumes:
+      - ./docs:/docs
+    command: >
+      sh -c "if [ -f Makefile ]; then make html; else echo 'Makefile not found. Please run sphinx-quickstart to initialize.'; fi"
+    environment:
+      - SPHINX_BUILD=html
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
   # API service for the context engine
   context-engine-api:
     build:

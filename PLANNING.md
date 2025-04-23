@@ -1,3 +1,5 @@
+# All tasks must be linked to TASKS.md and referenced in TESTING.md where applicable.
+
 # Dukat Development Plan v0.3.3 (2025-04-27)
 
 ## Vision

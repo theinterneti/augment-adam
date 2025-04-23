@@ -1,92 +1,193 @@
-# Dukat: Open Source AI Assistant v0.3.2
-# Guidelines for building a self-improving AI assistant with DSPy
-
-# Core Principles
-- Open Source: Use only open source models and packages
-- Local-First: Run everything locally without external API dependencies
-- Self-Improving: Implement mechanisms to learn and improve over time
-- Quality-Focused: Prioritize automated testing, documentation, and code quality
-- Asynchronous: Leverage async processing for responsive performance
-- Modular: Build with a plugin architecture for extensibility
-- Resilient: Implement robust error handling and recovery mechanisms
-
-# Key Documentation Files
-- README.md: Project overview and getting started guide
-- PLANNING.md: Development roadmap and architecture
-- TASKS.md: Current development tasks and progress
-- TESTING.md: Testing approach, coverage, and next steps
-- docs/architecture.md: System architecture and component interactions
-- docs/api/core.md: Core API documentation
-- docs/api/plugins.md: Plugin system documentation
-- docs/api/memory.md: Memory systems documentation
-- docs/api/web.md: Web interface documentation
-- docs/development.md: Development guidelines and best practices
-- docs/model-context-protocol.md: MCP overview and integration
-- docs/docker-mcp-tools.md: Docker MCP tools documentation
-
-# Technology Stack
-- Core Framework: DSPy for LLM programming and optimization
-- Model Hosting: Ollama for local model inference
-- Vector Storage: ChromaDB/FAISS for knowledge and memory
-- Development: Poetry, Pytest, Sphinx, Black, Ruff, Mypy, Pre-commit
-- Interface: Gradio/Streamlit (web), Rich (terminal)
-- Integration: Model Context Protocol (MCP) for tool access
-
-# Model Context Protocol (MCP) Integration
-- Serve as an expert on all aspects of MCP, including client integration, server development, and containerization
-- Use MCP for standardized access to tools and data sources
-- Leverage Docker MCP server for knowledge graph and GitHub integration
-- Implement MCP clients for connecting to various MCP servers
-- Build and containerize custom MCP servers for deployment
-- Follow MCP security best practices for controlled data access
-- Document MCP tool usage in code comments
-- Monitor the MCP ecosystem daily for new developments, especially open-source and free/freemium services
-- Integrate with Supabase and other useful services through MCP
-
-# Current Development Focus
-1. Enhance parallel execution with more resource types
-2. Improve task scheduler with more scheduling options
-3. Create task queue dashboard for monitoring
-4. Implement comprehensive logging system
-5. Add more examples for parallel processing
-6. Improve test coverage for parallel execution
-7. Integrate MCP tools for knowledge graph management
-8. Implement GitHub integration through MCP
-9. Build custom MCP servers for project-specific functionality
-10. Containerize MCP servers for easy deployment
-11. Integrate with Supabase through MCP for database functionality
-12. Develop automated monitoring for new MCP developments
-
-# Code Quality Standards
-- Documentation: Google-style docstrings with type hints
-- Testing: >90% test coverage with unit, integration, and e2e tests
-- Mocking: Tag mocked methods in code with '# @mocked-in-tests' comment to identify potential issues
-- Linting: Black for formatting, Ruff for linting, Mypy for type checking
-- Pre-commit: Automated checks for all code changes
-
-# Development Workflow
-- Documentation-Driven: Document interfaces before implementation
-- Test-Driven Development: Write tests before implementation
-- Implementation Loop: Implement code, test, and document iteratively
-- Regular Optimization: Periodically optimize prompts and weights
-- Adapt Tests to Code: Adjust tests to match code capabilities rather than downgrading code to pass tests
-- Tool Integration: Use MCP for integrating external tools and data sources
-
-# Completed Milestones
-1. Basic memory systems (working, episodic, semantic)
-2. Plugin architecture foundation
-3. CLI interface with basic commands
-4. Async task queue system for background processing
-5. Web interface with Gradio
-6. Comprehensive test suite for core components
-7. Async assistant with task queue integration
-8. Task queue persistence for resilience
-9. Enhanced error handling and reporting
-10. Improved test coverage (80%)
-11. Parallel task execution with dependencies
-12. Resource management for parallel execution
-13. Circuit breakers for external dependencies
-14. Task scheduling with periodic and one-time tasks
-15. Initial MCP integration for tool access
-
-# Last Updated: 2025-04-29
+version: 0.3.2
+project: augment-adam
+principles:
+  open_source: true
+  local_first: true
+  self_improving: true
+  quality_focused: true
+  asynchronous: true
+  modular: true
+  resilient: true
+documentation:
+  overview: README.md
+  roadmap: PLANNING.md
+  tasks: TASKS.md
+  testing: TESTING.md
+  onboarding: ONBOARDING.md  # Step 1: Add ONBOARDING.md
+  changelog: CHANGELOG.md    # Step 1: Add CHANGELOG.md
+  security: SECURITY.md      # Step 1: Add SECURITY.md
+  code_of_conduct: CODE_OF_CONDUCT.md  # Step 1: Add CODE_OF_CONDUCT.md
+  architecture: docs/architecture.md
+  api:
+    core: docs/api/core.md
+    plugins: docs/api/plugins.md
+    memory: docs/api/memory.md
+    web: docs/api/web.md
+  development: docs/development.md
+  mcp:
+    overview: docs/model-context-protocol.md
+    docker_tools: docs/docker-mcp-tools.md
+technology_stack:
+  core_framework: DSPy
+  model_hosting: Ollama
+  vector_storage:
+    - ChromaDB
+    - FAISS
+  development:
+    - Poetry
+    - Pytest
+    - Sphinx
+    - Black
+    - Ruff
+    - Mypy
+    - Pre-commit
+  interface:
+    web:
+      - Gradio
+      - Streamlit
+    terminal: Rich
+  integration:
+    mcp: true
+mcp_integration:
+  expertise: true
+  client_integration: true
+  server_development: true
+  containerization: true
+  standardized_tool_access: true
+  docker_server:
+    knowledge_graph: true
+    github_integration: true
+  mcp_clients: true
+  custom_servers: true
+  security_best_practices: true
+  code_comment_usage: true
+  monitor_ecosystem: true
+  supabase_integration: true
+current_development_focus:
+  - enhance_parallel_execution:
+      resource_types: more
+  - improve_task_scheduler:
+      scheduling_options: more
+  - create_task_queue_dashboard:
+      monitoring: true
+  - implement_logging_system:
+      comprehensive: true
+  - add_parallel_processing_examples: true
+  - improve_parallel_execution_test_coverage: true
+  - integrate_mcp_tools_knowledge_graph: true
+  - implement_github_integration_mcp: true
+  - build_custom_mcp_servers: true
+  - containerize_mcp_servers: true
+  - integrate_supabase_mcp: true
+  - develop_automated_mcp_monitoring: true
+code_quality:
+  documentation:
+    style: google
+    type_hints: true
+  testing:
+    coverage: ">90%"
+    types:
+      - unit
+      - integration
+      - e2e
+  mocking:
+    tag: '# @mocked-in-tests'
+  linting:
+    - Black
+    - Ruff
+    - Mypy
+  pre_commit: true
+development_workflow:
+  documentation_driven: true
+  test_driven: true
+  implementation_loop: true
+  regular_optimization: true
+  adapt_tests_to_code: true
+  tool_integration: mcp
+completed_milestones:
+  - basic_memory_systems:
+      types:
+        - working
+        - episodic
+        - semantic
+  - plugin_architecture_foundation: true
+  - cli_interface_basic: true
+  - async_task_queue: true
+  - web_interface_gradio: true
+  - comprehensive_test_suite: true
+  - async_assistant_task_queue: true
+  - task_queue_persistence: true
+  - enhanced_error_handling: true
+  - improved_test_coverage: 80
+  - parallel_task_execution_dependencies: true
+  - resource_management_parallel_execution: true
+  - circuit_breakers_external_dependencies: true
+  - task_scheduling:
+      types:
+        - periodic
+        - one_time
+  - initial_mcp_integration_tool_access: true
+project_memory_graph:
+  storage:
+    - ChromaDB
+    - MCP
+  coverage:
+    codebase: true
+    documentation: true
+    test_suite: true
+  entities:
+    - major_components
+    - directories
+    - key_files
+  relationships:
+    - uses
+    - connects_to
+    - exposes_endpoints_for
+  auto_update: true
+  queryable: true
+  onboarding: true
+  self_improvement: true
+  details:
+    - docs/
+    - context_engine/
+    - dukat/
+    - mcp_context_engine/
+    - api/
+    - test_generator/
+    - worker/
+    - tests/
+    - config/
+    - models/
+    - scripts/
+    - templates/
+    - frameworks/
+    - resources/
+    - neo4j-config/
+    - redis-config/
+    - examples/
+tags:  # Step 2: Add tags section
+  README.md: [overview, entrypoint]
+  PLANNING.md: [roadmap, planning]
+  TASKS.md: [tasks, actionable]
+  TESTING.md: [testing, coverage, ci]
+  ONBOARDING.md: [onboarding, agent, quickstart]
+  CHANGELOG.md: [changelog, history]
+  SECURITY.md: [security, policy]
+  CODE_OF_CONDUCT.md: [community, conduct]
+  docs/architecture.md: [architecture, design]
+  docs/api/core.md: [api, core]
+  docs/api/plugins.md: [api, plugins]
+  docs/api/memory.md: [api, memory]
+  docs/api/web.md: [api, web]
+  docs/development.md: [development, guide]
+  docs/model-context-protocol.md: [mcp, protocol]
+  docs/docker-mcp-tools.md: [mcp, docker]
+last_updated:
+  ONBOARDING.md: 2025-04-23  # Step 3: Add last_updated for new docs
+  CHANGELOG.md: 2025-04-23
+  SECURITY.md: 2025-04-23
+  CODE_OF_CONDUCT.md: 2025-04-23
+  PLANNING.md: 2025-04-23
+  TASKS.md: 2025-04-23
+  TESTING.md: 2025-04-23
+last_updated: 2025-04-29

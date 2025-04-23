@@ -158,6 +158,13 @@ Dukat is currently in active development (v0.3.3). The project is following the 
 - ⏳ Web interface
 - ⏳ Multi-file code generation
 
+## Agent Reference Documentation
+
+- [ONBOARDING.md](ONBOARDING.md): Quickstart and orientation for new AI coding agents. Contains project meta, core principles, key files, and agent responsibilities.
+- [CHANGELOG.md](CHANGELOG.md): Chronological, agent-readable log of significant project changes, with links to related tasks and planning items.
+- [SECURITY.md](SECURITY.md): Security policies, agent responsibilities, and procedures for handling vulnerabilities or sensitive operations.
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md): Agent behavior standards, collaboration protocols, and escalation procedures.
+
 ## Contributing
 
 Contributions are welcome! Please read the [PLANNING.md](PLANNING.md) file to understand the project's direction and check [TASKS.md](TASKS.md) for current development tasks.

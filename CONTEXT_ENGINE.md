@@ -2,6 +2,20 @@
 
 A hybrid vector-graph context engine for code understanding, built with Redis and Neo4j.
 
+# MCP Memory vs. Context Engine vs. Memory System: Clarification
+
+## Overview
+This project uses three related but distinct systems for memory and context:
+- **MCP Memory (Augment):** A protocol-based, queryable memory graph (ChromaDB/MCP) for project documentation, codebase structure, and relationships. Used by Augment for reasoning, onboarding, and self-improvement. Exposes a standardized API for remote access and tool integration.
+- **Context Engine:** The core logic for managing and combining context from multiple sources (including memory, code, embeddings, and knowledge graphs). Provides APIs for storing, retrieving, and updating context, and is used internally by Dukat and other modules.
+- **Memory System:** The underlying storage and retrieval mechanisms (working, episodic, semantic memory) implemented using Redis, Neo4j, and ChromaDB. These are managed by the context engine and can be accessed directly or via the MCP server.
+
+## Key Distinctions
+- **MCP Memory** is a protocol/API layer (MCP server) for remote, standardized, and cross-container access to project memory and knowledge. Connect using the MCP client (e.g., mcp_context_engine_client.py) to the MCP server (simple_mcp_server.py) at the configured address/port.
+- **Context Engine** is the internal logic that combines and manages context from memory, embeddings, and knowledge graphs. It is not a network service but can be exposed via MCP.
+- **Memory System** refers to the actual storage (Redis, Neo4j, ChromaDB) and memory types (working, episodic, semantic) used by the context engine.
+- Keep configuration, documentation, and code for each clearly separated to avoid confusion.
+
 ## Architecture
 
 This context engine uses a hybrid approach combining:
