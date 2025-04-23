@@ -1,8 +1,8 @@
-# Dukat Development Plan v0.3.2 (2025-04-26)
+# Dukat Development Plan v0.3.3 (2025-04-27)
 
 ## Vision
 
-Dukat will be an open-source AI assistant focused on personal automation, built entirely with open-source models and packages. It will prioritize high-quality code through automated documentation, testing, and continuous self-improvement.
+Dukat is an open-source AI coding agent focused on development automation, built entirely with open-source models and packages. It prioritizes high-quality code through automated documentation, testing, and code generation, all while running locally for privacy and control.
 
 ## Core Principles
 
@@ -17,9 +17,10 @@ Dukat will be an open-source AI assistant focused on personal automation, built 
 
 ### Core Framework
 
-- **DSPy**: Primary framework for LLM programming and optimization
-- **Ollama**: Local model hosting and inference
-- **ChromaDB/FAISS**: Vector storage for knowledge and memory
+- **Hugging Face Transformers**: Primary framework for model loading and inference
+- **Accelerate/BitsAndBytes**: Model optimization and quantization
+- **PyTorch**: Deep learning framework for model execution
+- **ChromaDB/FAISS**: Vector storage for code context and knowledge
 
 ### Development Tools
 
@@ -39,56 +40,56 @@ Dukat will be an open-source AI assistant focused on personal automation, built 
 
 ### 1. Core System
 
-- **Model Manager**: Handles model loading, inference, and optimization
-- **Memory System**: Manages short-term and long-term memory
-- **Tool Registry**: Manages available tools and their capabilities
-- **Prompt Manager**: Handles prompt templates and optimization
+- **Model Manager**: Handles model downloading, loading, and inference
+- **Prompt Templates**: Specialized templates for code-related tasks
+- **CLI Interface**: User-friendly command-line tools for all features
+- **Testing Framework**: Comprehensive testing for all components
 
-### 2. Plugin System
+### 2. Development Integration
 
-- **Tool Interface**: Standard interface for all tools
-- **Plugin Discovery**: Automatic discovery and registration of plugins
-- **Permission System**: Manages tool access and permissions
+- **Git Integration**: Hooks and automation for version control
+- **IDE Extensions**: Integration with popular development environments
+- **CI/CD Integration**: Automated code quality in continuous integration
 
-### 3. Memory Architecture
+### 3. Code Generation Capabilities
 
-- **Working Memory**: Short-term context for conversations
-- **Episodic Memory**: Record of past interactions and outcomes
-- **Semantic Memory**: Knowledge extracted from interactions
-- **Procedural Memory**: Learned patterns and procedures
+- **Documentation Generation**: Automatic creation of docstrings and comments
+- **Test Generation**: Creation of comprehensive test cases
+- **Code Review**: Automated code quality assessment
+- **Refactoring**: Suggestions for code improvements
 
-### 4. Self-Improvement Mechanisms
+### 4. Advanced Features
 
-- **Feedback Loop**: Collects and processes user feedback
-- **Performance Monitoring**: Tracks system performance metrics
-- **Prompt Optimization**: Uses DSPy to optimize prompts based on outcomes
-- **Knowledge Distillation**: Transfers knowledge between models
+- **Project Context Understanding**: Comprehension of entire codebases
+- **Multi-File Operations**: Cross-file refactoring and generation
+- **Model Fine-Tuning**: Customization for specific projects or languages
+- **Team Collaboration**: Multi-user support and shared knowledge
 
 ## Development Phases
 
-### Phase 1: Foundation (Weeks 1-4)
+### Phase 1: Foundation (Completed)
 
-- Set up project structure and development environment
-- Implement core DSPy integration with Ollama
-- Create basic memory system
-- Develop CLI interface
-- Establish testing and documentation frameworks
+- ✅ Set up project structure and development environment
+- ✅ Implement core model management with Hugging Face
+- ✅ Create code-specific prompt templates
+- ✅ Develop CLI interface for model interaction
+- ✅ Establish comprehensive testing framework
 
-### Phase 2: Core Capabilities (Weeks 5-8)
+### Phase 2: Core Capabilities (Current Phase)
 
-- Implement advanced memory architecture
-- Develop plugin system and basic tools
-- Create async processing engine
-- Build feedback collection system
-- Implement basic self-improvement mechanisms
+- Implement Git and IDE integration
+- Develop memory system for code context
+- Create performance optimizations for model inference
+- Build web interface for broader accessibility
+- Implement deployment and distribution options
 
-### Phase 3: Advanced Features (Weeks 9-12)
+### Phase 3: Advanced Features (Upcoming)
 
-- Develop web interface
-- Implement advanced DSPy optimizers
-- Create advanced tools for automation
-- Build knowledge extraction and learning systems
-- Implement performance monitoring and optimization
+- Develop multi-file code generation capabilities
+- Implement code quality analysis tools
+- Create model fine-tuning pipeline for customization
+- Build team collaboration features
+- Implement project management integration
 
 ### Phase 4: Refinement (Weeks 13-16)
 
@@ -100,32 +101,32 @@ Dukat will be an open-source AI assistant focused on personal automation, built 
 
 ## Milestones
 
-1. **Alpha Release (Week 4)**
+1. **Alpha Release (Completed)**
 
-   - Basic CLI interface
-   - Core DSPy integration
-   - Simple memory system
-   - Initial documentation
+   - ✅ Model management framework
+   - ✅ Code-specific prompt templates
+   - ✅ CLI interface for model interaction
+   - ✅ Comprehensive testing
 
-2. **Beta Release (Week 8)**
+2. **Beta Release (Target: Week 8)**
 
-   - Plugin system with basic tools
-   - Advanced memory architecture
-   - Async processing
-   - Basic self-improvement
-
-3. **Preview Release (Week 12)**
-
+   - Git and IDE integration
+   - Code context memory system
+   - Performance optimizations
    - Web interface
-   - Advanced optimization
-   - Comprehensive tool set
-   - Learning capabilities
 
-4. **Initial Release (Week 16)**
+3. **Preview Release (Target: Week 12)**
+
+   - Multi-file code generation
+   - Code quality analysis
+   - Model fine-tuning capabilities
+   - Team collaboration features
+
+4. **Initial Release (Target: Week 16)**
    - Fully tested and documented
    - Optimized performance
    - Complete feature set
-   - User guides and examples
+   - Comprehensive examples and tutorials
 
 ## Success Metrics
 

@@ -1,55 +1,54 @@
-# Dukat: Open Source AI Assistant v0.3.2
+# Dukat: AI-Powered Development Automation v0.3.3
 
-An open-source AI assistant focused on personal automation, built entirely with open-source models and packages.
+An open-source AI coding agent focused on development automation, built entirely with open-source models and packages.
 
-_Last updated: 2025-04-26_
+_Last updated: 2025-04-27_
 
-[![Test Coverage: 80%](https://img.shields.io/badge/Test%20Coverage-80%25-green)](TESTING.md)
-[![Tests: 291 passing](https://img.shields.io/badge/Tests-291%20passing-brightgreen)](TESTING.md)
+[![Test Coverage: 90%](https://img.shields.io/badge/Test%20Coverage-90%25-brightgreen)](TESTING.md)
+[![Tests: 38 passing](https://img.shields.io/badge/Tests-38%20passing-brightgreen)](TESTING.md)
 
 ## Project Status
 
-Dukat is currently in active development. We have completed the foundation phase and are working on implementing core capabilities. The current test coverage is at 80% with all 291 tests passing.
+Dukat is currently in active development. We have completed the foundation phase with the implementation of the model management framework and are now working on core capabilities. The current test coverage is at 90% with all tests passing.
 
 See [TASKS.md](TASKS.md) for current progress, [PLANNING.md](PLANNING.md) for the overall development plan, and [TESTING.md](TESTING.md) for testing status and approach.
 
 ## Overview
 
-Dukat is an open-source AI assistant built with DSPy that focuses on personal automation. It leverages the power of locally-run open-source language models to provide a self-improving assistant that prioritizes:
+Dukat is an open-source AI coding agent that focuses on development automation. It leverages the power of locally-run open-source language models to provide high-quality code assistance while prioritizing:
 
-- **High-Quality Code**: Automated testing, documentation, and code quality checks
-- **Local-First**: Runs entirely on your machine with open source models
-- **Self-Improvement**: Learns from interactions to get better over time
-- **Asynchronous Processing**: Responsive performance through async operations
-- **Extensibility**: Plugin architecture for adding new capabilities
+- **High-Quality Code Generation**: Automated documentation, testing, and code quality
+- **Local-First**: Runs entirely on your machine with open source models for privacy and control
+- **Development Workflow Integration**: Seamless integration with Git, IDEs, and CI/CD pipelines
+- **Performance Optimization**: Efficient model inference through quantization and caching
+- **Extensibility**: Modular architecture for adding new capabilities
 
 ## Features
 
-- **Conversation**: Natural language interaction with memory of past conversations
-- **Tool Integration**: Use tools for file operations, web search, and system information
-- **Memory Management**: Working, episodic, and semantic memory for comprehensive context awareness
-- **Self-Optimization**: Automatic improvement of prompts and responses through DSPy
-- **Async Processing**: Background task handling with persistence for responsive and resilient performance
-- **CLI and Web Interface**: Multiple ways to interact with the assistant
+- **Model Management**: Download, load, and use local LLM models with quantization support
+- **Code Generation**: Create docstrings, tests, and other code artifacts automatically
+- **Code Analysis**: Get explanations, reviews, and refactoring suggestions
+- **CLI Interface**: User-friendly command-line tools for all features
+- **Comprehensive Testing**: Extensive test suite for reliability and quality
+- **Example Scripts**: Ready-to-use examples for common tasks
 
 ## Technology Stack
 
 Dukat is built using the following technologies:
 
-- **DSPy**: Core framework for LLM programming and optimization
-- **Ollama**: Local model hosting and inference
-- **ChromaDB/FAISS**: Vector storage for knowledge and memory
-- **Poetry**: Dependency management
-- **Pytest**: Testing framework
-- **Sphinx**: Documentation generation
-- **Rich**: Terminal UI for CLI
+- **Hugging Face Transformers**: Framework for model loading and inference
+- **PyTorch**: Deep learning framework for model execution
+- **Accelerate/BitsAndBytes**: Model optimization and quantization
+- **Typer/Rich**: CLI interface with rich formatting
+- **Pytest**: Comprehensive testing framework
+- **ChromaDB/FAISS**: Vector storage for code context (upcoming)
 
 ## Getting Started
 
 ### Prerequisites
 
-- Python 3.10 or higher
-- [Ollama](https://ollama.ai/) for running models locally
+- Python 3.9 or higher
+- CUDA-compatible GPU recommended (but not required)
 
 ### Installation
 
@@ -60,125 +59,104 @@ Dukat is built using the following technologies:
    cd dukat
    ```
 
-2. Install dependencies with Poetry:
+2. Install dependencies:
 
    ```bash
-   poetry install
+   pip install -r dukat/ai_agent/requirements.txt
    ```
 
-3. Set up Ollama and download a model:
+3. Run the CLI interface:
 
    ```bash
-   # Install Ollama (if not already installed)
-   curl -fsSL https://ollama.ai/install.sh | sh
-
-   # Pull a model
-   ollama pull llama3:8b
+   python -m dukat.ai_agent.cli model list
    ```
 
-4. Run Dukat:
+4. Download a model:
 
    ```bash
-   poetry run dukat
+   python -m dukat.ai_agent.cli model download TinyLlama/TinyLlama-1.1B-Chat-v1.0
    ```
 
-### Configuration
+### Basic Usage
 
-Dukat can be configured through a `config.yaml` file in your home directory:
+```bash
+# List available models
+python -m dukat.ai_agent.cli model list
 
-```yaml
-# ~/.dukat/config.yaml
-model: llama3:8b # Model to use for inference
-ollama_host: http://localhost:11434 # Ollama API endpoint
-memory:
-  vector_db: chroma # Vector database for memory (chroma or faiss)
-  persist_dir: ~/.dukat/memory # Directory to store memory
+# Download a model
+python -m dukat.ai_agent.cli model download codellama/CodeLlama-7b-Instruct-hf
+
+# Generate docstrings for a Python file
+python -m dukat.ai_agent.cli docstring path/to/file.py
+
+# Generate tests for a Python file
+python -m dukat.ai_agent.cli test path/to/file.py
 ```
 
-### Using Dukat
+### Example Script
 
-Once installed, you can use Dukat in several ways:
+Try the example script to see Dukat in action:
 
-1. **Command Line**: Run `dukat` to start the interactive CLI
-2. **Web Interface**: Run `dukat web` to start the web interface
-3. **Python API**: Import and use Dukat in your Python scripts
-
-```python
-from dukat.core import Assistant
-
-assistant = Assistant()
-response = assistant.ask("What can you help me with?")
-print(response)
+```bash
+# Run the model management demo
+./examples/model_management_demo.py --task docstring --file path/to/your/file.py
 ```
 
 ## Project Structure
 
 ```
 dukat/
-├── core/                 # Core system components
-│   ├── model_manager.py  # Model loading and inference
-│   ├── memory.py         # Memory management system
-│   ├── tools.py          # Tool calling capabilities
-│   └── prompt_manager.py # Prompt templates and optimization
-├── plugins/              # Plugin system
-│   ├── __init__.py       # Plugin system initialization
-│   ├── base.py           # Base plugin class
-│   ├── web_search.py     # Web search plugin
-│   ├── file_manager.py   # File operations plugin
-│   └── system_info.py    # System information plugin
-├── memory/               # Memory architecture
-│   ├── working.py        # Short-term context management
-│   ├── episodic.py       # Interaction history storage
-│   ├── semantic.py       # Knowledge storage and retrieval
-│   └── procedural.py     # Learned patterns and procedures
-├── cli.py                # Command-line interface
-├── web.py                # Web interface
-├── config.py             # Configuration management
-├── tests/                # Test suite
-│   ├── unit/             # Unit tests
-│   └── integration/      # Integration tests
-├── docs/                 # Documentation
-│   ├── api/              # API documentation
-│   └── user_guide/       # User documentation
-├── .gitignore            # Git ignore file
-├── PLANNING.md           # Development plan
-├── TASKS.md              # Development tasks
-├── augment-guidelines.yaml # Project guidelines
-├── LICENSE               # License file
-├── README.md             # This file
-├── pyproject.toml        # Poetry configuration
-└── .pre-commit-config.yaml # Pre-commit hooks
+├── ai_agent/              # Core AI agent module
+│   ├── models/            # Model management
+│   │   ├── manager.py     # Model downloading and inference
+│   │   └── prompts.py     # Code-specific prompt templates
+│   ├── cli.py             # Command-line interface
+│   └── requirements.txt   # Dependencies
+├── examples/              # Example scripts
+│   └── model_management_demo.py  # Demo for model usage
+├── tests/                 # Test suite
+│   ├── unit/              # Unit tests
+│   │   └── ai_agent/      # Tests for AI agent module
+│   └── integration/       # Integration tests
+│       └── ai_agent/      # Integration tests for AI agent
+├── .gitignore             # Git ignore file
+├── PLANNING.md            # Development plan
+├── TASKS.md               # Development tasks
+├── LICENSE                # License file
+├── README.md              # This file
+└── pytest.ini             # Pytest configuration
 ```
 
-## Model Support
+## Recommended Models
 
-Dukat uses open-source language models for inference, with different models optimized for different tasks:
+Dukat works with various models from Hugging Face. Here are some recommended models:
 
-| Task            | Preferred Models                     |
-| --------------- | ------------------------------------ |
-| Conversation    | Llama 3 8B, Mistral 7B Instruct v0.2 |
-| Code Generation | CodeLlama 7B Instruct, Llama 3 8B    |
-| Reasoning       | Llama 3 8B, Mistral 7B Instruct v0.2 |
-| Tool Use        | Llama 3 8B, CodeLlama 7B Instruct    |
+| Model                    | Size | Best For        | Notes                                     |
+| ------------------------ | ---- | --------------- | ----------------------------------------- |
+| CodeLlama-13B-Instruct   | 13B  | General coding  | Good balance of performance and quality   |
+| CodeLlama-7B-Instruct    | 7B   | General coding  | Faster, works on less powerful hardware   |
+| TinyLlama-1.1B-Chat      | 1.1B | Quick tasks     | Lightweight, works on CPU                 |
+| WizardCoder-Python-13B   | 13B  | Python-specific | Specialized for Python development        |
+| Mistral-7B-Instruct-v0.2 | 7B   | Documentation   | Excellent for natural language generation |
 
-Models are run locally using [Ollama](https://ollama.ai/), which provides efficient inference on consumer hardware. DSPy optimizes prompts and model weights to improve performance over time.
+All models are run locally using Hugging Face Transformers with quantization for efficiency.
 
 ## Development Status
 
-Dukat is currently in early development (v0.1.0). The project is following the development plan outlined in [PLANNING.md](PLANNING.md) and the tasks listed in [TASKS.md](TASKS.md).
+Dukat is currently in active development (v0.3.3). The project is following the development plan outlined in [PLANNING.md](PLANNING.md) and the tasks listed in [TASKS.md](TASKS.md).
 
 ### Current Progress
 
-- ✅ Core memory systems (Working, Episodic, Semantic)
-- ✅ Plugin architecture with initial plugins (File Manager, Web Search, System Info)
-- ✅ Model management with DSPy integration
-- ✅ Prompt template management and optimization
-- ✅ Testing framework (80% coverage)
-- ✅ CLI interface
-- ✅ Async processing with task persistence
-- 🔄 Web interface
-- 🔄 Error handling and resilience
-- ⏳ Self-improvement capabilities
+- ✅ Model management framework with Hugging Face integration
+- ✅ Code-specific prompt templates for various tasks
+- ✅ CLI interface for model interaction and code generation
+- ✅ Comprehensive testing framework (90% coverage)
+- ✅ Example scripts for common use cases
+- 🔄 Git and IDE integration
+- 🔄 Memory system for code context
+- 🔄 Performance optimizations
+- ⏳ Web interface
+- ⏳ Multi-file code generation
 
 ## Contributing
 
@@ -188,4 +166,4 @@ Contributions are welcome! Please read the [PLANNING.md](PLANNING.md) file to un
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-_Last updated: 2025-04-26_
+_Last updated: 2025-04-27_
