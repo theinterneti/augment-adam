@@ -40,22 +40,22 @@ TEST_MODELS = {
 @pytest.fixture
 def temp_model_dir() -> Generator[Path, None, None]:
     """Create a temporary directory for model files."""
-    temp_dir = tempfile.mkdtemp(prefix="dukat_test_models_")
+    temp_dir = tempfile.mkdtemp(prefix="augment_adam_test_models_")
     temp_path = Path(temp_dir)
-    
+
     yield temp_path
-    
+
     # Clean up
     shutil.rmtree(temp_dir)
 
 @pytest.fixture
 def temp_config_file() -> Generator[Path, None, None]:
     """Create a temporary config file."""
-    fd, path = tempfile.mkstemp(prefix="dukat_test_config_", suffix=".json")
+    fd, path = tempfile.mkstemp(prefix="augment_adam_test_config_", suffix=".json")
     os.close(fd)
-    
+
     yield Path(path)
-    
+
     # Clean up
     if os.path.exists(path):
         os.unlink(path)
