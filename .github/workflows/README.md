@@ -6,7 +6,7 @@ This directory contains GitHub Actions workflows for the Augment Adam project.
 
 ### CI Workflow (`ci.yml`)
 
-The CI workflow runs on every push to main, feature/*, and release/* branches, as well as on pull requests to main. It includes:
+The CI workflow runs on every push to main, feature/_, and release/_ branches, as well as on pull requests to main. It includes:
 
 - **Code Quality Checks**: Runs Black, isort, flake8, and mypy to ensure code quality.
 - **Unit Tests**: Runs unit tests and uploads coverage reports.
@@ -54,10 +54,10 @@ The dependencies workflow runs every Monday at 3 AM UTC. It includes:
 
 The following secrets need to be set in the repository settings:
 
-- `PYPI_API_TOKEN`: API token for PyPI.
-- `DOCKERHUB_USERNAME`: DockerHub username.
-- `DOCKERHUB_TOKEN`: DockerHub token.
-- `SLACK_WEBHOOK`: Webhook URL for Slack notifications.
+- `PYPI_TOKEN`: API token for PyPI publishing.
+- `DOCKER_USERNAME`: Docker Hub username.
+- `DOCKER_PASSWORD`: Docker Hub password or access token.
+- `SLACK_WEBHOOK_URL`: Webhook URL for Slack notifications.
 
 ## Local Development
 
