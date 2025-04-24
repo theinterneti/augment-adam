@@ -367,6 +367,60 @@ Key features:
 
 For more details, see the [Building Agents](docs/guides/building_agents.md) guide.
 
+## Agent Coordination
+
+Augment Adam provides powerful tools for coordinating multiple agents:
+
+```python
+from augment_adam.ai_agent.coordination import AgentCoordinator, AgentTeam, Workflow
+
+# Create coordinator
+coordinator = AgentCoordinator("My Coordinator")
+
+# Register agents
+coordinator.register_agent("research_agent", research_agent)
+coordinator.register_agent("coding_agent", coding_agent)
+
+# Send message from one agent to another
+message = coordinator.send_message(
+    from_agent_id="research_agent",
+    to_agent_id="coding_agent",
+    message="Here's information about algorithms..."
+)
+
+# Process the message
+response = coordinator.process_message(message)
+print(response["message"])
+
+# Create a team with roles
+team = AgentTeam(
+    name="Development Team",
+    description="A team for software development tasks"
+)
+
+# Add roles
+team.add_role("researcher", research_agent)
+team.add_role("developer", coding_agent)
+
+# Create and execute a workflow
+workflow = Workflow("Development Workflow")
+workflow.add_process_step(role="researcher", input="Research algorithms")
+workflow.add_message_step(from_role="researcher", to_role="developer", message="{researcher_result}")
+
+# Execute workflow
+result = team.execute_workflow("Create an algorithm", workflow.to_list())
+```
+
+Key features:
+
+- **Agent Coordinator**: Manages communication between agents
+- **Agent Team**: Organizes agents into teams with specific roles
+- **Workflow**: Defines sequences of steps for agents to follow
+- **Coordination Patterns**: Sequential, parallel, and collaborative coordination
+- **Asynchronous Processing**: Support for async coordination
+
+For more details, see the [Agent Coordination](docs/guides/agent_coordination.md) guide.
+
 ## FastAPI Server
 
 Augment Adam includes a FastAPI server for easy integration with web applications:
