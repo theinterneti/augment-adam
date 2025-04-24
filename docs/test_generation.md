@@ -41,7 +41,7 @@ This script will:
 To generate tests for a Python module, use the wrapper script:
 
 ```bash
-./generate_tests.sh --source-file path/to/file.py --output-dir tests/
+scripts/generate_tests.sh --source-file path/to/file.py --output-dir tests/
 ```
 
 This will generate tests using all available methods and save them to the specified output directory.
@@ -51,7 +51,7 @@ This will generate tests using all available methods and save them to the specif
 You can customize the test generation process with various options:
 
 ```bash
-./generate_tests.sh \
+scripts/generate_tests.sh \
   --source-file path/to/file.py \
   --output-dir tests/ \
   --config config/test_generator_config.json \
@@ -62,7 +62,7 @@ You can customize the test generation process with various options:
 You can also set the model via environment variable:
 
 ```bash
-MODEL=wizardcoder:15b ./generate_tests.sh --source-file path/to/file.py --output-dir tests/
+MODEL=wizardcoder:15b scripts/generate_tests.sh --source-file path/to/file.py --output-dir tests/
 ```
 
 Available options:
@@ -114,26 +114,26 @@ The system can generate several types of tests:
 ### Generate Tests for a Single Module
 
 ```bash
-./generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/
+scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/
 ```
 
 ### Generate Tests with a Specific Model
 
 ```bash
-./generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --model tinyllama:1.1b
+scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --model tinyllama:1.1b
 ```
 
 ### Generate Only Property-Based Tests
 
 ```bash
-./generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --no-llm --no-pynguin
+scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --no-llm --no-pynguin
 ```
 
 ### Generate Tests with GPU Acceleration
 
 ```bash
 # Ensure GPU settings are enabled in config/test_generator_config.json
-./generate_tests.sh --source-file dukat/core/parallel_executor.py --output-dir tests/unit/ --model codellama:7b
+scripts/generate_tests.sh --source-file dukat/core/parallel_executor.py --output-dir tests/unit/ --model codellama:7b
 ```
 
 ## Troubleshooting
@@ -153,7 +153,7 @@ If you're having issues with GPU acceleration:
 1. Verify GPU is detected: `nvidia-smi`
 2. Check Ollama is using the GPU: Look for GPU memory usage when running a model
 3. Try setting specific GPU parameters in `config/test_generator_config.json`
-4. Run with verbose logging: `LOGLEVEL=DEBUG ./generate_tests.sh ...`
+4. Run with verbose logging: `LOGLEVEL=DEBUG scripts/generate_tests.sh ...`
 
 ### Model Loading Issues
 
@@ -171,7 +171,7 @@ If test generation fails:
 1. Check the logs for error messages
 2. Verify that the source file is valid Python
 3. Try using a different model or approach
-4. Run with verbose logging: `LOGLEVEL=DEBUG ./generate_tests.sh ...`
+4. Run with verbose logging: `LOGLEVEL=DEBUG scripts/generate_tests.sh ...`
 
 ## Extending the System
 

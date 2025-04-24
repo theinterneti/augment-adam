@@ -14,6 +14,7 @@ from rich import print as rprint
 from test_generator.code_analyzer import CodeAnalyzer
 from test_generator.test_generator import TestGenerator
 from test_generator.model_manager import ModelManager
+from test_generator.jinja_utils import render_template
 
 app = typer.Typer(help="Automated test generator using local LLMs")
 console = Console()
@@ -56,11 +57,14 @@ def generate(
     
     console.print("Generating tests...")
     test_generator = TestGenerator(model_manager, code_info)
-    generated_tests = test_generator.generate_tests(max_tests=max_tests, target_coverage=target_coverage)
-    
+    generated_context = test_generator.generate_tests_context(max_tests=max_tests, target_coverage=target_coverage)
+
+    # Render tests using Jinja2 template
+    rendered_tests = render_template("hypothesis_template.j2", generated_context)
+
     # Write tests to file
     with open(test_file, "w") as f:
-        f.write(generated_tests)
+        f.write(rendered_tests)
     
     console.print(f"[bold green]Success![/bold green] Generated tests written to: [bold]{test_file}[/bold]")
     

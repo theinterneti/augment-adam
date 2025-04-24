@@ -45,7 +45,7 @@ chmod +x setup_mcp_context_engine.sh
 Run the test script to verify the installation:
 
 ```bash
-python test_mcp_context_engine.py
+python tests/test_mcp_context_engine.py
 ```
 
 ## API Endpoints
@@ -73,7 +73,7 @@ The context engine exposes the following MCP tools:
 The context engine comes with a client library for easy integration:
 
 ```python
-from mcp_context_engine_client import MCPContextEngineClient
+from mcp_context_engine.client.mcp_context_engine_client import MCPContextEngineClient
 
 # Initialize the client
 client = MCPContextEngineClient("http://localhost:8080", "test-api-key")
@@ -122,11 +122,11 @@ async def main():
     async with ClientSession("http://localhost:8080/mcp") as session:
         # Initialize the session
         await session.initialize()
-        
+
         # List available tools
         tools = await session.list_tools()
         print(f"Available tools: {tools}")
-        
+
         # Call the vector_search tool
         result = await session.call_tool("vector_search", {
             "query": "function that prints hello world",
