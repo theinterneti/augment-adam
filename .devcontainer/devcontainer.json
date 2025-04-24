@@ -18,6 +18,7 @@
     "vscode": {
       "extensions": [
         "ms-python.python",
+        "Augment.vscode-augment",
         "ms-python.vscode-pylance",
         "ms-toolsai.jupyter",
         "ms-azuretools.vscode-docker",
