@@ -11,7 +11,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Union
 
-from dukat.core.progress import ProgressTracker, ProgressState
+from augment_adam.core.progress import ProgressTracker, ProgressState
 
 
 class ProgressBar:

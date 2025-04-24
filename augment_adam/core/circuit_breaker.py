@@ -14,7 +14,7 @@ import time
 from functools import wraps
 from typing import Any, Callable, Dict, List, Optional, Set, TypeVar, Union, cast
 
-from dukat.core.errors import CircuitBreakerError, ErrorCategory
+from augment_adam.core.errors import CircuitBreakerError, ErrorCategory
 
 logger = logging.getLogger(__name__)
 

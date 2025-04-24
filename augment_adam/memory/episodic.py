@@ -123,7 +123,7 @@ class EpisodicMemory:
     def __init__(
         self,
         persist_dir: Optional[str] = None,
-        collection_name: str = "dukat_episodes",
+        collection_name: str = "augment_adam_episodes",
     ):
         """Initialize the episodic memory.
 
@@ -132,7 +132,7 @@ class EpisodicMemory:
             collection_name: Name of the collection.
         """
         self.persist_dir = persist_dir or os.path.expanduser(
-            "~/.dukat/memory/episodic")
+            "~/.augment_adam/memory/episodic")
 
         # Create directory if it doesn't exist
         os.makedirs(self.persist_dir, exist_ok=True)

@@ -13,11 +13,11 @@ import time
 
 import dspy
 
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     ModelError, NetworkError, TimeoutError, ResourceError,
     wrap_error, log_error, retry, CircuitBreaker
 )
-from dukat.core.settings import get_settings
+from augment_adam.core.settings import get_settings
 
 logger = logging.getLogger(__name__)
 

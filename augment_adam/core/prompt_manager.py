@@ -166,7 +166,7 @@ class PromptManager:
         """
         self.templates: Dict[str, PromptTemplate] = {}
         self.persist_dir = persist_dir or os.path.expanduser(
-            "~/.dukat/prompts")
+            "~/.augment_adam/prompts")
 
         # Create directory if it doesn't exist
         os.makedirs(self.persist_dir, exist_ok=True)

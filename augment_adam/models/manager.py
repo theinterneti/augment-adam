@@ -31,8 +31,8 @@ class ModelManager:
 
     def __init__(
         self,
-        models_dir: str = "~/.dukat/models",
-        config_path: str = "~/.dukat/config.json",
+        models_dir: str = "~/.augment_adam/models",
+        config_path: str = "~/.augment_adam/config.json",
         default_model: str = "codellama/CodeLlama-13b-Instruct-hf"
     ):
         # Set up directories

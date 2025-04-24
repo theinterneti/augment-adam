@@ -16,9 +16,9 @@ import time
 from typing import Dict, Any, List, Optional, Union, Tuple, Callable, Awaitable
 from datetime import datetime, timedelta
 
-from dukat.core.model_manager import get_model_manager, ModelManager
-from dukat.memory.working import WorkingMemory, Message
-from dukat.core.task_queue import (
+from augment_adam.core.model_manager import get_model_manager, ModelManager
+from augment_adam.memory.working import WorkingMemory, Message
+from augment_adam.core.task_queue import (
     add_task,
     get_task,
     cancel_task,
@@ -28,19 +28,19 @@ from dukat.core.task_queue import (
     TaskStatus,
     Task,
 )
-from dukat.core.parallel_executor import (
+from augment_adam.core.parallel_executor import (
     ParallelTaskExecutor,
     ResourceRequirement,
     ResourceType,
     create_parallel_executor,
 )
-from dukat.core.task_scheduler import (
+from augment_adam.core.task_scheduler import (
     schedule_task,
     cancel_scheduled_task,
     get_scheduled_task,
     get_all_scheduled_tasks,
 )
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
 
 logger = logging.getLogger(__name__)
 

@@ -13,8 +13,8 @@ from typing import Dict, List, Any, Optional, Tuple, Callable, Union
 
 import gradio as gr
 
-from dukat.memory.working import Message
-from dukat.core.assistant import Assistant
+from augment_adam.memory.working import Message
+from augment_adam.core.assistant import Assistant
 
 logger = logging.getLogger(__name__)
 

@@ -15,7 +15,7 @@ import os
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Union, Awaitable
 
-from dukat.core.progress import (
+from augment_adam.core.progress import (
     ProgressTracker, ProgressState,
     create_progress_tracker, get_progress_tracker, remove_progress_tracker
 )
@@ -221,7 +221,7 @@ class TaskQueue:
             max_queue_size: Maximum number of tasks to queue.
             enable_persistence: Whether to enable task persistence.
             persistence_dir: Directory to store persistence files.
-                If None, defaults to ~/.dukat/tasks
+                If None, defaults to ~/.augment_adam/tasks
             auto_save_interval: Interval in seconds between auto-saves.
                 Set to 0 to disable auto-saving.
             loop: Event loop to use. If None, uses the current event loop.
@@ -252,7 +252,7 @@ class TaskQueue:
 
         # Initialize persistence if enabled
         if self.enable_persistence:
-            from dukat.core.task_persistence import TaskPersistence
+            from augment_adam.core.task_persistence import TaskPersistence
             self.persistence = TaskPersistence(
                 persistence_dir=self.persistence_dir,
                 auto_save_interval=self.auto_save_interval,

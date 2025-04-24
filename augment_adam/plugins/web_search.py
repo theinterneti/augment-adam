@@ -20,9 +20,9 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 
-from dukat.core.circuit_breaker import circuit_breaker
-from dukat.core.errors import CircuitBreakerError, ErrorCategory, wrap_error, log_error
-from dukat.plugins.base import Plugin
+from augment_adam.core.circuit_breaker import circuit_breaker
+from augment_adam.core.errors import CircuitBreakerError, ErrorCategory, wrap_error, log_error
+from augment_adam.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
 
@@ -69,7 +69,7 @@ class WebSearchPlugin(Plugin):
         self.search_engine = search_engine.lower()
         self.user_agent = user_agent or "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
         self.cache_dir = cache_dir or os.path.expanduser(
-            "~/.dukat/cache/web_search")
+            "~/.augment_adam/cache/web_search")
         self.cache_expiry = cache_expiry
 
         # Create cache directory if it doesn't exist

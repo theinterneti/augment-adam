@@ -781,3 +781,7 @@ async def create_parallel_executor(
         max_concurrency=max_concurrency,
         resource_pool=resource_pool,
     )
+
+
+# Alias for backward compatibility
+ParallelTaskExecutor = ParallelExecutor

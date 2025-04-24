@@ -16,7 +16,7 @@ from rich.console import Console
 from rich.table import Table
 from rich.logging import RichHandler
 
-from dukat.ai_agent.models import ModelManager, CodePromptTemplates
+from augment_adam.ai_agent.models import ModelManager, CodePromptTemplates
 
 # Set up logging
 logging.basicConfig(
@@ -26,7 +26,7 @@ logging.basicConfig(
     handlers=[RichHandler(rich_tracebacks=True)]
 )
 
-logger = logging.getLogger("dukat.ai_agent")
+logger = logging.getLogger("augment_adam.ai_agent")
 
 # Create Typer app
 app = typer.Typer(help="AI coding agent for development automation")

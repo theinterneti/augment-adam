@@ -15,19 +15,19 @@ from typing import Dict, List, Optional, Tuple, Any, Callable
 
 import gradio as gr
 
-from dukat.core.assistant import Assistant
-from dukat.core.model_manager import ModelManager
-from dukat.memory.working import Message
-from dukat.config import Config
-from dukat.core.errors import (
+from augment_adam.core.assistant import Assistant
+from augment_adam.core.model_manager import ModelManager
+from augment_adam.memory.working import Message
+from augment_adam.config import Config
+from augment_adam.core.errors import (
     DukatError, ModelError, NetworkError, ResourceError, NotFoundError,
     wrap_error, log_error, ErrorCategory
 )
-from dukat.core.settings import get_settings
-from dukat.web.plugin_manager import create_plugin_tab
-from dukat.web.settings_manager import create_settings_tab
-from dukat.web.task_manager import create_task_tab
-from dukat.web.conversation_viz import create_visualization_tab
+from augment_adam.core.settings import get_settings
+from augment_adam.web.plugin_manager import create_plugin_tab
+from augment_adam.web.settings_manager import create_settings_tab
+from augment_adam.web.task_manager import create_task_tab
+from augment_adam.web.conversation_viz import create_visualization_tab
 
 logger = logging.getLogger(__name__)
 

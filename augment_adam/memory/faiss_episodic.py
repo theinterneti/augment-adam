@@ -19,11 +19,11 @@ import numpy as np
 import faiss
 from sentence_transformers import SentenceTransformer
 
-from dukat.core.settings import get_settings
-from dukat.core.errors import (
+from augment_adam.core.settings import get_settings
+from augment_adam.core.errors import (
     ResourceError, DatabaseError, wrap_error, log_error, ErrorCategory
 )
-from dukat.memory.faiss_memory import FAISSMemory
+from augment_adam.memory.faiss_memory import FAISSMemory
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +124,7 @@ class FAISSEpisodicMemory:
     def __init__(
         self,
         persist_dir: Optional[str] = None,
-        collection_name: str = "dukat_episodes",
+        collection_name: str = "augment_adam_episodes",
         embedding_model: str = "all-MiniLM-L6-v2",
     ):
         """Initialize the episodic memory.
@@ -135,7 +135,7 @@ class FAISSEpisodicMemory:
             embedding_model: Name of the SentenceTransformer model to use for embeddings.
         """
         self.persist_dir = persist_dir or os.path.expanduser(
-            "~/.dukat/memory/faiss_episodic")
+            "~/.augment_adam/memory/faiss_episodic")
 
         # Create directory if it doesn't exist
         os.makedirs(self.persist_dir, exist_ok=True)

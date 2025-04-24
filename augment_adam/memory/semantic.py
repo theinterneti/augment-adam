@@ -134,7 +134,7 @@ class SemanticMemory:
     def __init__(
         self,
         persist_dir: Optional[str] = None,
-        collection_name: str = "dukat_concepts",
+        collection_name: str = "augment_adam_concepts",
     ):
         """Initialize the semantic memory.
 
@@ -143,7 +143,7 @@ class SemanticMemory:
             collection_name: Name of the collection.
         """
         self.persist_dir = persist_dir or os.path.expanduser(
-            "~/.dukat/memory/semantic")
+            "~/.augment_adam/memory/semantic")
 
         # Create directory if it doesn't exist
         os.makedirs(self.persist_dir, exist_ok=True)

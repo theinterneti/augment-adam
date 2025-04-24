@@ -11,7 +11,7 @@ from typing import Dict, List, Any, Optional, Tuple, Callable, Union
 
 import gradio as gr
 
-from dukat.core.settings import (
+from augment_adam.core.settings import (
     Settings,
     SettingsScope,
     get_settings,

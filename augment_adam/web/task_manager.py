@@ -13,11 +13,11 @@ from typing import Dict, List, Any, Optional, Tuple, Callable, Union
 
 import gradio as gr
 
-from dukat.core.task_queue import (
+from augment_adam.core.task_queue import (
     TaskQueue, Task, TaskStatus,
     get_task_queue
 )
-from dukat.core.progress import (
+from augment_adam.core.progress import (
     ProgressTracker, ProgressState,
     get_progress_tracker, get_all_progress_trackers, get_progress_tracker_stats
 )

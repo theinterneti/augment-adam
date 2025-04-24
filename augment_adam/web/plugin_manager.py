@@ -12,8 +12,8 @@ from typing import Dict, List, Any, Optional, Tuple, Callable
 
 import gradio as gr
 
-from dukat.plugins import list_plugins, get_plugin, execute_plugin
-from dukat.plugins.base import Plugin, PluginRegistry, get_plugin_registry
+from augment_adam.plugins import list_plugins, get_plugin, execute_plugin
+from augment_adam.plugins.base import Plugin, PluginRegistry, get_plugin_registry
 
 logger = logging.getLogger(__name__)
 

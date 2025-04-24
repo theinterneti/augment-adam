@@ -14,7 +14,7 @@ import heapq
 from datetime import datetime, timedelta
 from typing import Dict, List, Set, Any, Optional, Union, Callable, Awaitable, Tuple
 
-from dukat.core.task_queue import Task, TaskQueue, TaskStatus, add_task
+from augment_adam.core.task_queue import Task, TaskQueue, TaskStatus, add_task
 
 logger = logging.getLogger(__name__)
 

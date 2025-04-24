@@ -19,7 +19,7 @@ import tempfile
 import mimetypes
 import hashlib
 
-from dukat.plugins.base import Plugin
+from augment_adam.plugins.base import Plugin
 
 logger = logging.getLogger(__name__)
 

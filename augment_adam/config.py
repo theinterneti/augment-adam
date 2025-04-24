@@ -28,7 +28,7 @@ class MemoryConfig(BaseModel):
     
     vector_db: str = Field(default="chroma", description="Vector database to use")
     persist_dir: str = Field(
-        default="~/.dukat/memory",
+        default="~/.augment_adam/memory",
         description="Directory to persist memory data",
     )
 
@@ -63,12 +63,12 @@ def get_config_path() -> Path:
         return Path("config.yaml")
     
     # Check for config in user's home directory
-    home_config = os.path.expanduser("~/.dukat/config.yaml")
+    home_config = os.path.expanduser("~/.augment_adam/config.yaml")
     if os.path.exists(home_config):
         return Path(home_config)
     
     # Return default path
-    return Path(os.path.expanduser("~/.dukat/config.yaml"))
+    return Path(os.path.expanduser("~/.augment_adam/config.yaml"))
 
 
 def load_config(config_path: Optional[str] = None) -> Config:
