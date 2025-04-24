@@ -102,10 +102,24 @@ def test_load_nonexistent_config():
         assert os.path.exists(config_path)
 
 
-def test_memory_config_override(self):
-    config = load_config({
-        'memory': {
-            'persist_dir': '/tmp/augment_adam/memory',
-        }
-    })
-    assert config.memory.persist_dir == '/tmp/augment_adam/memory'
+def test_memory_config_override():
+    """Test overriding memory configuration."""
+    # Create a temporary config file
+    with tempfile.TemporaryDirectory() as temp_dir:
+        config_path = os.path.join(temp_dir, "config.yaml")
+
+        # Create a config with custom memory settings
+        config = Config(
+            memory=MemoryConfig(
+                persist_dir="/tmp/augment_adam/memory",
+            )
+        )
+
+        # Save the config
+        save_config(config, config_path)
+
+        # Load the config
+        loaded_config = load_config(config_path)
+
+        # Check that the memory settings were loaded correctly
+        assert loaded_config.memory.persist_dir == "/tmp/augment_adam/memory"
