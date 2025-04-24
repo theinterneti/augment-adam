@@ -1,102 +1,84 @@
 # Augment Adam
 
-An intelligent assistant with advanced memory capabilities.
+An intelligent assistant with advanced memory capabilities and agent coordination.
 
-## Features
+## Overview
 
-- **Multiple Memory Systems**: FAISS, Neo4j, and working memory integration
-- **Memory Interface**: Common interface for all memory systems
-- **Memory Factory**: Easy creation of different memory systems
-- **AI Agent**: Flexible AI agent architecture with model management
-- **Context Engine**: Advanced context management with vector search and knowledge graphs
-- **Plugin System**: Extensible plugin architecture
-- **Web Interface**: Interactive web interface for visualization and management
+Augment Adam is an AI assistant framework that uses advanced memory systems and agent coordination to provide more contextual and personalized responses. It's designed to be modular, extensible, and optimized for current hardware.
+
+### Key Features
+
+- **Advanced Memory Systems**: FAISS-based vector memory, Neo4j graph memory, and more
+- **Agent Coordination**: Coordinate multiple specialized agents to solve complex tasks
+- **Monte Carlo Techniques**: Optimize smaller models with advanced context/memory techniques
+- **Context Engine**: Efficiently manage memory access and context windows
+- **FastAPI-MCP Integration**: Package everything via FastAPI-MCP for client use
 
 ## Installation
 
 ```bash
-# Basic installation
+# Install from PyPI
 pip install augment-adam
 
-# With Neo4j support
+# Install with Neo4j support
 pip install augment-adam[neo4j]
 
-# With development tools
+# Install development dependencies
 pip install augment-adam[dev]
 ```
 
 ## Quick Start
 
 ```python
-from augment_adam.memory import create_memory
+from augment_adam.core import Agent
+from augment_adam.memory import FAISSMemory
 
-# Create a memory instance
-memory = create_memory(memory_type="faiss")
+# Create a memory system
+memory = FAISSMemory()
 
-# Add a memory
-memory_id = memory.add(
-    text="Python is a programming language with simple syntax and powerful libraries.",
-    metadata={"type": "note", "topic": "programming", "language": "python"}
-)
+# Create an agent with the memory system
+agent = Agent(memory=memory)
 
-# Retrieve memories
-results = memory.retrieve(
-    query="programming language",
-    n_results=5,
-    filter_metadata={"topic": "programming"}
-)
-
-# Process results
-for memory, similarity in results:
-    print(f"Memory: {memory['text']}")
-    print(f"Similarity: {similarity}")
-    print(f"Metadata: {memory}")
-    print()
-```
-
-## Memory Systems
-
-Augment Adam provides multiple memory systems with a common interface:
-
-- **FAISS Memory**: Vector-based memory using Facebook AI Similarity Search
-
-  - Fast similarity search for large collections of vectors
-  - Persistent storage of vectors and metadata
-  - Filtering based on metadata
-
-- **Neo4j Memory**: Graph-based memory using Neo4j
-  - Graph-based relationships between memories
-  - Advanced graph queries
-  - Filtering based on metadata
-
-## Memory Factory
-
-The memory factory provides a simple way to create different types of memory systems:
-
-```python
-from augment_adam.memory import create_memory, get_default_memory
-
-# Create a FAISS memory instance
-faiss_memory = create_memory(
-    memory_type="faiss",
-    persist_dir="/path/to/memory",
-    collection_name="my_collection"
-)
-
-# Create a Neo4j memory instance
-neo4j_memory = create_memory(
-    memory_type="neo4j",
-    collection_name="my_collection"
-)
-
-# Get the default memory instance (based on settings)
-default_memory = get_default_memory()
+# Run the agent
+response = agent.run("What can you tell me about quantum computing?")
+print(response)
 ```
 
 ## Documentation
 
-For more detailed documentation, see the [docs](docs/) directory.
+For more detailed information, check out our documentation:
+
+- [User Guide](https://augment-adam.readthedocs.io/en/latest/user_guide/)
+- [API Reference](https://augment-adam.readthedocs.io/en/latest/api/)
+- [Examples](https://augment-adam.readthedocs.io/en/latest/examples/)
+- [Research](https://augment-adam.readthedocs.io/en/latest/research/)
+
+## Development
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/augment-adam/augment-adam.git
+cd augment-adam
+
+# Install development dependencies
+pip install -e ".[dev]"
+
+# Install pre-commit hooks
+pre-commit install
+```
+
+### Run Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=augment_adam
+```
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -1,0 +1,114 @@
+version: '3.8'
+
+services:
+  # Main development container
+  dukat-dev:
+    build:
+      context: .
+      dockerfile: .devcontainer/Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    container_name: dukat-dev
+    volumes:
+      - .:/workspace:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ollama-models:/root/.ollama:cached
+      - model-cache:/workspace/.cache/models:cached
+      - huggingface-cache:/workspace/.cache/huggingface:cached
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+    ports:
+      - "8888:8888"  # Jupyter
+    environment:
+      - PYTHONPATH=/workspace
+      - HF_HOME=/workspace/.cache/huggingface
+      - OLLAMA_HOST=http://dukat-ollama:11434
+      - CHROMA_HOST=http://dukat-chroma:8000
+      - NEO4J_URI=bolt://dukat-neo4j:7687
+      - REDIS_HOST=dukat-redis
+    depends_on:
+      - dukat-ollama
+      - dukat-chroma
+      - dukat-neo4j
+      - dukat-redis
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Ollama for local LLM inference
+  dukat-ollama:
+    image: ollama/ollama:latest
+    container_name: dukat-ollama
+    volumes:
+      - ollama-models:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/version"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ChromaDB for vector storage
+  dukat-chroma:
+    image: chromadb/chroma:latest
+    container_name: dukat-chroma
+    volumes:
+      - chroma-data:/chroma/chroma
+    ports:
+      - "8000:8000"
+    environment:
+      - ALLOW_RESET=true
+      - ANONYMIZED_TELEMETRY=false
+
+  # Neo4j for graph relationships
+  dukat-neo4j:
+    image: neo4j:5.13.0
+    container_name: dukat-neo4j
+    environment:
+      - NEO4J_AUTH=neo4j/dukatpassword
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=2G
+    volumes:
+      - neo4j-data:/data
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+
+  # Redis for caching
+  dukat-redis:
+    image: redis:latest
+    container_name: dukat-redis
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+
+volumes:
+  ollama-models:
+    external: true  # Use existing Ollama models volume
+  model-cache:
+  huggingface-cache:
+  pip-cache:
+    name: dukat-pip-cache
+  apt-cache:
+    name: dukat-apt-cache
+  torch-cache:
+    name: dukat-torch-cache
+  chroma-data:
+  neo4j-data:
+  redis-data:
