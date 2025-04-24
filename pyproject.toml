@@ -23,7 +23,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.9,<3.12"
 # Core dependencies
 faiss-cpu = ">=1.7.0"  # Use faiss-gpu for GPU support
 sentence-transformers = ">=2.2.0"
