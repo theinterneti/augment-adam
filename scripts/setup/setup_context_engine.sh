@@ -3,7 +3,10 @@
 # Setup script for the context engine
 
 # Create necessary directories
-mkdir -p redis-config neo4j-config
+mkdir -p api
+mkdir -p worker
+mkdir -p redis-config
+mkdir -p neo4j-config
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
@@ -24,33 +27,33 @@ docker pull neo4j:5.13.0
 
 # Build the Docker images
 echo "Building Docker images..."
-docker compose -f context-engine-docker-compose.yml build
+docker compose build
 
 # Start the containers
 echo "Starting containers..."
-docker compose -f context-engine-docker-compose.yml up -d
+docker compose up -d
 
 # Wait for the containers to start
 echo "Waiting for containers to start..."
 sleep 10
 
 # Check if the containers are running
-if docker compose -f context-engine-docker-compose.yml ps | grep -q "Up"; then
+if docker compose ps | grep -q "Up"; then
   echo "Containers are running."
 else
-  echo "Containers failed to start. Please check the logs with 'docker compose -f context-engine-docker-compose.yml logs'."
+  echo "Containers failed to start. Please check the logs with 'docker compose logs'."
   exit 1
 fi
 
 # Create the Redis index
 echo "Creating Redis index..."
-docker compose -f context-engine-docker-compose.yml exec redis-vector redis-cli -a redispassword <<EOF
+docker compose exec redis-vector redis-cli -a redispassword <<EOF
 FT.CREATE vector_index ON HASH PREFIX 1 vector: SCHEMA vector VECTOR HNSW 6 TYPE FLOAT32 DIM 384 DISTANCE_METRIC COSINE metadata TEXT
 EOF
 
 # Create the Neo4j index
 echo "Creating Neo4j index..."
-docker compose -f context-engine-docker-compose.yml exec neo4j cypher-shell -u neo4j -p neopassword <<EOF
+docker compose exec neo4j cypher-shell -u neo4j -p neopassword <<EOF
 CREATE VECTOR INDEX vector_index IF NOT EXISTS
 FOR (n:Vector) ON (n.embedding)
 OPTIONS {
@@ -62,6 +65,6 @@ OPTIONS {
 EOF
 
 echo "Context engine setup complete!"
-echo "MCP server is available at http://localhost:8080"
+echo "API is available at http://localhost:8080"
 echo "Redis Insight is available at http://localhost:8001"
 echo "Neo4j Browser is available at http://localhost:7474"
