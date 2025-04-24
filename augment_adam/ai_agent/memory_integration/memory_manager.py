@@ -10,9 +10,7 @@ import logging
 import uuid
 from typing import Dict, List, Any, Optional, Union, Tuple
 
-from augment_adam.core.errors import (
-    ResourceError, wrap_error, log_error, ErrorCategory
-)
+from augment_adam.core.errors import ResourceError, wrap_error, log_error, ErrorCategory
 from augment_adam.memory import create_memory, get_default_memory
 
 logger = logging.getLogger(__name__)
@@ -20,23 +18,23 @@ logger = logging.getLogger(__name__)
 
 class MemoryManager:
     """Memory Manager for the AI Agent.
-    
+
     This class manages interactions with memory systems.
-    
+
     Attributes:
         memory: The memory system to use
         agent_id: The ID of the agent
         collection_name: The name of the memory collection
     """
-    
+
     def __init__(
         self,
         memory_type: Optional[str] = None,
         agent_id: Optional[str] = None,
-        collection_name: Optional[str] = None
+        collection_name: Optional[str] = None,
     ):
         """Initialize the Memory Manager.
-        
+
         Args:
             memory_type: The type of memory to use (if None, use default)
             agent_id: The ID of the agent (if None, generate a random ID)
@@ -48,13 +46,13 @@ class MemoryManager:
                 self.memory = create_memory(memory_type)
             else:
                 self.memory = get_default_memory()
-            
+
             # Set agent ID
             self.agent_id = agent_id or str(uuid.uuid4())
-            
+
             # Set collection name
             self.collection_name = collection_name or f"agent_{self.agent_id}"
-            
+
             logger.info(f"Initialized Memory Manager for agent {self.agent_id}")
         except Exception as e:
             error = wrap_error(
@@ -68,18 +66,14 @@ class MemoryManager:
             )
             log_error(error, logger=logger)
             raise error
-    
-    def add(
-        self,
-        text: str,
-        metadata: Optional[Dict[str, Any]] = None
-    ) -> str:
+
+    def add(self, text: str, metadata: Optional[Dict[str, Any]] = None) -> str:
         """Add a memory.
-        
+
         Args:
             text: The text to add
             metadata: Additional metadata for the memory
-            
+
         Returns:
             The ID of the added memory
         """
@@ -87,14 +81,12 @@ class MemoryManager:
             # Add agent ID to metadata
             metadata = metadata or {}
             metadata["agent_id"] = self.agent_id
-            
+
             # Add to memory
             memory_id = self.memory.add(
-                text=text,
-                metadata=metadata,
-                collection_name=self.collection_name
+                text=text, metadata=metadata, collection_name=self.collection_name
             )
-            
+
             logger.info(f"Added memory with ID: {memory_id}")
             return memory_id
         except Exception as e:
@@ -109,20 +101,20 @@ class MemoryManager:
             )
             log_error(error, logger=logger)
             return ""
-    
+
     def retrieve(
         self,
         query: str,
         n_results: int = 5,
-        filter_metadata: Optional[Dict[str, Any]] = None
+        filter_metadata: Optional[Dict[str, Any]] = None,
     ) -> List[Tuple[Dict[str, Any], float]]:
         """Retrieve memories.
-        
+
         Args:
             query: The query to retrieve memories for
             n_results: Maximum number of results to retrieve
             filter_metadata: Filter to apply to the metadata
-            
+
         Returns:
             A list of tuples containing the memory and its similarity score
         """
@@ -130,15 +122,15 @@ class MemoryManager:
             # Add agent ID to filter metadata
             filter_metadata = filter_metadata or {}
             filter_metadata["agent_id"] = self.agent_id
-            
+
             # Retrieve from memory
             results = self.memory.retrieve(
                 query=query,
                 n_results=n_results,
                 filter_metadata=filter_metadata,
-                collection_name=self.collection_name
+                collection_name=self.collection_name,
             )
-            
+
             logger.info(f"Retrieved {len(results)} memories for query: {query}")
             return results
         except Exception as e:
@@ -153,20 +145,20 @@ class MemoryManager:
             )
             log_error(error, logger=logger)
             return []
-    
+
     def update(
         self,
         memory_id: str,
         text: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> bool:
         """Update a memory.
-        
+
         Args:
             memory_id: The ID of the memory to update
             text: The new text (if None, keep existing text)
             metadata: The new metadata (if None, keep existing metadata)
-            
+
         Returns:
             True if the update was successful, False otherwise
         """
@@ -176,9 +168,9 @@ class MemoryManager:
                 memory_id=memory_id,
                 text=text,
                 metadata=metadata,
-                collection_name=self.collection_name
+                collection_name=self.collection_name,
             )
-            
+
             logger.info(f"Updated memory with ID: {memory_id}")
             return success
         except Exception as e:
@@ -193,23 +185,22 @@ class MemoryManager:
             )
             log_error(error, logger=logger)
             return False
-    
+
     def delete(self, memory_id: str) -> bool:
         """Delete a memory.
-        
+
         Args:
             memory_id: The ID of the memory to delete
-            
+
         Returns:
             True if the deletion was successful, False otherwise
         """
         try:
             # Delete memory
             success = self.memory.delete(
-                memory_id=memory_id,
-                collection_name=self.collection_name
+                memory_id=memory_id, collection_name=self.collection_name
             )
-            
+
             logger.info(f"Deleted memory with ID: {memory_id}")
             return success
         except Exception as e:

@@ -14,7 +14,7 @@ from augment_adam.ai_agent.memory_integration.semantic_memory import SemanticMem
 from augment_adam.ai_agent.memory_integration.memory_configuration import (
     MemoryConfiguration,
     MemoryAllocation,
-    get_memory_configuration
+    get_memory_configuration,
 )
 
 __all__ = [
