@@ -315,22 +315,49 @@ class HuggingFaceModel(ModelInterface):
 
             # If Monte Carlo sampling is requested and potentials are provided, use SMC
             if use_monte_carlo and monte_carlo_potentials:
-                from augment_adam.ai_agent.smc.sampler import SequentialMonteCarlo
+                # Check if parallel processing is requested
+                use_parallel = kwargs.get("use_parallel_monte_carlo", False)
+                num_workers = kwargs.get("monte_carlo_workers", None)
+                use_gpu = kwargs.get("use_gpu_monte_carlo", False) and self.device == "cuda"
 
-                # Create SMC sampler
-                smc_sampler = SequentialMonteCarlo(
-                    num_particles=monte_carlo_particles,
-                    potentials=monte_carlo_potentials,
-                    model=self
-                )
+                if use_parallel:
+                    from augment_adam.ai_agent.smc.parallel_sampler import ParallelSequentialMonteCarlo
 
-                # Generate with SMC
-                generated_text = smc_sampler.sample(
-                    prompt=prompt,
-                    max_tokens=max_tokens,
-                    temperature=temperature,
-                    stop=stop
-                )
+                    # Create parallel SMC sampler
+                    smc_sampler = ParallelSequentialMonteCarlo(
+                        num_particles=monte_carlo_particles,
+                        potentials=monte_carlo_potentials,
+                        model=self,
+                        num_workers=num_workers,
+                        use_gpu=use_gpu,
+                        batch_size=kwargs.get("monte_carlo_batch_size", 10)
+                    )
+
+                    # Generate with parallel SMC
+                    generated_text = smc_sampler.sample(
+                        prompt=prompt,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                        stop=stop,
+                        timeout=kwargs.get("monte_carlo_timeout", None)
+                    )
+                else:
+                    from augment_adam.ai_agent.smc.sampler import SequentialMonteCarlo
+
+                    # Create sequential SMC sampler
+                    smc_sampler = SequentialMonteCarlo(
+                        num_particles=monte_carlo_particles,
+                        potentials=monte_carlo_potentials,
+                        model=self
+                    )
+
+                    # Generate with sequential SMC
+                    generated_text = smc_sampler.sample(
+                        prompt=prompt,
+                        max_tokens=max_tokens,
+                        temperature=temperature,
+                        stop=stop
+                    )
 
                 # Cache the result
                 if should_use_cache and self.cache:
@@ -641,6 +668,65 @@ class HuggingFaceModel(ModelInterface):
         except Exception as e:
             logger.warning(f"Error getting token probabilities: {e}")
             return [(" ", 1.0)]  # Return a default token with probability 1.0
+
+    def batch_get_token_probabilities(
+        self,
+        prompts: List[str],
+        temperature: float = 0.7,
+        top_k: int = 50,
+        **kwargs
+    ) -> List[List[str]]:
+        """Get token probabilities for multiple prompts in batch.
+
+        Args:
+            prompts: List of prompts to get probabilities for
+            temperature: Sampling temperature (higher = more random)
+            top_k: Number of top tokens to return
+            **kwargs: Additional model-specific parameters
+
+        Returns:
+            List of lists of candidate tokens
+        """
+        try:
+            # Tokenize all prompts
+            batch_inputs = self.tokenizer(prompts, padding=True, return_tensors="pt").to(self.device)
+
+            # Get logits for the next token for all prompts
+            with torch.no_grad():
+                outputs = self.model(**batch_inputs)
+                batch_logits = outputs.logits
+
+            # Process each prompt's logits
+            results = []
+
+            for i, logits in enumerate(batch_logits):
+                # Get the last token's logits
+                last_token_logits = logits[-1, :]
+
+                # Apply temperature
+                if temperature > 0:
+                    last_token_logits = last_token_logits / temperature
+
+                # Convert to probabilities
+                probs = torch.softmax(last_token_logits, dim=0)
+
+                # Get top-k token indices and probabilities
+                top_k_val = min(top_k, probs.size(0))
+                top_probs, top_indices = torch.topk(probs, top_k_val)
+
+                # Convert to tokens
+                tokens = []
+                for index in top_indices:
+                    token = self.tokenizer.decode(index)
+                    tokens.append(token)
+
+                results.append(tokens)
+
+            return results
+        except Exception as e:
+            logger.warning(f"Error in batch token probabilities: {e}")
+            # Return default tokens
+            return [[" "] * top_k for _ in range(len(prompts))]
 
     def get_model_info(self) -> Dict[str, Any]:
         """Get information about the model.

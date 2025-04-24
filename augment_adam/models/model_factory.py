@@ -160,6 +160,17 @@ class ModelFactory:
                     kwargs["monte_carlo_particles"] = 100
                     logger.info(f"Using 100 particles for Monte Carlo sampling with small model: {model_name}")
 
+                # Enable parallel processing by default for small models
+                if "use_parallel_monte_carlo" not in kwargs:
+                    kwargs["use_parallel_monte_carlo"] = True
+                    logger.info(f"Enabling parallel Monte Carlo processing for small model: {model_name}")
+
+                # Set number of workers if not specified
+                if "monte_carlo_workers" not in kwargs:
+                    import multiprocessing as mp
+                    kwargs["monte_carlo_workers"] = max(1, mp.cpu_count() - 1)  # Leave one core free
+                    logger.info(f"Using {kwargs['monte_carlo_workers']} workers for parallel processing")
+
             # Create model
             model = model_class(
                 model_name=model_name,

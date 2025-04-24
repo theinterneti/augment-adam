@@ -287,6 +287,7 @@ Key benefits:
 - **Efficiency**: Small models require less computational resources
 - **Large Context**: Support for context windows up to 32K tokens
 - **Guided Generation**: Monte Carlo approach enhances output quality
+- **Parallel Processing**: Multi-core and GPU acceleration for faster generation
 - **Persistent Caching**: Docker named volumes for efficient caching
 
 For more details, see the [Small Models with Large Context Windows](docs/guides/small_models_large_context.md) guide.

@@ -17,12 +17,12 @@ Augment Adam addresses this challenge by:
 
 We recommend the following small models with large context windows:
 
-| Model Size | Hugging Face Model | Ollama Model | Context Window |
-|------------|-------------------|--------------|----------------|
-| tiny_context | Qwen/Qwen1.5-0.5B-Chat | qwen:0.5b | 32K tokens |
-| small_context | Qwen/Qwen1.5-0.5B-Chat | qwen:0.5b | 32K tokens |
-| medium_context | Qwen/Qwen1.5-1.8B-Chat | qwen:1.8b | 32K tokens |
-| long_context | Qwen/Qwen1.5-7B-Chat | qwen:7b | 32K tokens |
+| Model Size     | Hugging Face Model     | Ollama Model | Context Window |
+| -------------- | ---------------------- | ------------ | -------------- |
+| tiny_context   | Qwen/Qwen1.5-0.5B-Chat | qwen:0.5b    | 32K tokens     |
+| small_context  | Qwen/Qwen1.5-0.5B-Chat | qwen:0.5b    | 32K tokens     |
+| medium_context | Qwen/Qwen1.5-1.8B-Chat | qwen:1.8b    | 32K tokens     |
+| long_context   | Qwen/Qwen1.5-7B-Chat   | qwen:7b      | 32K tokens     |
 
 ## Monte Carlo Approach
 
@@ -100,7 +100,7 @@ Augment Adam includes a caching system that improves performance by:
 ### Docker Compose Setup
 
 ```yaml
-version: '3'
+version: "3"
 
 services:
   augment-adam:
@@ -131,13 +131,34 @@ To make the most of large context windows with smaller models, Augment Adam prov
 3. **Context Optimization**: Optimizing context to fit within the model's context window
 4. **Relevance Scoring**: Prioritizing the most relevant information
 
+## Parallel Processing
+
+To further enhance performance, Augment Adam supports parallel processing for Monte Carlo sampling:
+
+```bash
+python -m examples.agent_core_example \
+  --model-type huggingface \
+  --model-size small_context \
+  --use-cache \
+  --use-monte-carlo \
+  --use-parallel-monte-carlo \
+  --monte-carlo-workers 4 \
+  --monte-carlo-particles 100 \
+  --agent conversational
+```
+
+Parallel processing distributes particle generation and evaluation across multiple CPU cores or GPU threads, significantly improving performance. This allows us to use more particles and explore more possibilities in the same amount of time.
+
+For more details, see the [Parallel Monte Carlo Processing](parallel_monte_carlo.md) guide.
+
 ## Best Practices
 
 1. **Use Quantization**: Enable 4-bit or 8-bit quantization for even more efficiency
 2. **Tune Potentials**: Create domain-specific potentials for your use case
 3. **Adjust Particle Count**: Use more particles for more complex tasks
-4. **Enable Caching**: Always use caching for better performance
-5. **Use Flash Attention**: Enable Flash Attention for faster inference on GPU
+4. **Enable Parallel Processing**: Use multiple cores or GPU for faster generation
+5. **Enable Caching**: Always use caching for better performance
+6. **Use Flash Attention**: Enable Flash Attention for faster inference on GPU
 
 ## Conclusion
 

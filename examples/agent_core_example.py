@@ -515,6 +515,28 @@ def main():
         default=None,
         help="Number of particles for Monte Carlo sampling (default: 50 for medium/large models, 100 for small models)"
     )
+    parser.add_argument(
+        "--use-parallel-monte-carlo",
+        action="store_true",
+        help="Use parallel processing for Monte Carlo sampling (automatically enabled for small models)"
+    )
+    parser.add_argument(
+        "--monte-carlo-workers",
+        type=int,
+        default=None,
+        help="Number of workers for parallel Monte Carlo sampling (default: CPU count - 1)"
+    )
+    parser.add_argument(
+        "--use-gpu-monte-carlo",
+        action="store_true",
+        help="Use GPU for parallel Monte Carlo sampling (if available)"
+    )
+    parser.add_argument(
+        "--monte-carlo-timeout",
+        type=int,
+        default=None,
+        help="Maximum time in seconds for Monte Carlo sampling (default: no timeout)"
+    )
 
     args = parser.parse_args()
 
@@ -545,10 +567,22 @@ def main():
         model_kwargs["use_cache"] = True
     if args.context_window_size:
         model_kwargs["context_window_size"] = args.context_window_size
+
+    # Add Monte Carlo parameters
     if args.use_monte_carlo:
         model_kwargs["use_monte_carlo"] = True
     if args.monte_carlo_particles:
         model_kwargs["monte_carlo_particles"] = args.monte_carlo_particles
+
+    # Add parallel Monte Carlo parameters
+    if args.use_parallel_monte_carlo:
+        model_kwargs["use_parallel_monte_carlo"] = True
+    if args.monte_carlo_workers:
+        model_kwargs["monte_carlo_workers"] = args.monte_carlo_workers
+    if args.use_gpu_monte_carlo:
+        model_kwargs["use_gpu_monte_carlo"] = True
+    if args.monte_carlo_timeout:
+        model_kwargs["monte_carlo_timeout"] = args.monte_carlo_timeout
 
     logger.info(f"Using model type: {model_type}, model size: {model_size or 'default'}, model name: {model_name or 'auto'}")
     if model_kwargs:
