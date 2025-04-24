@@ -16,6 +16,7 @@ from augment_adam.core.errors import (
 )
 from augment_adam.context_engine import get_context_manager
 from augment_adam.memory import create_memory, get_default_memory
+from augment_adam.models import create_model, get_default_model
 from augment_adam.ai_agent.agent_interface import AgentInterface
 from augment_adam.ai_agent.memory_integration.memory_manager import MemoryManager
 from augment_adam.ai_agent.reasoning.chain_of_thought import ChainOfThought
@@ -30,10 +31,10 @@ logger = logging.getLogger(__name__)
 
 class BaseAgent(AgentInterface):
     """Base implementation of the Agent interface.
-    
+
     This class provides a base implementation of the Agent interface with
     Sequential Monte Carlo for controlled generation.
-    
+
     Attributes:
         name: The name of the agent
         description: A description of the agent
@@ -42,74 +43,85 @@ class BaseAgent(AgentInterface):
         reasoning_engine: The reasoning engine for the agent
         smc_sampler: The Sequential Monte Carlo sampler for controlled generation
     """
-    
+
     def __init__(
         self,
         name: str = "Base Agent",
         description: str = "A base AI agent",
         memory_type: str = None,
+        model_type: str = None,
+        model_name: str = None,
         context_window_size: int = 4096,
         potentials: Optional[List[Potential]] = None,
         num_particles: int = 100
     ):
         """Initialize the Base Agent.
-        
+
         Args:
             name: The name of the agent
             description: A description of the agent
             memory_type: The type of memory to use (if None, use default)
+            model_type: The type of model to use (if None, use default)
+            model_name: The name of the model to use (if None, use default)
             context_window_size: The size of the context window
             potentials: List of potential functions for controlled generation
             num_particles: Number of particles for SMC sampling
         """
         self.name = name
         self.description = description
-        
+
         # Initialize context manager
         self.context_manager = get_context_manager()
-        
+
         # Create a context window for this agent
         self.context_window = self.context_manager.create_context_window(
             name=f"{name}_window",
             max_tokens=context_window_size
         )
-        
+
         # Initialize memory manager
         self.memory_manager = MemoryManager(memory_type=memory_type)
-        
+
+        # Initialize model
+        if model_type:
+            self.model = create_model(model_type=model_type, model_name=model_name)
+        else:
+            self.model = get_default_model()
+
         # Initialize reasoning engine
-        self.reasoning_engine = ChainOfThought()
-        
+        self.reasoning_engine = ChainOfThought(model=self.model)
+
         # Initialize SMC sampler with potentials
         self.potentials = potentials or []
         self.smc_sampler = SequentialMonteCarlo(
             num_particles=num_particles,
-            potentials=self.potentials
+            potentials=self.potentials,
+            model=self.model
         )
-        
-        logger.info(f"Initialized {name} agent")
-    
+
+        logger.info(f"Initialized {name} agent with {self.model.get_model_info()['name']} model")
+
     def add_potential(self, potential: Potential) -> None:
         """Add a potential function for controlled generation.
-        
+
         Args:
             potential: The potential function to add
         """
         self.potentials.append(potential)
         self.smc_sampler.update_potentials(self.potentials)
         logger.info(f"Added potential: {potential.__class__.__name__}")
-    
+
     def process(
         self,
         input_text: str,
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Process input and generate a response.
-        
+
         Args:
             input_text: The input text to process
             context: Additional context for processing
-            
+
         Returns:
             A dictionary containing the response and additional information
         """
@@ -120,7 +132,7 @@ class BaseAgent(AgentInterface):
                 sources=["memory", "web", "document", "code"],
                 max_items=10
             )
-            
+
             # Compose context
             window = self.context_manager.compose_context(
                 query=input_text,
@@ -128,26 +140,26 @@ class BaseAgent(AgentInterface):
                 composer_name="default",
                 window_name=f"{self.name}_window"
             )
-            
+
             # Optimize context
             window = self.context_manager.optimize_context(
                 window=window,
                 optimizer_name="default"
             )
-            
+
             # Create prompt
             prompt = self.context_manager.create_prompt(
                 query=input_text,
                 window=window,
                 prompt_type="default"
             )
-            
+
             # Generate response using SMC
             response = self.generate(
                 prompt=prompt,
                 constraints=context.get("constraints") if context else None
             )
-            
+
             # Remember the interaction
             memory_id = self.remember(
                 text=f"User: {input_text}\nAssistant: {response}",
@@ -157,7 +169,7 @@ class BaseAgent(AgentInterface):
                     "response": response
                 }
             )
-            
+
             return {
                 "response": response,
                 "memory_id": memory_id,
@@ -171,13 +183,13 @@ class BaseAgent(AgentInterface):
                 details={"input_length": len(input_text) if input_text else 0},
             )
             log_error(error, logger=logger)
-            
+
             # Fall back to simple response
             return {
                 "response": "I'm sorry, I encountered an error while processing your request.",
                 "error": str(error)
             }
-    
+
     def generate(
         self,
         prompt: str,
@@ -185,12 +197,12 @@ class BaseAgent(AgentInterface):
         max_tokens: int = 1000
     ) -> str:
         """Generate text based on a prompt using Sequential Monte Carlo.
-        
+
         Args:
             prompt: The prompt to generate from
             constraints: Constraints for generation
             max_tokens: Maximum number of tokens to generate
-            
+
         Returns:
             The generated text
         """
@@ -202,19 +214,19 @@ class BaseAgent(AgentInterface):
                     grammar = constraints["grammar"]
                     grammar_potential = GrammarPotential(grammar)
                     self.add_potential(grammar_potential)
-                
+
                 # Add semantic constraint if specified
                 if "semantic" in constraints:
                     semantic_fn = constraints["semantic"]
                     semantic_potential = SemanticPotential(semantic_fn)
                     self.add_potential(semantic_potential)
-            
+
             # Generate using SMC
             result = self.smc_sampler.sample(
                 prompt=prompt,
                 max_tokens=max_tokens
             )
-            
+
             logger.info(f"Generated response with {len(result)} characters")
             return result
         except Exception as e:
@@ -225,21 +237,21 @@ class BaseAgent(AgentInterface):
                 details={"prompt_length": len(prompt) if prompt else 0},
             )
             log_error(error, logger=logger)
-            
+
             # Fall back to simple response
             return "I'm sorry, I encountered an error while generating a response."
-    
+
     def remember(
         self,
         text: str,
         metadata: Optional[Dict[str, Any]] = None
     ) -> str:
         """Store information in memory.
-        
+
         Args:
             text: The text to remember
             metadata: Additional metadata for the memory
-            
+
         Returns:
             The ID of the stored memory
         """
@@ -248,7 +260,7 @@ class BaseAgent(AgentInterface):
                 text=text,
                 metadata=metadata or {}
             )
-            
+
             logger.info(f"Stored memory with ID: {memory_id}")
             return memory_id
         except Exception as e:
@@ -260,7 +272,7 @@ class BaseAgent(AgentInterface):
             )
             log_error(error, logger=logger)
             return ""
-    
+
     def retrieve(
         self,
         query: str,
@@ -268,12 +280,12 @@ class BaseAgent(AgentInterface):
         filter_metadata: Optional[Dict[str, Any]] = None
     ) -> List[Dict[str, Any]]:
         """Retrieve information from memory.
-        
+
         Args:
             query: The query to retrieve information for
             n_results: Maximum number of results to retrieve
             filter_metadata: Filter to apply to the metadata
-            
+
         Returns:
             A list of retrieved memories
         """
@@ -283,14 +295,14 @@ class BaseAgent(AgentInterface):
                 n_results=n_results,
                 filter_metadata=filter_metadata
             )
-            
+
             # Convert to list of dictionaries
             memories = []
             for memory, similarity in results:
                 memory_dict = dict(memory)
                 memory_dict["similarity"] = similarity
                 memories.append(memory_dict)
-            
+
             logger.info(f"Retrieved {len(memories)} memories for query: {query}")
             return memories
         except Exception as e:
@@ -302,18 +314,18 @@ class BaseAgent(AgentInterface):
             )
             log_error(error, logger=logger)
             return []
-    
+
     def reason(
         self,
         query: str,
         context: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """Perform reasoning on a query.
-        
+
         Args:
             query: The query to reason about
             context: Additional context for reasoning
-            
+
         Returns:
             The reasoning results
         """
@@ -325,7 +337,7 @@ class BaseAgent(AgentInterface):
                     sources=["memory", "web", "document", "code"],
                     max_items=10
                 )
-                
+
                 # Compose context
                 window = self.context_manager.compose_context(
                     query=query,
@@ -333,18 +345,18 @@ class BaseAgent(AgentInterface):
                     composer_name="default",
                     window_name=f"{self.name}_window"
                 )
-                
+
                 # Get context content
                 context_content = window.get_content()
             else:
                 context_content = context.get("context_items", "")
-            
+
             # Perform reasoning
             reasoning_result = self.reasoning_engine.reason(
                 query=query,
                 context=context_content
             )
-            
+
             logger.info(f"Performed reasoning for query: {query}")
             return reasoning_result
         except Exception as e:
