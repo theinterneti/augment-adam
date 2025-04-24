@@ -92,52 +92,135 @@ class SequentialMonteCarlo:
 
         logger.info(f"Initialized {len(self.particles)} particles with prompt: {prompt[:20]}...")
 
-    def extend_particles(self, model: Any = None) -> None:
+    def extend_particles(self, model: Any = None, num_candidates: int = 5, temperature: float = 0.8) -> None:
         """Extend particles with new tokens.
 
         Args:
             model: The language model to use (if None, use the model from initialization)
+            num_candidates: Number of candidate tokens to consider for each particle
+            temperature: Temperature for token sampling
         """
         new_particles = []
         model_to_use = model or self.model
 
         for particle in self.particles:
-            if model_to_use:
-                # Get current text
-                current_text = particle.get_sequence_text()
+            # Get current text
+            current_text = particle.get_sequence_text()
 
-                # Generate a short continuation
-                try:
-                    continuation = model_to_use.generate(
-                        prompt=current_text,
-                        max_tokens=1,
-                        temperature=0.7
-                    )
+            # Generate candidate tokens
+            candidate_tokens = self._generate_candidate_tokens(
+                current_text,
+                model_to_use,
+                num_candidates,
+                temperature
+            )
 
-                    # Extract the first character of the continuation
-                    if continuation and len(continuation) > len(current_text):
-                        next_token = continuation[len(current_text)]
-                    else:
-                        # Fallback if model doesn't return a continuation
-                        next_token = " "
-                except Exception as e:
-                    logger.warning(f"Error generating with model: {e}")
-                    # Fallback to random character
-                    next_token = random.choice(["a", "b", "c", "d", "e", " "])
-            else:
-                # No model available, use a simple model that generates random characters
-                next_tokens = ["a", "b", "c", "d", "e", " "]
-                next_probs = [0.2, 0.2, 0.2, 0.2, 0.1, 0.1]
+            # Create new particles for each candidate token
+            for token in candidate_tokens:
+                new_particle = particle.extend(token)
+                new_particles.append(new_particle)
 
-                # Sample next token
-                next_token = random.choices(next_tokens, weights=next_probs)[0]
+        # If we have too many particles, sample down to the original number
+        if len(new_particles) > self.num_particles:
+            # Prioritize particles from high-weight parents
+            parent_weights = []
+            for i, particle in enumerate(self.particles):
+                parent_weights.extend([particle.weight] * num_candidates)
 
-            # Extend particle
-            new_particle = particle.extend(next_token)
-            new_particles.append(new_particle)
+            # Sample particles based on parent weights
+            indices = np.random.choice(
+                len(new_particles),
+                size=self.num_particles,
+                replace=False,
+                p=np.array(parent_weights) / sum(parent_weights)
+            )
+
+            new_particles = [new_particles[i] for i in indices]
 
         self.particles = new_particles
-        logger.info(f"Extended {len(self.particles)} particles")
+        logger.info(f"Extended {len(self.particles)} particles with {num_candidates} candidates each")
+
+    def _generate_candidate_tokens(
+        self,
+        text: str,
+        model: Any,
+        num_candidates: int,
+        temperature: float
+    ) -> List[str]:
+        """Generate candidate tokens for a given text.
+
+        Args:
+            text: The text to generate candidates for
+            model: The language model to use
+            num_candidates: Number of candidates to generate
+            temperature: Temperature for token sampling
+
+        Returns:
+            List of candidate tokens
+        """
+        if not model:
+            # No model available, use a simple model that generates random characters
+            candidates = ["a", "b", "c", "d", "e", " ", ".", ",", "!", "?", "\n"]
+            probabilities = [0.15, 0.15, 0.15, 0.15, 0.1, 0.1, 0.05, 0.05, 0.05, 0.05, 0.05]
+
+            # Sample candidates
+            return random.choices(candidates, weights=probabilities, k=num_candidates)
+
+        try:
+            # Try to get token probabilities from the model
+            if hasattr(model, "get_token_probabilities"):
+                # If the model supports token probability API
+                token_probs = model.get_token_probabilities(
+                    prompt=text,
+                    temperature=temperature
+                )
+
+                # Sample tokens based on probabilities
+                tokens = []
+                probs = []
+
+                for token, prob in token_probs[:20]:  # Consider top 20 tokens
+                    tokens.append(token)
+                    probs.append(prob)
+
+                # Normalize probabilities
+                probs = np.array(probs) / sum(probs)
+
+                # Sample candidates
+                return np.random.choice(tokens, size=num_candidates, replace=True, p=probs).tolist()
+            else:
+                # Generate multiple completions and extract first token from each
+                candidates = []
+
+                for _ in range(num_candidates):
+                    try:
+                        continuation = model.generate(
+                            prompt=text,
+                            max_tokens=1,
+                            temperature=temperature
+                        )
+
+                        # Extract the first character of the continuation
+                        if continuation and len(continuation) > len(text):
+                            next_token = continuation[len(text)]
+                            candidates.append(next_token)
+                        else:
+                            # Fallback if model doesn't return a continuation
+                            candidates.append(" ")
+                    except Exception as e:
+                        logger.warning(f"Error generating candidate: {e}")
+                        # Add a fallback token
+                        candidates.append(" ")
+
+                # If we couldn't generate enough candidates, add some random ones
+                while len(candidates) < num_candidates:
+                    candidates.append(random.choice(["a", "e", "i", "o", "u", " ", "."]))
+
+                return candidates
+        except Exception as e:
+            logger.warning(f"Error generating candidates: {e}")
+            # Fallback to random characters
+            return [random.choice(["a", "e", "i", "o", "u", " ", "."]) for _ in range(num_candidates)]
 
     def reweight_particles(self) -> None:
         """Reweight particles using potential functions."""
@@ -199,7 +282,10 @@ class SequentialMonteCarlo:
         max_tokens: int = 100,
         model: Any = None,
         temperature: float = 0.7,
-        stop: Optional[List[str]] = None
+        stop: Optional[List[str]] = None,
+        num_candidates: int = 5,
+        batch_size: int = 10,
+        early_stopping: bool = True
     ) -> str:
         """Sample a sequence using SMC.
 
@@ -209,6 +295,9 @@ class SequentialMonteCarlo:
             model: The language model to use (if None, use the model from initialization)
             temperature: Sampling temperature (higher = more random)
             stop: List of strings that stop generation when encountered
+            num_candidates: Number of candidate tokens to consider for each particle
+            batch_size: Number of tokens to generate before reweighting
+            early_stopping: Whether to use early stopping
 
         Returns:
             The generated sequence
@@ -230,39 +319,73 @@ class SequentialMonteCarlo:
             # Initialize particles
             self.initialize_particles(prompt)
 
-            # Generate tokens
-            for i in range(max_tokens):
-                # Extend particles
-                self.extend_particles(model_to_use)
+            # Track best particle and its score
+            best_particle = None
+            best_score = 0.0
 
-                # Reweight particles
+            # Track number of tokens without improvement
+            tokens_without_improvement = 0
+
+            # Generate tokens in batches
+            for i in range(0, max_tokens, batch_size):
+                # Determine batch size (might be smaller for the last batch)
+                current_batch_size = min(batch_size, max_tokens - i)
+
+                # Generate tokens for the current batch
+                for j in range(current_batch_size):
+                    # Extend particles
+                    self.extend_particles(
+                        model=model_to_use,
+                        num_candidates=num_candidates,
+                        temperature=temperature
+                    )
+
+                    # Check for stop sequences after each token
+                    if stop:
+                        should_stop = False
+                        for particle in self.particles:
+                            text = particle.get_sequence_text()
+                            if any(s in text for s in stop):
+                                logger.info(f"Stopping generation at token {i+j} due to stop sequence")
+                                should_stop = True
+                                break
+
+                        if should_stop:
+                            break
+
+                # Reweight particles after the batch
                 self.reweight_particles()
 
                 # Resample particles
                 self.resample_particles()
 
-                # Check for termination
-                if stop:
-                    # Check if any particle's sequence contains a stop sequence
-                    for particle in self.particles:
-                        text = particle.get_sequence_text()
-                        if any(s in text for s in stop):
-                            logger.info(f"Stopping generation at token {i} due to stop sequence")
-                            break
+                # Get current best particle
+                current_best_particle = max(self.particles, key=lambda p: p.weight)
+                current_score = current_best_particle.weight
 
-                # Check for end-of-sequence tokens in best particle
-                best_particle = max(self.particles, key=lambda p: p.weight)
-                text = best_particle.get_sequence_text()
-                if text.endswith(".") or text.endswith("!") or text.endswith("?") or text.endswith("\n\n"):
-                    if random.random() < 0.3:  # 30% chance of termination at sentence end
-                        logger.info(f"Stopping generation at token {i} due to sentence end")
+                # Update best particle if improved
+                if best_particle is None or current_score > best_score:
+                    best_particle = current_best_particle
+                    best_score = current_score
+                    tokens_without_improvement = 0
+                else:
+                    tokens_without_improvement += current_batch_size
+
+                # Early stopping if no improvement for a while
+                if early_stopping and tokens_without_improvement >= max(20, max_tokens // 5):
+                    logger.info(f"Early stopping after {i + current_batch_size} tokens due to no improvement")
+                    break
+
+                # Check for natural stopping points in best particle
+                text = current_best_particle.get_sequence_text()
+                if (text.endswith(".") or text.endswith("!") or text.endswith("?") or
+                    text.endswith("\n\n") or text.endswith("</s>") or text.endswith("</answer>")):
+                    if random.random() < 0.5:  # 50% chance of termination at natural end
+                        logger.info(f"Stopping generation at token {i + current_batch_size} due to natural end")
                         break
 
-            # Select best particle
-            best_particle = max(self.particles, key=lambda p: p.weight)
-
-            # Get sequence text
-            result = best_particle.get_sequence_text()
+            # Use the best particle found during generation
+            result = best_particle.get_sequence_text() if best_particle else prompt
 
             # If result is just the prompt, and we have a model, generate directly
             if result == prompt and model_to_use:

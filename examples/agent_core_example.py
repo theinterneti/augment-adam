@@ -15,7 +15,12 @@ import argparse
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from augment_adam.ai_agent import create_agent
-from augment_adam.ai_agent.smc.potential import RegexPotential, GrammarPotential
+from augment_adam.ai_agent.smc.potential import RegexPotential, GrammarPotential, SemanticPotential
+from augment_adam.ai_agent.smc.advanced_potentials import (
+    CoherencePotential, FactualPotential, StylePotential, ConstraintPotential,
+    ContextAwarePotential, FORMAL_STYLE, CONVERSATIONAL_STYLE, TECHNICAL_STYLE, CREATIVE_STYLE,
+    length_constraint, required_elements_constraint, forbidden_content_constraint
+)
 from augment_adam.context_engine import get_context_manager
 from augment_adam.context_engine.retrieval import MemoryRetriever, WebRetriever
 from augment_adam.context_engine.composition import ContextComposer, ContextOptimizer
@@ -74,11 +79,44 @@ def demo_conversational_agent(model_type=None, model_name=None, model_kwargs=Non
     model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Conversational Agent")
 
+    # Create a model for embedding functions
+    model = create_model(model_type=model_type, model_name=model_name, **model_kwargs)
+
     # Create potentials for controlled generation
-    sentence_ending_potential = RegexPotential(
-        pattern=r".*[.!?]$",
-        name="sentence_ending_potential"
-    )
+    potentials = [
+        # Basic potentials
+        RegexPotential(
+            pattern=r".*[.!?]$",
+            name="sentence_ending_potential"
+        ),
+
+        # Style potential for conversational text
+        StylePotential(
+            style_patterns=CONVERSATIONAL_STYLE,
+            name="conversational_style_potential"
+        ),
+
+        # Constraint potentials
+        ConstraintPotential(
+            constraints=[
+                length_constraint(min_length=10, max_length=200),
+                forbidden_content_constraint(["offensive", "inappropriate", "harmful"])
+            ],
+            name="constraint_potential"
+        )
+    ]
+
+    # Add coherence potential if the model supports embeddings
+    try:
+        # Create a coherence potential using the model's embedding function
+        coherence_potential = CoherencePotential(
+            embedding_fn=model.get_embedding,
+            reference_text="Hello! I'm a helpful and friendly AI assistant. How can I help you today?",
+            name="coherence_potential"
+        )
+        potentials.append(coherence_potential)
+    except (AttributeError, NotImplementedError):
+        logger.warning("Model doesn't support embeddings, skipping coherence potential")
 
     # Create a conversational agent
     agent = create_agent(
@@ -87,7 +125,7 @@ def demo_conversational_agent(model_type=None, model_name=None, model_kwargs=Non
         description="A conversational AI agent",
         model_type=model_type,
         model_name=model_name,
-        potentials=[sentence_ending_potential],
+        potentials=potentials,
         num_particles=50,
         **model_kwargs
     )
@@ -230,6 +268,45 @@ def demo_creative_agent(model_type=None, model_name=None, model_kwargs=None):
     model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Creative Agent")
 
+    # Create a model for embedding functions
+    model = create_model(model_type=model_type, model_name=model_name, **model_kwargs)
+
+    # Create potentials for controlled generation
+    potentials = [
+        # Style potential for creative text
+        StylePotential(
+            style_patterns=CREATIVE_STYLE,
+            name="creative_style_potential"
+        ),
+
+        # Constraint potentials
+        ConstraintPotential(
+            constraints=[
+                # Creative text can be longer
+                length_constraint(min_length=50, max_length=500),
+                # Require creative elements
+                required_elements_constraint(
+                    ["imagine", "beautiful", "creative", "unique", "inspiring"],
+                    threshold=2
+                )
+            ],
+            name="creative_constraint_potential"
+        )
+    ]
+
+    # Add factual potential for certain topics
+    factual_potential = FactualPotential(
+        facts=[
+            "creativity involves imagination",
+            "art is a form of expression",
+            "stories have characters and plots",
+            "poetry uses rhythm and metaphor"
+        ],
+        threshold=1,
+        name="factual_potential"
+    )
+    potentials.append(factual_potential)
+
     # Create a creative agent
     agent = create_agent(
         agent_type="creative",
@@ -237,6 +314,7 @@ def demo_creative_agent(model_type=None, model_name=None, model_kwargs=None):
         description="A creative-focused AI agent",
         model_type=model_type,
         model_name=model_name,
+        potentials=potentials,
         num_particles=50,
         **model_kwargs
     )
@@ -281,6 +359,52 @@ def demo_coding_agent(model_type=None, model_name=None, model_kwargs=None):
     model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Coding Agent")
 
+    # Create a model for embedding functions
+    model = create_model(model_type=model_type, model_name=model_name, **model_kwargs)
+
+    # Create potentials for controlled generation
+    potentials = [
+        # Style potential for technical/code text
+        StylePotential(
+            style_patterns=TECHNICAL_STYLE,
+            name="technical_style_potential"
+        ),
+
+        # Grammar potential for code structure
+        RegexPotential(
+            pattern=r"(def |class |import |from |if |for |while |return |with |try |except |finally )",
+            name="code_keyword_potential"
+        ),
+
+        # Constraint potentials for code
+        ConstraintPotential(
+            constraints=[
+                # Code should be properly indented
+                required_elements_constraint(
+                    ["    ", "def ", "return ", "import ", "class "],
+                    threshold=2
+                ),
+                # Avoid certain anti-patterns
+                forbidden_content_constraint(["goto", "exec(", "eval("])
+            ],
+            name="code_constraint_potential"
+        )
+    ]
+
+    # Add factual potential for coding knowledge
+    factual_potential = FactualPotential(
+        facts=[
+            "functions are defined with def",
+            "classes are defined with class",
+            "python uses indentation for blocks",
+            "variables are assigned with =",
+            "comments start with #"
+        ],
+        threshold=2,
+        name="code_factual_potential"
+    )
+    potentials.append(factual_potential)
+
     # Create a coding agent
     agent = create_agent(
         agent_type="coding",
@@ -288,6 +412,7 @@ def demo_coding_agent(model_type=None, model_name=None, model_kwargs=None):
         description="A code-focused AI agent",
         model_type=model_type,
         model_name=model_name,
+        potentials=potentials,
         num_particles=50,
         **model_kwargs
     )

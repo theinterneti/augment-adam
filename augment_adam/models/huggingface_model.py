@@ -401,6 +401,55 @@ class HuggingFaceModel(ModelInterface):
             # Return a zero vector as fallback
             return [0.0] * 384  # Default embedding size for all-MiniLM-L6-v2
 
+    def get_token_probabilities(
+        self,
+        prompt: str,
+        temperature: float = 0.7,
+        top_k: int = 50,
+        **kwargs
+    ) -> List[Tuple[str, float]]:
+        """Get token probabilities for the next token.
+
+        Args:
+            prompt: The prompt to get probabilities for
+            temperature: Sampling temperature (higher = more random)
+            top_k: Number of top tokens to return
+            **kwargs: Additional model-specific parameters
+
+        Returns:
+            List of (token, probability) tuples
+        """
+        try:
+            # Tokenize the prompt
+            inputs = self.tokenizer(prompt, return_tensors="pt").to(self.device)
+
+            # Get logits for the next token
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                logits = outputs.logits[0, -1, :]
+
+            # Apply temperature
+            if temperature > 0:
+                logits = logits / temperature
+
+            # Convert to probabilities
+            probs = torch.softmax(logits, dim=0)
+
+            # Get top-k token indices and probabilities
+            top_k = min(top_k, probs.size(0))
+            top_probs, top_indices = torch.topk(probs, top_k)
+
+            # Convert to tokens and probabilities
+            result = []
+            for i, (index, prob) in enumerate(zip(top_indices, top_probs)):
+                token = self.tokenizer.decode(index)
+                result.append((token, prob.item()))
+
+            return result
+        except Exception as e:
+            logger.warning(f"Error getting token probabilities: {e}")
+            return [(" ", 1.0)]  # Return a default token with probability 1.0
+
     def get_model_info(self) -> Dict[str, Any]:
         """Get information about the model.
 
