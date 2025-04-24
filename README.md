@@ -327,6 +327,46 @@ Key features:
 
 For more details, see the [Hardware Optimization and Model Analysis](docs/guides/hardware_optimization.md) guide.
 
+## Specialized Agents
+
+Augment Adam provides a powerful agent framework for building specialized AI assistants:
+
+```python
+from augment_adam.models import create_model
+from augment_adam.ai_agent import create_agent
+
+# Create a model
+model = create_model(
+    model_type="huggingface",
+    model_size="small_context"
+)
+
+# Create an agent with system prompt and output instructions
+agent = create_agent(
+    agent_type="conversational",
+    name="My Agent",
+    description="A helpful AI assistant",
+    model=model,
+    system_prompt="You are a helpful AI assistant...",
+    output_format="json",
+    strict_output=True
+)
+
+# Process a request
+result = agent.process("Hello, how are you?")
+print(result["response"])
+```
+
+Key features:
+
+- **System Prompts**: Define agent behavior with detailed instructions
+- **Output Formats**: Support for text or structured JSON output
+- **Specialized Tools**: Add custom tools for specific tasks
+- **Worker Agents**: Process tasks asynchronously
+- **MCP Integration**: Deploy agents as MCP servers
+
+For more details, see the [Building Agents](docs/guides/building_agents.md) guide.
+
 ## FastAPI Server
 
 Augment Adam includes a FastAPI server for easy integration with web applications:
