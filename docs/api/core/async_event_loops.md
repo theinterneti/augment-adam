@@ -83,7 +83,7 @@ result = await new_future
 The `TaskQueue` class in Dukat manages a queue of tasks that are executed asynchronously. It uses the event loop to create futures and tasks:
 
 ```python
-from dukat.core.task_queue import TaskQueue
+from augment_adam.core.task_queue import TaskQueue
 
 # Create a task queue with the current event loop
 loop = asyncio.get_event_loop()
@@ -107,7 +107,7 @@ result = await queue.wait_for_task(task.task_id)
 The `AsyncAssistant` class integrates with the task queue system and uses the event loop to manage asynchronous operations:
 
 ```python
-from dukat.core.async_assistant import get_async_assistant
+from augment_adam.core.async_assistant import get_async_assistant
 
 # Get an async assistant (uses the current event loop)
 assistant = await get_async_assistant(

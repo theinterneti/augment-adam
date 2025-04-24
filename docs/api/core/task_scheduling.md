@@ -19,7 +19,7 @@ The task scheduling system provides the following capabilities:
 The main class for task scheduling.
 
 ```python
-from dukat.core.task_scheduler import TaskScheduler
+from augment_adam.core.task_scheduler import TaskScheduler
 from datetime import datetime, timedelta
 import asyncio
 
@@ -64,7 +64,7 @@ all_tasks = await scheduler.get_all_tasks()
 Represents a scheduled task.
 
 ```python
-from dukat.core.task_scheduler import ScheduledTask
+from augment_adam.core.task_scheduler import ScheduledTask
 from datetime import datetime, timedelta
 
 # Create a one-time task
@@ -89,7 +89,7 @@ task = ScheduledTask(
 The AsyncAssistant class provides methods to use the task scheduling system:
 
 ```python
-from dukat.core.async_assistant import get_async_assistant
+from augment_adam.core.async_assistant import get_async_assistant
 from datetime import datetime, timedelta
 
 # Create an async assistant

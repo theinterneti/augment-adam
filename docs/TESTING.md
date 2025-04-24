@@ -10,19 +10,19 @@ As of April 22, 2025, the project has a test coverage of 69%, with all 109 tests
 
 | Module                        | Coverage | Notes                             |
 | ----------------------------- | -------- | --------------------------------- |
-| dukat/**init**.py             | 100%     | Fully covered                     |
-| dukat/cli.py                  | 0%       | Needs implementation              |
-| dukat/config.py               | 70%      | Missing some error handling paths |
-| dukat/core/model_manager.py   | 76%      | Missing some error handling paths |
-| dukat/core/prompt_manager.py  | 82%      | Good coverage                     |
-| dukat/memory/episodic.py      | 82%      | Good coverage                     |
-| dukat/memory/semantic.py      | 84%      | Good coverage                     |
-| dukat/memory/working.py       | 97%      | Excellent coverage                |
-| dukat/plugins/**init**.py     | 86%      | Good coverage                     |
-| dukat/plugins/base.py         | 54%      | Needs improvement                 |
-| dukat/plugins/file_manager.py | 66%      | Improved, but needs more coverage |
-| dukat/plugins/system_info.py  | 76%      | Good coverage                     |
-| dukat/plugins/web_search.py   | 72%      | Good coverage                     |
+| augment_adam/**init**.py             | 100%     | Fully covered                     |
+| augment_adam/cli.py                  | 0%       | Needs implementation              |
+| augment_adam/config.py               | 70%      | Missing some error handling paths |
+| augment_adam/core/model_manager.py   | 76%      | Missing some error handling paths |
+| augment_adam/core/prompt_manager.py  | 82%      | Good coverage                     |
+| augment_adam/memory/episodic.py      | 82%      | Good coverage                     |
+| augment_adam/memory/semantic.py      | 84%      | Good coverage                     |
+| augment_adam/memory/working.py       | 97%      | Excellent coverage                |
+| augment_adam/plugins/**init**.py     | 86%      | Good coverage                     |
+| augment_adam/plugins/base.py         | 54%      | Needs improvement                 |
+| augment_adam/plugins/file_manager.py | 66%      | Improved, but needs more coverage |
+| augment_adam/plugins/system_info.py  | 76%      | Good coverage                     |
+| augment_adam/plugins/web_search.py   | 72%      | Good coverage                     |
 
 ## Current Test Status
 
@@ -199,17 +199,17 @@ Dukat makes extensive use of asynchronous programming with `asyncio`. Testing as
 
 ### 1. Improve Test Coverage
 
-1. **dukat/cli.py**:
+1. **augment_adam/cli.py**:
 
    - Implement tests for the CLI functionality
    - Cover all command-line options and arguments
 
-2. **dukat/plugins/base.py**:
+2. **augment_adam/plugins/base.py**:
 
    - Improve test coverage for the base plugin class
    - Test error handling and edge cases
 
-3. **dukat/plugins/file_manager.py**:
+3. **augment_adam/plugins/file_manager.py**:
    - Improve test coverage for file operations
    - Test error handling and edge cases
 

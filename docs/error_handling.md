@@ -34,10 +34,10 @@ Errors in Dukat are categorized into the following types:
 
 ## Custom Exceptions
 
-Dukat provides a hierarchy of custom exceptions that extend from the base `DukatError` class:
+Dukat provides a hierarchy of custom exceptions that extend from the base `AugmentAdamError` class:
 
 ```python
-from dukat.core.errors import DukatError, ModelError, NetworkError
+from augment_adam.core.errors import AugmentAdamError, ModelError, NetworkError
 
 # Raising a custom error
 raise ModelError("Failed to load model", original_error=original_exception)
@@ -52,7 +52,7 @@ except ModelError as e:
 except NetworkError as e:
     # Handle network errors
     pass
-except DukatError as e:
+except AugmentAdamError as e:
     # Handle all other Dukat errors
     pass
 ```
@@ -62,7 +62,7 @@ except DukatError as e:
 Dukat provides utilities to wrap standard Python exceptions into Dukat's custom exceptions:
 
 ```python
-from dukat.core.errors import wrap_error
+from augment_adam.core.errors import wrap_error
 
 try:
     # Some operation
@@ -87,7 +87,7 @@ except Exception as e:
 The retry decorator automatically retries a function when it fails with specified exceptions:
 
 ```python
-from dukat.core.errors import retry
+from augment_adam.core.errors import retry
 
 @retry(max_attempts=3, delay=1.0, backoff_factor=2.0)
 def fetch_data():
@@ -100,7 +100,7 @@ def fetch_data():
 The circuit breaker pattern prevents cascading failures by stopping operations when they consistently fail:
 
 ```python
-from dukat.core.errors import CircuitBreaker
+from augment_adam.core.errors import CircuitBreaker
 
 # Create a circuit breaker
 circuit = CircuitBreaker(
@@ -128,7 +128,7 @@ except CircuitBreakerError:
 Dukat provides utilities for structured logging of errors:
 
 ```python
-from dukat.core.errors import log_error
+from augment_adam.core.errors import log_error
 
 try:
     # Some operation
@@ -160,7 +160,7 @@ except Exception as e:
 The model manager in Dukat uses the error handling framework to provide robust error handling:
 
 ```python
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     ModelError, NetworkError, TimeoutError, ResourceError,
     wrap_error, log_error, retry, CircuitBreaker
 )
@@ -212,7 +212,7 @@ class ModelManager:
 Dukat provides utilities for testing error handling:
 
 ```python
-from dukat.core.errors import DukatError, ModelError
+from augment_adam.core.errors import AugmentAdamError, ModelError
 
 def test_error_handling():
     # Test that errors are properly wrapped

@@ -14,10 +14,10 @@ Dukat implements a flexible plugin system that provides:
 
 ## Plugin Architecture
 
-The plugin architecture is based on the `Plugin` abstract base class in `dukat.plugins.base`:
+The plugin architecture is based on the `Plugin` abstract base class in `augment-adam.plugins.base`:
 
 ```python
-from dukat.plugins.base import Plugin
+from augment_adam.plugins.base import Plugin
 
 class MyPlugin(Plugin):
     """My custom plugin."""
@@ -74,16 +74,16 @@ signature = my_plugin.get_signature()
 
 ## Plugin Registry
 
-The plugin registry is implemented in `dukat.plugins.base.PluginRegistry` and provides a central registry for managing plugins:
+The plugin registry is implemented in `augment-adam.plugins.base.PluginManager` and provides a central registry for managing plugins:
 
 ```python
-from dukat.plugins.base import PluginRegistry, get_plugin_registry
+from augment_adam.plugins.base import PluginManager, get_plugin_manager
 
 # Create a new registry
-registry = PluginRegistry()
+registry = PluginManager()
 
 # Or get the default registry
-registry = get_plugin_registry()
+registry = get_plugin_manager()
 ```
 
 ### Key Features
@@ -140,7 +140,7 @@ result = registry.execute_plugin("my_plugin", param1="test", param2=42)
 The plugin system implements robust error handling using the Dukat error handling framework:
 
 ```python
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     PluginError, ValidationError, NotFoundError,
     wrap_error, log_error, retry, CircuitBreaker
 )
@@ -198,7 +198,7 @@ error = wrap_error(
 The plugin system integrates with the Dukat settings system:
 
 ```python
-from dukat.core.settings import get_settings
+from augment_adam.core.settings import get_settings
 
 # Get settings for plugin configuration
 settings = get_settings()
@@ -218,7 +218,7 @@ Dukat includes several built-in plugins for common tasks:
 The file manager plugin provides file system operations:
 
 ```python
-from dukat.plugins.file_manager import FileManagerPlugin
+from augment_adam.plugins.file_manager import FileManagerPlugin
 
 # Create the plugin
 file_manager = FileManagerPlugin()
@@ -239,7 +239,7 @@ result = registry.execute_plugin(
 The system info plugin provides system information:
 
 ```python
-from dukat.plugins.system_info import SystemInfoPlugin
+from augment_adam.plugins.system_info import SystemInfoPlugin
 
 # Create the plugin
 system_info = SystemInfoPlugin()
@@ -259,7 +259,7 @@ result = registry.execute_plugin(
 The web search plugin provides web search capabilities:
 
 ```python
-from dukat.plugins.web_search import WebSearchPlugin
+from augment_adam.plugins.web_search import WebSearchPlugin
 
 # Create the plugin
 web_search = WebSearchPlugin()
@@ -280,7 +280,7 @@ result = registry.execute_plugin(
 Creating a custom plugin involves subclassing the `Plugin` class and implementing the `execute` method:
 
 ```python
-from dukat.plugins.base import Plugin, get_plugin_registry
+from augment_adam.plugins.base import Plugin, get_plugin_manager
 
 class CalculatorPlugin(Plugin):
     """A simple calculator plugin."""
@@ -331,7 +331,7 @@ class CalculatorPlugin(Plugin):
         }
 
 # Register the plugin
-registry = get_plugin_registry()
+registry = get_plugin_manager()
 registry.register(CalculatorPlugin())
 
 # Execute the plugin
@@ -354,17 +354,17 @@ result = registry.execute_plugin(
 ## Example: Using Plugins in an Assistant
 
 ```python
-from dukat.core.assistant import Assistant
-from dukat.plugins.base import get_plugin_registry
-from dukat.plugins.file_manager import FileManagerPlugin
-from dukat.plugins.system_info import SystemInfoPlugin
-from dukat.plugins.web_search import WebSearchPlugin
+from augment_adam.core.assistant import Assistant
+from augment_adam.plugins.base import get_plugin_manager
+from augment_adam.plugins.file_manager import FileManagerPlugin
+from augment_adam.plugins.system_info import SystemInfoPlugin
+from augment_adam.plugins.web_search import WebSearchPlugin
 
 # Create an assistant
 assistant = Assistant()
 
 # Get the plugin registry
-registry = get_plugin_registry()
+registry = get_plugin_manager()
 
 # Register plugins
 registry.register(FileManagerPlugin())

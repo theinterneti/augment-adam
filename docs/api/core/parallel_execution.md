@@ -15,15 +15,15 @@ The parallel execution system provides the following capabilities:
 
 ## Components
 
-### ParallelTaskExecutor
+### ParallelExecutor
 
 The main class for parallel task execution.
 
 ```python
-from dukat.core.parallel_executor import ParallelTaskExecutor
+from augment_adam.core.parallel_executor import ParallelExecutor
 
 # Create an executor with a maximum concurrency of 3
-executor = ParallelTaskExecutor(max_concurrency=3)
+executor = ParallelExecutor(max_concurrency=3)
 
 # Add tasks to the executor
 await executor.add_task(task1)
@@ -41,7 +41,7 @@ results = await executor.execute_all()
 Manages resource allocation for tasks.
 
 ```python
-from dukat.core.parallel_executor import ResourcePool, ResourceRequirement, ResourceType
+from augment_adam.core.parallel_executor import ResourcePool, ResourceRequirement, ResourceType
 
 # Create a resource pool
 pool = ResourcePool()
@@ -63,7 +63,7 @@ await pool.release("task1")
 Manages dependencies between tasks.
 
 ```python
-from dukat.core.parallel_executor import DependencyGraph
+from augment_adam.core.parallel_executor import DependencyGraph
 
 # Create a dependency graph
 graph = DependencyGraph()
@@ -84,7 +84,7 @@ ready_tasks = graph.get_ready_tasks(completed_tasks={"task1"})
 Implements the circuit breaker pattern to prevent cascading failures.
 
 ```python
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
 
 # Create a circuit breaker
 breaker = CircuitBreaker(
@@ -119,7 +119,7 @@ else:
 The AsyncAssistant class provides methods to use the parallel execution system:
 
 ```python
-from dukat.core.async_assistant import get_async_assistant
+from augment_adam.core.async_assistant import get_async_assistant
 
 # Create an async assistant with parallel execution capabilities
 assistant = await get_async_assistant(

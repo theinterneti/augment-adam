@@ -14,10 +14,10 @@ Dukat implements a web interface using Gradio that provides:
 
 ## Interface Architecture
 
-The web interface is implemented in `dukat.web.interface` and provides a Gradio-based interface for interacting with the assistant:
+The web interface is implemented in `augment-adam.web.interface` and provides a Gradio-based interface for interacting with the assistant:
 
 ```python
-from dukat.web.interface import WebInterface, create_web_interface, launch_web_interface
+from augment_adam.web.interface import WebInterface, create_web_interface, launch_web_interface
 
 # Create a web interface
 interface = create_web_interface(
@@ -80,8 +80,8 @@ The settings tab provides a settings management interface:
 The web interface implements robust error handling using the Dukat error handling framework:
 
 ```python
-from dukat.core.errors import (
-    DukatError, ModelError, NetworkError, ResourceError, NotFoundError,
+from augment_adam.core.errors import (
+    AugmentAdamError, ModelError, NetworkError, ResourceError, NotFoundError,
     wrap_error, log_error, ErrorCategory
 )
 ```
@@ -229,10 +229,10 @@ def _get_css(self) -> str:
 ## Example: Custom Web Interface
 
 ```python
-from dukat.web.interface import WebInterface
-from dukat.core.assistant import Assistant
-from dukat.core.model_manager import ModelManager
-from dukat.core.settings import get_settings
+from augment_adam.web.interface import WebInterface
+from augment_adam.core.assistant import Assistant
+from augment_adam.core.model_manager import ModelManager
+from augment_adam.core.settings import get_settings
 
 # Create a custom web interface
 class CustomWebInterface(WebInterface):

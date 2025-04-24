@@ -70,8 +70,8 @@ Update the Docker configuration to support local model execution:
 # Example docker-compose.yml modifications
 version: '3'
 services:
-  dukat-dev:
-    image: dukat-dev:latest
+  augment-adam-dev:
+    image: augment-adam-dev:latest
     volumes:
       - .:/workspace
       - ./models:/models  # Mount a volume for storing models
@@ -126,7 +126,7 @@ ollama pull phi2
 Update the Dukat configuration to use local models for test generation:
 
 ```python
-# Example configuration in dukat/config.py
+# Example configuration in augment_adam/config.py
 TEST_GENERATION_CONFIG = {
     "model_name": "codellama:7b",  # Use a smaller model if resources are limited
     "ollama_host": "http://ollama:11434",  # Or "http://localhost:11434" if not using Docker
@@ -232,7 +232,7 @@ def generate_tests(source_file, output_dir, use_llm=True, use_pynguin=True, use_
         print(f"Generating tests using local LLM for {source_file}...")
         # Call your LLM-based test generator here
         subprocess.run([
-            "python", "-m", "dukat.tools.generate_tests",
+            "python", "-m", "augment-adam.tools.generate_tests",
             "--source-file", source_file,
             "--output-file", f"{output_dir}/test_{module_name}_llm.py"
         ])

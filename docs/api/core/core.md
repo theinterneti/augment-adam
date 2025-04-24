@@ -15,7 +15,7 @@ This document provides reference information for the core API of Dukat.
 The `Assistant` class is the main entry point for interacting with Dukat programmatically.
 
 ```python
-from dukat.core import Assistant
+from augment_adam.core import Assistant
 
 assistant = Assistant(
     model_name="llama3:8b",
@@ -29,7 +29,7 @@ assistant = Assistant(
 
 - `model_name` (str, optional): The name of the model to use. Default: "llama3:8b"
 - `ollama_host` (str, optional): The host address for the Ollama API. Default: "http://localhost:11434"
-- `persist_dir` (str, optional): Directory to persist memory data. Default: None (uses "~/.dukat/memory")
+- `persist_dir` (str, optional): Directory to persist memory data. Default: None (uses "~/.augment_adam/memory")
 - `conversation_id` (str, optional): The ID of the conversation to continue. Default: None (generates a new ID)
 
 ### Methods
@@ -88,7 +88,7 @@ for item in history:
 The `ModelManager` class handles loading, configuring, and using language models through DSPy and Ollama.
 
 ```python
-from dukat.core.model_manager import ModelManager, get_model_manager
+from augment_adam.core.model_manager import ModelManager, get_model_manager
 
 # Create a new instance
 model_manager = ModelManager(
@@ -150,12 +150,12 @@ print(prediction.answer)
 The `Memory` class provides the core memory management functionality for storing and retrieving information across conversations.
 
 ```python
-from dukat.core.memory import Memory, get_memory
+from augment_adam.core.memory import Memory, get_memory
 
 # Create a new instance
 memory = Memory(
     persist_dir=None,
-    collection_name="dukat_memory",
+    collection_name="augment_adam_memory",
 )
 
 # Or get the default instance
@@ -164,8 +164,8 @@ memory = get_memory()
 
 ### Parameters
 
-- `persist_dir` (str, optional): Directory to persist memory data. Default: None (uses "~/.dukat/memory")
-- `collection_name` (str, optional): Name of the default collection. Default: "dukat_memory"
+- `persist_dir` (str, optional): Directory to persist memory data. Default: None (uses "~/.augment_adam/memory")
+- `collection_name` (str, optional): Name of the default collection. Default: "augment_adam_memory"
 
 ### Methods
 
@@ -269,7 +269,7 @@ success = memory.clear()
 The `Config` class handles loading, validating, and providing access to configuration settings for the Dukat assistant.
 
 ```python
-from dukat.config import Config, load_config, save_config, get_config
+from augment_adam.config import Config, load_config, save_config, get_config
 
 # Create a new instance
 config = Config(
@@ -278,10 +278,10 @@ config = Config(
 )
 
 # Load from a file
-config = load_config("~/.dukat/config.yaml")
+config = load_config("~/.augment_adam/config.yaml")
 
 # Save to a file
-save_config(config, "~/.dukat/config.yaml")
+save_config(config, "~/.augment_adam/config.yaml")
 
 # Get the default instance
 config = get_config()
@@ -294,7 +294,7 @@ config = get_config()
 Load configuration from a file.
 
 ```python
-config = load_config("~/.dukat/config.yaml")
+config = load_config("~/.augment_adam/config.yaml")
 ```
 
 **Parameters:**
@@ -310,7 +310,7 @@ config = load_config("~/.dukat/config.yaml")
 Save configuration to a file.
 
 ```python
-save_config(config, "~/.dukat/config.yaml")
+save_config(config, "~/.augment_adam/config.yaml")
 ```
 
 **Parameters:**
@@ -344,7 +344,7 @@ The `AsyncAssistant` class is an asynchronous version of the `Assistant` class t
 
 ```python
 import asyncio
-from dukat.core import AsyncAssistant, get_async_assistant
+from augment_adam.core import AsyncAssistant, get_async_assistant
 
 async def main():
     # Create a new instance
@@ -727,7 +727,7 @@ The `TaskQueue` class provides a system for asynchronous processing of tasks in 
 
 ```python
 import asyncio
-from dukat.core import TaskQueue, Task, add_task, wait_for_task, get_task_queue
+from augment_adam.core import TaskQueue, Task, add_task, wait_for_task, get_task_queue
 
 async def my_task(x, y):
     await asyncio.sleep(1)  # Simulate some work

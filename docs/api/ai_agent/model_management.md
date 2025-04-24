@@ -18,7 +18,7 @@ The model management system allows you to:
 The `ModelManager` class is the main interface for model management.
 
 ```python
-from dukat.ai_agent.models import ModelManager
+from augment_adam.ai_agent.models import ModelManager
 
 # Create a model manager
 manager = ModelManager(

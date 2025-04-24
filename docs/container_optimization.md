@@ -10,9 +10,9 @@ We use several caching strategies to speed up container builds:
 
 Named volumes are used to persist cache data between builds:
 
-- **dukat-pip-cache**: Caches Python packages downloaded by pip
-- **dukat-apt-cache**: Caches Debian packages downloaded by apt
-- **dukat-torch-cache**: Caches PyTorch models and weights
+- **augment-adam-pip-cache**: Caches Python packages downloaded by pip
+- **augment-adam-apt-cache**: Caches Debian packages downloaded by apt
+- **augment-adam-torch-cache**: Caches PyTorch models and weights
 - **model-cache**: Caches ML models
 - **huggingface-cache**: Caches Hugging Face models and datasets
 - **OllamaModels**: Caches Ollama models
@@ -94,6 +94,6 @@ If you need to rebuild the containers from scratch:
 
 If you encounter issues with the baked images:
 
-1. Check if the image exists: `docker images | grep dukat`
+1. Check if the image exists: `docker images | grep augment-adam`
 2. Restore the original docker-compose.yml from the backup
 3. Try rebuilding with: `DOCKER_BUILDKIT=1 docker-compose build --no-cache`

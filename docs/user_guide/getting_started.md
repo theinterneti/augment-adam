@@ -18,14 +18,14 @@ Before you begin, make sure you have the following installed:
 You can install Dukat using pip:
 
 ```bash
-pip install dukat
+pip install augment-adam
 ```
 
 Or, if you prefer to install from source:
 
 ```bash
-git clone https://github.com/yourusername/dukat.git
-cd dukat
+git clone https://github.com/augment-adam/augment-adam.git
+cd augment-adam
 pip install -e .
 ```
 
@@ -51,12 +51,12 @@ ollama pull llama3:8b
 Dukat can be configured through a `config.yaml` file in your home directory:
 
 ```yaml
-# ~/.dukat/config.yaml
+# ~/.augment_adam/config.yaml
 model: llama3:8b  # Model to use for inference
 ollama_host: http://localhost:11434  # Ollama API endpoint
 memory:
   vector_db: chroma  # Vector database for memory (chroma or faiss)
-  persist_dir: ~/.dukat/memory  # Directory to store memory
+  persist_dir: ~/.augment_adam/memory  # Directory to store memory
 log_level: INFO  # Logging level
 ```
 
@@ -67,7 +67,7 @@ log_level: INFO  # Logging level
 To start the Dukat CLI:
 
 ```bash
-dukat
+augment-adam
 ```
 
 This will launch an interactive session where you can chat with the assistant.
@@ -77,7 +77,7 @@ This will launch an interactive session where you can chat with the assistant.
 To start the Dukat web interface:
 
 ```bash
-dukat web
+augment-adam web
 ```
 
 This will start a web server at http://localhost:7860 where you can interact with the assistant through a browser.
@@ -87,7 +87,7 @@ This will start a web server at http://localhost:7860 where you can interact wit
 You can also use Dukat programmatically in your Python code:
 
 ```python
-from dukat.core import Assistant
+from augment_adam.core import Assistant
 
 # Initialize the assistant
 assistant = Assistant()
@@ -127,7 +127,7 @@ If you see an error like "Failed to connect to Ollama", make sure:
 If you encounter memory-related errors:
 
 1. Check that the memory directory exists and is writable
-2. Try clearing the memory: `rm -rf ~/.dukat/memory/*`
+2. Try clearing the memory: `rm -rf ~/.augment_adam/memory/*`
 3. Ensure you have enough disk space
 
 ### Getting Help
@@ -135,5 +135,5 @@ If you encounter memory-related errors:
 If you encounter any issues not covered here, please:
 
 1. Check the [FAQ](faq.md) for common questions
-2. Search for similar issues in the [GitHub repository](https://github.com/yourusername/dukat/issues)
+2. Search for similar issues in the [GitHub repository](https://github.com/yourusername/augment_adam/issues)
 3. Open a new issue if your problem is not already reported

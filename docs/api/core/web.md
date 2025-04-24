@@ -9,7 +9,7 @@ This document provides reference information for the web interface API of Dukat.
 The `WebInterface` class provides a web interface for the Dukat assistant using Gradio.
 
 ```python
-from dukat.web import WebInterface, create_web_interface, launch_web_interface
+from augment_adam.web import WebInterface, create_web_interface, launch_web_interface
 
 # Create a new instance
 interface = WebInterface(

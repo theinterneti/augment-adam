@@ -16,7 +16,7 @@ The FAISS-based memory system allows you to:
 The `FAISSMemory` class is the core component of the FAISS-based memory system.
 
 ```python
-from dukat.memory.faiss_memory import FAISSMemory, get_faiss_memory
+from augment_adam.memory.faiss_memory import FAISSMemory, get_faiss_memory
 
 # Create a FAISS memory instance
 memory = FAISSMemory(
@@ -59,7 +59,7 @@ success = memory.clear()
 The `FAISSEpisodicMemory` class provides episodic memory functionality using FAISS.
 
 ```python
-from dukat.memory.faiss_episodic import FAISSEpisodicMemory, Episode
+from augment_adam.memory.faiss_episodic import FAISSEpisodicMemory, Episode
 
 # Create a FAISS episodic memory instance
 memory = FAISSEpisodicMemory(
@@ -110,7 +110,7 @@ success = memory.clear()
 The `FAISSSemanticMemory` class provides semantic memory functionality using FAISS.
 
 ```python
-from dukat.memory.faiss_semantic import FAISSSemanticMemory, Concept
+from augment_adam.memory.faiss_semantic import FAISSSemanticMemory, Concept
 
 # Create a FAISS semantic memory instance
 memory = FAISSSemanticMemory(
@@ -152,9 +152,9 @@ success = memory.clear()
 The FAISS-based memory system can be integrated with the working memory system:
 
 ```python
-from dukat.memory.working import WorkingMemory, Message
-from dukat.memory.faiss_episodic import FAISSEpisodicMemory
-from dukat.memory.faiss_semantic import FAISSSemanticMemory
+from augment_adam.memory.working import WorkingMemory, Message
+from augment_adam.memory.faiss_episodic import FAISSEpisodicMemory
+from augment_adam.memory.faiss_semantic import FAISSSemanticMemory
 
 # Create memory instances
 working_memory = WorkingMemory()

@@ -64,7 +64,7 @@ GLOBAL < USER < SESSION
 The `SettingsManager` class manages settings for different scopes:
 
 ```python
-from dukat.core.settings import SettingsManager, SettingsScope
+from augment_adam.core.settings import SettingsManager, SettingsScope
 
 # Create a settings manager
 manager = SettingsManager(config_dir="/path/to/config")
@@ -98,7 +98,7 @@ manager.load_settings(scope=SettingsScope.USER)
 Dukat provides global functions for working with settings:
 
 ```python
-from dukat.core.settings import (
+from augment_adam.core.settings import (
     get_settings, get_settings_manager, update_settings, reset_settings
 )
 
@@ -147,7 +147,7 @@ except ValidationError as e:
 Dukat provides a web interface for configuring settings:
 
 ```python
-from dukat.web.settings_manager import SettingsManagerUI
+from augment_adam.web.settings_manager import SettingsManagerUI
 
 # Create a settings manager UI
 settings_ui = SettingsManagerUI(settings_manager)
@@ -169,7 +169,7 @@ ui_components = settings_ui.create_ui()
 The model manager in Dukat uses the settings system to configure models:
 
 ```python
-from dukat.core.settings import get_settings
+from augment_adam.core.settings import get_settings
 
 class ModelManager:
     def __init__(
@@ -212,7 +212,7 @@ Dukat provides utilities for testing settings:
 ```python
 import tempfile
 from pathlib import Path
-from dukat.core.settings import SettingsManager, SettingsScope
+from augment_adam.core.settings import SettingsManager, SettingsScope
 
 def test_settings():
     # Create a temporary directory for settings

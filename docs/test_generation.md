@@ -114,26 +114,26 @@ The system can generate several types of tests:
 ### Generate Tests for a Single Module
 
 ```bash
-scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/
+scripts/generate_tests.sh --source-file augment_adam/core/async_assistant.py --output-dir tests/unit/
 ```
 
 ### Generate Tests with a Specific Model
 
 ```bash
-scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --model tinyllama:1.1b
+scripts/generate_tests.sh --source-file augment_adam/core/async_assistant.py --output-dir tests/unit/ --model tinyllama:1.1b
 ```
 
 ### Generate Only Property-Based Tests
 
 ```bash
-scripts/generate_tests.sh --source-file dukat/core/async_assistant.py --output-dir tests/unit/ --no-llm --no-pynguin
+scripts/generate_tests.sh --source-file augment_adam/core/async_assistant.py --output-dir tests/unit/ --no-llm --no-pynguin
 ```
 
 ### Generate Tests with GPU Acceleration
 
 ```bash
 # Ensure GPU settings are enabled in config/test_generator_config.json
-scripts/generate_tests.sh --source-file dukat/core/parallel_executor.py --output-dir tests/unit/ --model codellama:7b
+scripts/generate_tests.sh --source-file augment_adam/core/parallel_executor.py --output-dir tests/unit/ --model codellama:7b
 ```
 
 ## Troubleshooting

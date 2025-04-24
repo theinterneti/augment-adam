@@ -18,7 +18,7 @@ The circuit breaker pattern provides the following capabilities:
 The main class for implementing the circuit breaker pattern.
 
 ```python
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
 
 # Create a circuit breaker
 breaker = CircuitBreaker(
@@ -55,7 +55,7 @@ else:
 Enum representing the state of a circuit breaker.
 
 ```python
-from dukat.core.circuit_breaker import CircuitBreakerState
+from augment_adam.core.circuit_breaker import CircuitBreakerState
 
 # Circuit breaker states
 CircuitBreakerState.CLOSED    # Normal operation, requests pass through
@@ -68,7 +68,7 @@ CircuitBreakerState.HALF_OPEN # Testing if the service is back online
 Exception raised when a circuit breaker is open.
 
 ```python
-from dukat.core.errors import CircuitBreakerError
+from augment_adam.core.errors import CircuitBreakerError
 
 try:
     # Make a request through a circuit breaker
@@ -83,7 +83,7 @@ except CircuitBreakerError as e:
 The circuit breaker pattern can also be applied as a decorator.
 
 ```python
-from dukat.core.circuit_breaker import circuit_breaker
+from augment_adam.core.circuit_breaker import circuit_breaker
 
 @circuit_breaker(
     name="api_service",
@@ -101,7 +101,7 @@ async def make_api_request():
 The AsyncAssistant class provides circuit breakers for common dependencies:
 
 ```python
-from dukat.core.async_assistant import get_async_assistant
+from augment_adam.core.async_assistant import get_async_assistant
 
 # Create an async assistant
 assistant = await get_async_assistant(
