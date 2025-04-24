@@ -1,16 +1,9 @@
-# Dukat .gitignore v0.1.0 (2025-04-22)
-
-# Logs
-logs/
-*.log
-
 # Python
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-env/
 build/
 develop-eggs/
 dist/
@@ -22,52 +15,81 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-.pytest_cache/
-.coverage
+MANIFEST
+
+# Unit test / coverage reports
 htmlcov/
-
-# VS Code
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-*.code-workspace
-
-# Local History for Visual Studio Code
-.history/
-
-# Cache directories
-.cache/
-.huggingface/
-.mypy_cache/
-.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 .pytest_cache/
 
-# Environment variables
+# Environments
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Build output
-out/
-dist/
+# Documentation
+docs/_build/
+docs/api/_build/
+docs/user_guide/_build/
 
-# Misc
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS specific
 .DS_Store
 Thumbs.db
 
-# Vector databases
-*.chroma/
-faiss_index/
+# Project specific
+*.log
+logs/
+data/
+.faiss/
+.neo4j/
+.redis/
+.backup/
 
-# Ollama models
-ollama/
+# Docker
+.docker/
 
-# Local configuration
-.dukat/
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Virtual Environment
+.python-version
+
+# Poetry
+poetry.lock
+
+# Ruff
+.ruff_cache/
+
+# MyPy
+.mypy_cache/
+
+# Backup files
+backup/
+*.bak

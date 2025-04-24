@@ -1,57 +1,76 @@
+[build-system]
+requires = ["setuptools>=42", "wheel", "poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
-name = "dukat"
-version = "0.3.2"
-description = "An open source AI assistant focused on personal automation"
-authors = ["Dukat Team <info@example.com>"]
+name = "augment-adam"
+version = "0.1.0"
+description = "An intelligent assistant with advanced memory capabilities"
+authors = ["Augment Adam Team <info@augment-adam.com>"]
 readme = "README.md"
 license = "MIT"
-repository = "https://github.com/yourusername/dukat"
-documentation = "https://dukat.readthedocs.io"
+repository = "https://github.com/augment-adam/augment-adam"
+documentation = "https://augment-adam.readthedocs.io"
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 
-# File created: 2025-04-22
-# Last updated: 2025-04-26
-
 [tool.poetry.dependencies]
-python = "^3.10"
-dspy-ai = "^2.6.18"
-chromadb = "^0.4.22"
-rich = "^13.7.0"
-pydantic = "^2.5.3"
-typer = "^0.9.0"
-asyncio = "^3.4.3"
-aiohttp = "^3.9.1"
-psutil = "^5.9.0"
-pyyaml = "^6.0.0"
-requests = "^2.31.0"
-beautifulsoup4 = "^4.12.0"
+python = ">=3.8,<3.12"
+# Core dependencies
+faiss-cpu = ">=1.7.0"  # Use faiss-gpu for GPU support
+sentence-transformers = ">=2.2.0"
+scikit-learn = ">=1.0.0"
+numpy = ">=1.20.0"
+pydantic = ">=2.0.0"
+# Memory systems
+neo4j = {version = ">=5.0.0", optional = true}
+redis = ">=4.0.0"
+# Web and API
+fastapi = ">=0.95.0"
+uvicorn = ">=0.20.0"
+# Utilities
+tqdm = ">=4.65.0"
+aiohttp = ">=3.8.0"
+asyncio = ">=3.4.3"
+rich = ">=13.7.0"
+typer = ">=0.9.0"
+psutil = ">=5.9.0"
+pyyaml = ">=6.0.0"
+requests = ">=2.31.0"
+beautifulsoup4 = ">=4.12.0"
+dspy-ai = ">=2.6.18"
+chromadb = ">=0.4.22"
 
 [tool.poetry.group.dev.dependencies]
-pytest = "^7.4.3"
-pytest-cov = "^4.1.0"
-black = "^23.11.0"
-ruff = "^0.1.6"
-mypy = "^1.7.1"
-sphinx = "^7.2.6"
-sphinx-rtd-theme = "^1.3.0"
-pre-commit = "^3.5.0"
+pytest = ">=7.0.0"
+pytest-asyncio = ">=0.20.0"
+pytest-cov = ">=4.0.0"
+black = ">=23.0.0"
+isort = ">=5.0.0"
+flake8 = ">=6.0.0"
+mypy = ">=1.0.0"
+sphinx = ">=7.2.6"
+sphinx-rtd-theme = ">=1.3.0"
+pre-commit = ">=3.5.0"
+ruff = ">=0.1.6"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.poetry.extras]
+neo4j = ["neo4j>=5.0.0"]
 
 [tool.poetry.scripts]
-dukat = "dukat.cli:app"
+augment-adam = "augment_adam.cli:app"
 
 [tool.black]
 line-length = 88
-target-version = ["py310"]
+target-version = ["py38", "py39", "py310", "py311"]
 include = '\.pyi?$'
 
 [tool.ruff]
@@ -72,5 +91,4 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 python_classes = "Test*"
-# Commented out coverage options to make tests run
-# addopts = "--cov=dukat --cov-report=term-missing"
+addopts = "--cov=augment_adam --cov-report=term-missing"
