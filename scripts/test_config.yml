@@ -1,0 +1,27 @@
+# Dukat-specific test configuration
+project:
+  name: "dukat"
+  language: "python"
+  test_framework: "pytest"
+  
+code_paths:
+  - src/
+  - dukat/
+  
+exclude_paths:
+  - tests/
+  - examples/
+  
+test_settings:
+  coverage_threshold: 80
+  parallel_tests: 4
+  timeout: 60
+  
+model_settings:
+  model: "codellama:7b"
+  temperature: 0.2
+  max_tokens: 2000
+  
+output_settings:
+  output_dir: "generated_tests"
+  report_format: "html"
