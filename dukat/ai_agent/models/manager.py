@@ -126,6 +126,106 @@ class ModelManager:
         with open(self.config_path, 'w') as f:
             json.dump(self.config, f, indent=2)
 
+    def _infer_model_type(self, model_id: str) -> str:
+        """
+        Infer the model type from the model ID.
+
+        Args:
+            model_id: The model ID
+
+        Returns:
+            str: The inferred model type
+        """
+        model_id_lower = model_id.lower()
+
+        # Check for known model types
+        if 'tinyllama' in model_id_lower or 'llama' in model_id_lower:
+            return 'llama'
+        elif 'mistral' in model_id_lower:
+            return 'mistral'
+        elif 'gpt' in model_id_lower:
+            return 'gpt2'
+        elif 'bert' in model_id_lower:
+            return 'bert'
+        elif 'roberta' in model_id_lower:
+            return 'roberta'
+        elif 't5' in model_id_lower:
+            return 't5'
+        elif 'falcon' in model_id_lower:
+            return 'falcon'
+        elif 'bloom' in model_id_lower:
+            return 'bloom'
+        elif 'opt' in model_id_lower:
+            return 'opt'
+        elif 'gemma' in model_id_lower:
+            return 'gemma'
+
+        # Default to 'auto' if we can't infer
+        return 'auto'
+
+    def _format_prompt(self, prompt: str, system_prompt: Optional[str] = None, model_id: str = None) -> str:
+        """
+        Format the prompt according to the model's requirements.
+
+        Args:
+            prompt: The user prompt
+            system_prompt: Optional system prompt
+            model_id: The model ID
+
+        Returns:
+            str: The formatted prompt
+        """
+        if not system_prompt:
+            return prompt
+
+        model_id_lower = model_id.lower() if model_id else ""
+
+        # Format depends on the model
+        if "mistral" in model_id_lower:
+            return f"<s>[INST] {system_prompt}\n\n{prompt} [/INST]"
+        elif "llama" in model_id_lower and "instruct" in model_id_lower:
+            return f"<s>[INST] {system_prompt}\n\n{prompt} [/INST]"
+        elif "codellama" in model_id_lower and "instruct" in model_id_lower:
+            return f"<s>[INST] {system_prompt}\n\n{prompt} [/INST]"
+        elif "wizard" in model_id_lower:
+            return f"### System: {system_prompt}\n\n### User: {prompt}\n\n### Assistant:"
+        elif "tinyllama" in model_id_lower:
+            return f"<|system|>\n{system_prompt}\n<|user|>\n{prompt}\n<|assistant|>"
+        else:
+            # Generic format
+            return f"System: {system_prompt}\n\nUser: {prompt}\n\nAssistant:"
+
+    def _clean_response(self, response: str, model_id: str) -> str:
+        """
+        Clean the model response based on model-specific patterns.
+
+        Args:
+            response: The raw model response
+            model_id: The model ID
+
+        Returns:
+            str: The cleaned response
+        """
+        model_id_lower = model_id.lower() if model_id else ""
+
+        # Clean up based on model type
+        if "mistral" in model_id_lower or "codellama" in model_id_lower:
+            # Remove any trailing [INST] or similar tags
+            if "[/INST]" in response:
+                response = response.split("[/INST]")[0]
+        elif "tinyllama" in model_id_lower:
+            # Remove any trailing user or system tags
+            if "<|user|>" in response:
+                response = response.split("<|user|>")[0]
+            if "<|system|>" in response:
+                response = response.split("<|system|>")[0]
+        elif "llama" in model_id_lower:
+            # Handle other llama models
+            if "[/INST]" in response:
+                response = response.split("[/INST]")[0]
+
+        return response.strip()
+
     def download_model(
         self,
         model_id: str,
@@ -165,15 +265,36 @@ class ModelManager:
             tokenizer.save_pretrained(model_dir)
             logger.info(f"Tokenizer for {model_id} downloaded successfully")
 
-            # Download model configuration only (not loading weights)
+            # Download model configuration and weights
             # Use AutoConfig instead of trying to access config_class directly
-            from transformers import AutoConfig
+            from transformers import AutoConfig, AutoModelForCausalLM
+
+            # Download configuration
             model_config = AutoConfig.from_pretrained(
                 model_id,
                 revision=revision,
                 cache_dir=model_dir,
                 trust_remote_code=True
             )
+
+            # Download model weights
+            model = AutoModelForCausalLM.from_pretrained(
+                model_id,
+                revision=revision,
+                cache_dir=model_dir,
+                config=model_config,
+                trust_remote_code=True,
+                local_files_only=False
+            )
+            model.save_pretrained(model_dir)
+            logger.info(f"Model weights for {model_id} downloaded successfully")
+
+            # Add model_type if it's missing
+            if not hasattr(model_config, 'model_type'):
+                # Infer model type from model ID
+                model_config.model_type = self._infer_model_type(model_id)
+                model_config.save_pretrained(model_dir)
+                logger.info(f"Added model_type '{model_config.model_type}' to config for {model_id}")
 
             # Add to config if not present
             if model_id not in self.config["models"]:
@@ -264,6 +385,18 @@ class ModelManager:
                     load_in_8bit=True
                 )
 
+            # Check if we need to handle model_type
+            # Load the config first
+            from transformers import AutoConfig
+            config = AutoConfig.from_pretrained(model_dir, trust_remote_code=True)
+
+            # Add model_type if it's missing
+            if not hasattr(config, 'model_type'):
+                # Infer model type from model ID
+                config.model_type = self._infer_model_type(model_id)
+                config.save_pretrained(model_dir)
+                logger.info(f"Added model_type '{config.model_type}' to config for {model_id}")
+
             # Load model
             model = AutoModelForCausalLM.from_pretrained(
                 model_dir,
@@ -346,18 +479,7 @@ class ModelManager:
         gen_kwargs.update(kwargs)
 
         # Prepare full prompt with system prompt if provided
-        full_prompt = prompt
-        if system_prompt:
-            # Format depends on the model
-            if "mistral" in model_id.lower():
-                full_prompt = f"<s>[INST] {system_prompt}\n\n{prompt} [/INST]"
-            elif "codellama" in model_id.lower() and "instruct" in model_id.lower():
-                full_prompt = f"<s>[INST] {system_prompt}\n\n{prompt} [/INST]"
-            elif "wizard" in model_id.lower():
-                full_prompt = f"### System: {system_prompt}\n\n### User: {prompt}\n\n### Assistant:"
-            else:
-                # Generic format
-                full_prompt = f"System: {system_prompt}\n\nUser: {prompt}\n\nAssistant:"
+        full_prompt = self._format_prompt(prompt, system_prompt, model_id)
 
         logger.info(f"Generating with model {model_id}")
         logger.debug(f"Prompt: {full_prompt[:100]}...")
@@ -375,10 +497,7 @@ class ModelManager:
             response = generated_text[len(full_prompt):]
 
             # Clean up response based on model-specific patterns
-            if "mistral" in model_id.lower() or "codellama" in model_id.lower():
-                # Remove any trailing [INST] or similar tags
-                if "[/INST]" in response:
-                    response = response.split("[/INST]")[0]
+            response = self._clean_response(response, model_id)
 
             metadata = {
                 "model": model_id,

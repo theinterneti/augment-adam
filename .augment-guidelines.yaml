@@ -23,6 +23,11 @@ documentation:
     plugins: docs/api/plugins.md
     memory: docs/api/memory.md
     web: docs/api/web.md
+    ai_agent:
+      model_management: docs/api/ai_agent/model_management.md
+    core:
+      async_event_loops: docs/api/core/async_event_loops.md
+      task_scheduling: docs/api/core/task_scheduling.md
   development: docs/development.md
   mcp:
     overview: docs/model-context-protocol.md
@@ -64,22 +69,40 @@ mcp_integration:
   monitor_ecosystem: true
   supabase_integration: true
 current_development_focus:
+  - implement_memory_system:
+      types:
+        - working
+        - episodic
+        - semantic
+      dependencies:
+        - chromadb
+        - faiss
+  - fix_remaining_tests:
+      dependencies:
+        - chromadb
+        - gradio
+        - bs4
+        - uvicorn
+  - implement_git_ide_integration:
+      features:
+        - code_analysis
+        - commit_management
+        - branch_management
+  - build_web_interface:
+      frameworks:
+        - gradio
+        - streamlit
+  - optimize_model_inference:
+      techniques:
+        - quantization
+        - caching
+        - batching
   - enhance_parallel_execution:
       resource_types: more
   - improve_task_scheduler:
       scheduling_options: more
-  - create_task_queue_dashboard:
-      monitoring: true
-  - implement_logging_system:
-      comprehensive: true
-  - add_parallel_processing_examples: true
-  - improve_parallel_execution_test_coverage: true
   - integrate_mcp_tools_knowledge_graph: true
   - implement_github_integration_mcp: true
-  - build_custom_mcp_servers: true
-  - containerize_mcp_servers: true
-  - integrate_supabase_mcp: true
-  - develop_automated_mcp_monitoring: true
 code_quality:
   documentation:
     style: google
@@ -105,11 +128,20 @@ development_workflow:
   adapt_tests_to_code: true
   tool_integration: mcp
 completed_milestones:
-  - basic_memory_systems:
-      types:
-        - working
-        - episodic
-        - semantic
+  - model_management_framework:
+      features:
+        - model_downloading
+        - model_loading
+        - model_type_inference
+        - prompt_formatting
+        - response_cleaning
+      documentation: docs/api/ai_agent/model_management.md
+  - async_event_loop_handling:
+      features:
+        - proper_event_loop_management
+        - event_loop_documentation
+        - test_fixture_configuration
+      documentation: docs/api/core/async_event_loops.md
   - plugin_architecture_foundation: true
   - cli_interface_basic: true
   - async_task_queue: true
@@ -179,15 +211,21 @@ tags:  # Step 2: Add tags section
   docs/api/plugins.md: [api, plugins]
   docs/api/memory.md: [api, memory]
   docs/api/web.md: [api, web]
+  docs/api/core/async_event_loops.md: [api, core, async, event_loops]
+  docs/api/core/task_scheduling.md: [api, core, task, scheduling]
+  docs/api/ai_agent/model_management.md: [api, ai_agent, model, management]
   docs/development.md: [development, guide]
   docs/model-context-protocol.md: [mcp, protocol]
   docs/docker-mcp-tools.md: [mcp, docker]
 last_updated:
-  ONBOARDING.md: 2025-04-23  # Step 3: Add last_updated for new docs
+  ONBOARDING.md: 2025-04-23
   CHANGELOG.md: 2025-04-23
   SECURITY.md: 2025-04-23
   CODE_OF_CONDUCT.md: 2025-04-23
   PLANNING.md: 2025-04-23
   TASKS.md: 2025-04-23
-  TESTING.md: 2025-04-23
-last_updated: 2025-04-29
+  TESTING.md: 2025-04-24
+  docs/api/core/async_event_loops.md: 2025-04-24
+  docs/api/core/task_scheduling.md: 2025-04-24
+  docs/api/ai_agent/model_management.md: 2025-04-24
+last_updated: 2025-04-24
