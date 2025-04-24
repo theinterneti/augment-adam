@@ -57,13 +57,43 @@ For more detailed information, check out our documentation:
 
 ### Setup Development Environment
 
+The recommended way to set up the development environment is to use the VS Code devcontainer, which provides a consistent environment with all dependencies pre-installed.
+
+#### Using VS Code Devcontainer (Recommended)
+
+1. Prerequisites:
+
+   - [Visual Studio Code](https://code.visualstudio.com/)
+   - [Docker](https://www.docker.com/products/docker-desktop)
+   - [Remote - Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+
+2. Clone and open in VS Code:
+
+   ```bash
+   git clone https://github.com/theinterneti/augment-adam.git
+   cd augment-adam
+   code .
+   ```
+
+3. When prompted, click "Reopen in Container" or use the command palette (F1) and select "Remote-Containers: Reopen in Container".
+
+For more details, see [Devcontainer Documentation](docs/DEVCONTAINER.md).
+
+#### Manual Setup (Alternative)
+
 ```bash
 # Clone the repository
-git clone https://github.com/augment-adam/augment-adam.git
+git clone https://github.com/theinterneti/augment-adam.git
 cd augment-adam
 
-# Install development dependencies
-pip install -e ".[dev]"
+# Install Poetry (dependency management)
+curl -sSL https://install.python-poetry.org | python3 -
+
+# Install dependencies
+poetry install --with dev
+
+# Activate virtual environment
+poetry shell
 
 # Install pre-commit hooks
 pre-commit install
@@ -74,6 +104,9 @@ pre-commit install
 ```bash
 # Run all tests
 pytest
+
+# Run specific test files
+pytest tests/unit/test_memory.py
 
 # Run with coverage
 pytest --cov=augment_adam

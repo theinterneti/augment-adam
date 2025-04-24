@@ -4,6 +4,16 @@ This directory contains examples demonstrating how to use Augment Adam.
 
 ## Getting Started
 
+### Quick Start
+
+The quickstart example demonstrates basic usage of Augment Adam:
+
+```bash
+python -m examples.quickstart
+```
+
+This example shows how to create a simple assistant with memory capabilities.
+
 ### Minimal Example
 
 The minimal example demonstrates a simple agent without external dependencies:
@@ -50,6 +60,18 @@ Augment Adam is designed to work with a variety of model providers. The core fun
 The framework will automatically detect available dependencies and adjust functionality accordingly.
 
 ## Example Descriptions
+
+### quickstart.py
+
+A simple example showing how to create an assistant with memory capabilities.
+
+### memory_integration.py
+
+Demonstrates how to use and integrate different memory types (FAISS, Episodic, Semantic, Working).
+
+### agent_coordination.py
+
+Shows how to coordinate multiple specialized agents (Researcher, Coder, Creator) to work together on complex tasks.
 
 ### simple_agent_example.py
 
