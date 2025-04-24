@@ -27,6 +27,8 @@ pip install augment-adam[dev]
 
 ## Quick Start
 
+### Memory System
+
 ```python
 from augment_adam.memory import create_memory
 
@@ -52,6 +54,42 @@ for memory, similarity in results:
     print(f"Similarity: {similarity}")
     print(f"Metadata: {memory}")
     print()
+```
+
+### Agent Core
+
+```python
+from augment_adam.ai_agent import create_agent
+from augment_adam.ai_agent.smc.potential import RegexPotential
+
+# Create a potential for controlled generation
+sentence_ending_potential = RegexPotential(
+    pattern=r".*[.!?]$",
+    name="sentence_ending_potential"
+)
+
+# Create a conversational agent
+agent = create_agent(
+    agent_type="conversational",
+    name="My Assistant",
+    description="A helpful AI assistant",
+    potentials=[sentence_ending_potential]
+)
+
+# Process user input
+result = agent.process("Hello, how are you?")
+print(f"Agent: {result['response']}")
+
+# Create a task-focused agent
+task_agent = create_agent(
+    agent_type="task",
+    name="Task Assistant",
+    description="A task-focused AI assistant"
+)
+
+# Process a task request
+result = task_agent.process("Can you help me plan a birthday party?")
+print(f"Agent: {result['response']}")
 ```
 
 ## Memory Systems
@@ -91,6 +129,112 @@ neo4j_memory = create_memory(
 
 # Get the default memory instance (based on settings)
 default_memory = get_default_memory()
+```
+
+## Agent Core
+
+Augment Adam provides a flexible AI agent architecture with model management, memory integration, and reasoning capabilities:
+
+- **Base Agent**: Foundation for all agent types with core functionality
+- **Specialized Agents**: Conversational, Task, Research, Creative, and Coding agents
+- **Memory Integration**: Agent-specific memory with global memory access
+- **Reasoning Components**: Chain of thought, reflection, planning, and more
+- **Sequential Monte Carlo**: Controlled generation with syntactic and semantic constraints
+
+### Agent Factory
+
+The agent factory provides a simple way to create different types of agents:
+
+```python
+from augment_adam.ai_agent import create_agent, get_default_agent
+
+# Create a conversational agent
+conversational_agent = create_agent(
+    agent_type="conversational",
+    name="Conversational Assistant",
+    description="A conversational AI assistant"
+)
+
+# Create a task agent
+task_agent = create_agent(
+    agent_type="task",
+    name="Task Assistant",
+    description="A task-focused AI assistant"
+)
+
+# Create a research agent
+research_agent = create_agent(
+    agent_type="research",
+    name="Research Assistant",
+    description="A research-focused AI assistant"
+)
+
+# Create a creative agent
+creative_agent = create_agent(
+    agent_type="creative",
+    name="Creative Assistant",
+    description="A creative-focused AI assistant"
+)
+
+# Create a coding agent
+coding_agent = create_agent(
+    agent_type="coding",
+    name="Coding Assistant",
+    description="A code-focused AI assistant"
+)
+
+# Get the default agent (based on settings)
+default_agent = get_default_agent()
+```
+
+## Context Engine
+
+Augment Adam provides a sophisticated context engine for managing context windows, retrieving relevant information, and optimizing prompts for language models:
+
+- **Context Manager**: Central orchestrator for context management
+- **Retrievers**: Components for retrieving information from various sources
+- **Composers**: Components for composing context into coherent windows
+- **Chunkers**: Components for intelligently chunking content
+- **Optimizers**: Components for maximizing information density
+- **Prompt Composers**: Components for creating prompts with context
+
+```python
+from augment_adam.context_engine import get_context_manager
+from augment_adam.context_engine.retrieval import MemoryRetriever, WebRetriever
+from augment_adam.context_engine.composition import ContextComposer, ContextOptimizer
+from augment_adam.context_engine.chunking import IntelligentChunker, Summarizer
+from augment_adam.context_engine.prompt import PromptComposer, PromptTemplates
+
+# Get the context manager
+context_manager = get_context_manager()
+
+# Register retrievers
+context_manager.register_retriever("memory", MemoryRetriever())
+context_manager.register_retriever("web", WebRetriever())
+
+# Register composers
+context_manager.register_composer("default", ContextComposer())
+context_manager.register_composer("optimizer", ContextOptimizer(Summarizer()))
+
+# Register chunkers
+context_manager.register_chunker("intelligent", IntelligentChunker())
+
+# Register prompt composers
+prompt_templates = PromptTemplates()
+context_manager.register_prompt_composer(
+    "default",
+    PromptComposer(prompt_templates.get_all_templates())
+)
+
+# Process a query
+prompt = context_manager.process_query(
+    query="What is the capital of France?",
+    sources=["memory", "web"],
+    max_items=10,
+    composer_name="default",
+    optimizer_name="optimizer",
+    prompt_type="qa"
+)
 ```
 
 ## Documentation
