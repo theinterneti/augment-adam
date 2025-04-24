@@ -14,7 +14,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pytest
 
-from dukat.memory.faiss_episodic import FAISSEpisodicMemory, Episode
+from augment_adam.memory.faiss_episodic import FAISSEpisodicMemory, Episode
 
 
 class TestFAISSEpisodicMemory(unittest.TestCase):

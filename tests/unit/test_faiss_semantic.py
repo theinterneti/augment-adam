@@ -14,7 +14,7 @@ import unittest
 from unittest.mock import patch, MagicMock
 import pytest
 
-from dukat.memory.faiss_semantic import FAISSSemanticMemory, Concept
+from augment_adam.memory.faiss_semantic import FAISSSemanticMemory, Concept
 
 
 class TestFAISSSemanticMemory(unittest.TestCase):

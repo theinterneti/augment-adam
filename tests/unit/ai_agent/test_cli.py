@@ -11,7 +11,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 from typer.testing import CliRunner
 
-from dukat.ai_agent.cli import app
+from augment_adam.ai_agent.cli import app
 
 # Create a CLI runner
 runner = CliRunner()
@@ -21,7 +21,7 @@ class TestCLI:
     
     def test_model_list_command(self):
         """Test the 'model list' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the list_available_models method
             mock_manager.list_available_models.return_value = [
                 {
@@ -60,7 +60,7 @@ class TestCLI:
     
     def test_model_download_command(self):
         """Test the 'model download' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the download_model method
             mock_manager.download_model.return_value = True
             
@@ -78,7 +78,7 @@ class TestCLI:
     
     def test_model_download_command_failure(self):
         """Test the 'model download' command with failure."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the download_model method to return False (failure)
             mock_manager.download_model.return_value = False
             
@@ -93,7 +93,7 @@ class TestCLI:
     
     def test_model_load_command(self):
         """Test the 'model load' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the load_model method
             mock_manager.load_model.return_value = True
             
@@ -111,7 +111,7 @@ class TestCLI:
     
     def test_model_unload_command(self):
         """Test the 'model unload' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the unload_model method
             mock_manager.unload_model.return_value = True
             
@@ -129,7 +129,7 @@ class TestCLI:
     
     def test_model_set_default_command(self):
         """Test the 'model set-default' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the set_default_model method
             mock_manager.set_default_model.return_value = True
             
@@ -147,7 +147,7 @@ class TestCLI:
     
     def test_generate_command(self):
         """Test the 'generate' command."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the generate method
             mock_manager.generate.return_value = (
                 "Generated text response",
@@ -177,7 +177,7 @@ class TestCLI:
     
     def test_generate_command_with_options(self):
         """Test the 'generate' command with options."""
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the generate method
             mock_manager.generate.return_value = (
                 "Generated text response",
@@ -218,7 +218,7 @@ class TestCLI:
         with open(test_file, 'w') as f:
             f.write("def test_function():\n    pass\n")
         
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the generate method
             mock_manager.generate.return_value = (
                 '"""Test function docstring."""',
@@ -248,7 +248,7 @@ class TestCLI:
         with open(test_file, 'w') as f:
             f.write("def test_function():\n    pass\n")
         
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the generate method
             mock_manager.generate.return_value = (
                 "def test_test_function():\n    assert test_function() is None",
@@ -281,7 +281,7 @@ class TestCLI:
         # Create output path
         output_file = tmp_path / "test_output.py"
         
-        with patch('dukat.ai_agent.cli.model_manager') as mock_manager:
+        with patch('augment_adam.ai_agent.cli.model_manager') as mock_manager:
             # Mock the generate method
             mock_manager.generate.return_value = (
                 "def test_test_function():\n    assert test_function() is None",

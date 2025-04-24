@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from dukat.plugins.file_manager import FileManagerPlugin
+from augment_adam.plugins.file_manager import FileManagerPlugin
 
 
 @pytest.fixture

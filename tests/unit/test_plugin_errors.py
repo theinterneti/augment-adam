@@ -14,10 +14,10 @@ import os
 
 import pytest
 
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     PluginError, ValidationError, NotFoundError, CircuitBreakerError
 )
-from dukat.plugins.base import Plugin, PluginRegistry, get_plugin_registry
+from augment_adam.plugins.base import Plugin, PluginRegistry, get_plugin_registry
 
 
 class TestPlugin(Plugin):
@@ -238,7 +238,7 @@ class TestPluginErrorHandling(unittest.TestCase):
         self.registry._execute_circuit.reset()
 
         # Manually set the circuit breaker to open state
-        from dukat.core.errors import CircuitBreakerState
+        from augment_adam.core.errors import CircuitBreakerState
         self.registry._execute_circuit._state = CircuitBreakerState.OPEN
         self.registry._execute_circuit._failure_count = 5
 
@@ -253,10 +253,10 @@ class TestGetPluginRegistry(unittest.TestCase):
     def setUp(self):
         """Set up test fixtures."""
         # Reset the default registry
-        import dukat.plugins.base
-        dukat.plugins.base.default_registry = None
+        import augment_adam.plugins.base
+        augment_adam.plugins.base.default_registry = None
 
-    @patch('dukat.core.settings.get_settings')
+    @patch('augment_adam.core.settings.get_settings')
     def test_get_plugin_registry(self, mock_get_settings):
         """Test getting the plugin registry."""
         # Set up the mock
@@ -275,7 +275,7 @@ class TestGetPluginRegistry(unittest.TestCase):
         self.assertIs(registry, registry2)
 
     @pytest.mark.skip(reason="Test is not reliable in the current implementation")
-    @patch('dukat.core.settings.get_settings')
+    @patch('augment_adam.core.settings.get_settings')
     def test_get_plugin_registry_error(self, mock_get_settings):
         """Test handling of errors during plugin registry creation."""
         # Set up the mock to raise an exception

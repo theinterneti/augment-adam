@@ -7,7 +7,7 @@ for generating various code-related prompts.
 
 import pytest
 
-from dukat.ai_agent.models.prompts import CodePromptTemplates
+from augment_adam.ai_agent.models.prompts import CodePromptTemplates
 
 class TestCodePromptTemplates:
     """Tests for the CodePromptTemplates class."""

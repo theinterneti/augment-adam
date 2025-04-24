@@ -11,7 +11,7 @@ import unittest
 import time
 from unittest.mock import patch, MagicMock
 
-from dukat.core.parallel_executor import (
+from augment_adam.core.parallel_executor import (
     ParallelTaskExecutor,
     ResourceRequirement,
     ResourceType,
@@ -19,8 +19,8 @@ from dukat.core.parallel_executor import (
     TaskBatch,
     DependencyGraph,
 )
-from dukat.core.task_queue import Task, TaskStatus
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.task_queue import Task, TaskStatus
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
 
 
 class TestResourcePool(unittest.IsolatedAsyncioTestCase):

@@ -10,7 +10,7 @@ import pytest
 import logging
 from typing import Dict, Any
 
-from dukat.plugins.base import Plugin, PluginRegistry, get_plugin_registry
+from augment_adam.plugins.base import Plugin, PluginRegistry, get_plugin_registry
 
 
 class TestPlugin(Plugin):
@@ -272,8 +272,8 @@ def test_registry_execute_error_plugin():
 def test_get_plugin_registry():
     """Test getting the default plugin registry."""
     # Reset the default registry
-    import dukat.plugins.base
-    dukat.plugins.base.default_registry = None
+    import augment_adam.plugins.base
+    augment_adam.plugins.base.default_registry = None
     
     # Get the registry
     registry1 = get_plugin_registry()

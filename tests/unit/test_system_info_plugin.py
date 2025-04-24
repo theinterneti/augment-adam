@@ -15,7 +15,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 import psutil
 
-from dukat.plugins.system_info import SystemInfoPlugin
+from augment_adam.plugins.system_info import SystemInfoPlugin
 
 
 @pytest.fixture
@@ -33,16 +33,16 @@ def test_plugin_init():
     assert plugin.version == "0.2.0"
 
 
-@patch("dukat.plugins.system_info.platform.system")
-@patch("dukat.plugins.system_info.platform.node")
-@patch("dukat.plugins.system_info.platform.release")
-@patch("dukat.plugins.system_info.platform.version")
-@patch("dukat.plugins.system_info.platform.machine")
-@patch("dukat.plugins.system_info.platform.processor")
-@patch("dukat.plugins.system_info.socket.gethostname")
-@patch("dukat.plugins.system_info.socket.gethostbyname")
-@patch("dukat.plugins.system_info.psutil.boot_time")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.platform.system")
+@patch('augment_adam.plugins.system_info.platform.node")
+@patch('augment_adam.plugins.system_info.platform.release")
+@patch('augment_adam.plugins.system_info.platform.version")
+@patch('augment_adam.plugins.system_info.platform.machine")
+@patch('augment_adam.plugins.system_info.platform.processor")
+@patch('augment_adam.plugins.system_info.socket.gethostname")
+@patch('augment_adam.plugins.system_info.socket.gethostbyname")
+@patch('augment_adam.plugins.system_info.psutil.boot_time")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_system_info(
     mock_time, mock_boot_time, mock_gethostbyname, mock_gethostname,
     mock_processor, mock_machine, mock_version, mock_release, mock_node, mock_system,
@@ -79,12 +79,12 @@ def test_get_system_info(
     assert "environment" in info
 
 
-@patch("dukat.plugins.system_info.psutil.cpu_count")
-@patch("dukat.plugins.system_info.psutil.cpu_freq")
-@patch("dukat.plugins.system_info.psutil.cpu_percent")
-@patch("dukat.plugins.system_info.psutil.cpu_times")
-@patch("dukat.plugins.system_info.psutil.cpu_stats")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.psutil.cpu_count")
+@patch('augment_adam.plugins.system_info.psutil.cpu_freq")
+@patch('augment_adam.plugins.system_info.psutil.cpu_percent")
+@patch('augment_adam.plugins.system_info.psutil.cpu_times")
+@patch('augment_adam.plugins.system_info.psutil.cpu_stats")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_cpu_info(
     mock_time, mock_cpu_stats, mock_cpu_times, mock_cpu_percent,
     mock_cpu_freq, mock_cpu_count, plugin
@@ -140,9 +140,9 @@ def test_get_cpu_info(
     assert info["stats"]["syscalls"] == 5000
 
 
-@patch("dukat.plugins.system_info.psutil.virtual_memory")
-@patch("dukat.plugins.system_info.psutil.swap_memory")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.psutil.virtual_memory")
+@patch('augment_adam.plugins.system_info.psutil.swap_memory")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_memory_info(mock_time, mock_swap_memory, mock_virtual_memory, plugin):
     """Test getting memory information."""
     # Set up the mocks
@@ -181,10 +181,10 @@ def test_get_memory_info(mock_time, mock_swap_memory, mock_virtual_memory, plugi
     assert info["timestamp"] == 2000
 
 
-@patch("dukat.plugins.system_info.psutil.disk_partitions")
-@patch("dukat.plugins.system_info.psutil.disk_usage")
-@patch("dukat.plugins.system_info.psutil.disk_io_counters")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.psutil.disk_partitions")
+@patch('augment_adam.plugins.system_info.psutil.disk_usage")
+@patch('augment_adam.plugins.system_info.psutil.disk_io_counters")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_disk_info(
     mock_time, mock_disk_io_counters, mock_disk_usage, mock_disk_partitions, plugin
 ):
@@ -263,10 +263,10 @@ def test_get_disk_info(
     assert info["timestamp"] == 2000
 
 
-@patch("dukat.plugins.system_info.psutil.net_if_addrs")
-@patch("dukat.plugins.system_info.psutil.net_io_counters")
-@patch("dukat.plugins.system_info.psutil.net_connections")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.psutil.net_if_addrs")
+@patch('augment_adam.plugins.system_info.psutil.net_io_counters")
+@patch('augment_adam.plugins.system_info.psutil.net_connections")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_network_info(
     mock_time, mock_net_connections, mock_net_io_counters, mock_net_if_addrs, plugin
 ):
@@ -349,9 +349,9 @@ def test_get_network_info(
     assert info["timestamp"] == 2000
 
 
-@patch("dukat.plugins.system_info.psutil.pid_exists")
-@patch("dukat.plugins.system_info.psutil.Process")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.psutil.pid_exists")
+@patch('augment_adam.plugins.system_info.psutil.Process")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_process_info(mock_time, mock_process, mock_pid_exists, plugin):
     """Test getting process information."""
     # Set up the mocks
@@ -432,7 +432,7 @@ def test_get_process_info(mock_time, mock_process, mock_pid_exists, plugin):
     assert info["timestamp"] == 2000
 
 
-@patch("dukat.plugins.system_info.psutil.pid_exists")
+@patch('augment_adam.plugins.system_info.psutil.pid_exists")
 def test_get_process_info_nonexistent(mock_pid_exists, plugin):
     """Test getting information for a non-existent process."""
     # Set up the mocks
@@ -446,12 +446,12 @@ def test_get_process_info_nonexistent(mock_pid_exists, plugin):
     assert "does not exist" in info["error"]
 
 
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_system_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_cpu_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_memory_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_disk_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_network_info")
-@patch("dukat.plugins.system_info.time.time")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_system_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_cpu_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_memory_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_disk_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_network_info")
+@patch('augment_adam.plugins.system_info.time.time")
 def test_get_all_info(
     mock_time, mock_network, mock_disk, mock_memory, mock_cpu, mock_system, plugin
 ):
@@ -476,13 +476,13 @@ def test_get_all_info(
     assert info["timestamp"] == 2000
 
 
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_system_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_cpu_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_memory_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_disk_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_network_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_process_info")
-@patch("dukat.plugins.system_info.SystemInfoPlugin.get_all_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_system_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_cpu_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_memory_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_disk_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_network_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_process_info")
+@patch('augment_adam.plugins.system_info.SystemInfoPlugin.get_all_info")
 def test_execute(
     mock_all, mock_process, mock_network, mock_disk, mock_memory, mock_cpu, mock_system, plugin
 ):

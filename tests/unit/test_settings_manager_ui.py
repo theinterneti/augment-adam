@@ -12,8 +12,8 @@ from unittest.mock import MagicMock, patch
 import gradio as gr
 import pytest
 
-from dukat.core.settings import Settings, SettingsScope
-from dukat.web.settings_manager import SettingsManagerUI, create_settings_tab
+from augment_adam.core.settings import Settings, SettingsScope
+from augment_adam.web.settings_manager import SettingsManagerUI, create_settings_tab
 
 
 class TestSettingsManagerUI(unittest.TestCase):
@@ -25,9 +25,9 @@ class TestSettingsManagerUI(unittest.TestCase):
         self.mock_settings = Settings()
         
         # Create patches
-        self.get_settings_patch = patch("dukat.web.settings_manager.get_settings")
-        self.update_settings_patch = patch("dukat.web.settings_manager.update_settings")
-        self.reset_settings_patch = patch("dukat.web.settings_manager.reset_settings")
+        self.get_settings_patch = patch('augment_adam.web.settings_manager.get_settings")
+        self.update_settings_patch = patch('augment_adam.web.settings_manager.update_settings")
+        self.reset_settings_patch = patch('augment_adam.web.settings_manager.reset_settings")
         
         # Start patches
         self.mock_get_settings = self.get_settings_patch.start()
@@ -122,7 +122,7 @@ class TestSettingsManagerUI(unittest.TestCase):
         self.assertTrue("error" in status.lower())
 
 
-@patch("dukat.web.settings_manager.SettingsManagerUI")
+@patch('augment_adam.web.settings_manager.SettingsManagerUI")
 @patch("gradio.Tab")
 @patch("gradio.Row")
 @patch("gradio.Column")

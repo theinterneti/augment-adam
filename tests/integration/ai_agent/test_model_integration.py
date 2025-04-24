@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 import torch
 
-from dukat.ai_agent.models import ModelManager
+from augment_adam.ai_agent.models import ModelManager
 
 # Skip all tests if no GPU is available
 pytestmark = pytest.mark.skipif(
@@ -32,8 +32,8 @@ class TestModelManagerIntegration:
     def model_manager(self):
         """Create a model manager with a temporary directory."""
         # Create temporary directories
-        temp_dir = tempfile.mkdtemp(prefix="dukat_test_models_")
-        temp_config = tempfile.mktemp(prefix="dukat_test_config_", suffix=".json")
+        temp_dir = tempfile.mkdtemp(prefix="augment_adam_test_models_")
+        temp_config = tempfile.mktemp(prefix="augment_adam_test_config_", suffix=".json")
 
         # Create model manager
         manager = ModelManager(

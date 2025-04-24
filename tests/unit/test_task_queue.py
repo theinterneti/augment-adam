@@ -11,7 +11,7 @@ import pytest
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from dukat.core.task_queue import (
+from augment_adam.core.task_queue import (
     Task,
     TaskQueue,
     TaskStatus,

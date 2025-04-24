@@ -14,8 +14,8 @@ import tempfile
 import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
-from dukat.core.task_queue import Task, TaskQueue, TaskStatus
-from dukat.core.task_persistence import TaskPersistence
+from augment_adam.core.task_queue import Task, TaskQueue, TaskStatus
+from augment_adam.core.task_persistence import TaskPersistence
 
 
 @pytest.fixture
@@ -318,7 +318,7 @@ async def test_task_queue_auto_save(temp_dir):
     )
     
     # Mock the persistence.save_queue method
-    with patch("dukat.core.task_persistence.TaskPersistence.save_queue") as mock_save:
+    with patch('augment_adam.core.task_persistence.TaskPersistence.save_queue") as mock_save:
         mock_save.return_value = True
         
         # Start the queue

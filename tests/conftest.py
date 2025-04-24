@@ -1,44 +1,42 @@
-"""
-Global test configuration for Dukat.
+"""Pytest configuration for Augment Adam tests."""
 
-This module provides fixtures and configuration for all tests.
-"""
-
-import asyncio
+import os
+import tempfile
 import pytest
+from unittest.mock import patch, MagicMock
+
+from augment_adam.memory.faiss_memory import FAISSMemory
+from augment_adam.memory.neo4j_memory import Neo4jMemory
 
 
-# Configure pytest-asyncio to use function scope for event loops
-# This addresses the warning: "The configuration option 'asyncio_default_fixture_loop_scope' is unset"
-pytest_plugins = ["pytest_asyncio"]
-pytestmark = pytest.mark.asyncio
+@pytest.fixture
+def temp_dir():
+    """Create a temporary directory for tests."""
+    with tempfile.TemporaryDirectory() as temp_dir:
+        yield temp_dir
 
 
-@pytest.fixture(scope="function")
-def event_loop():
-    """Create an instance of the default event loop for each test case.
-
-    This fixture is used by pytest-asyncio to create a new event loop for each test.
-    Setting the scope to 'function' ensures that each test gets a fresh event loop.
-    """
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    yield loop
-    # Clean up pending tasks
-    pending_tasks = asyncio.all_tasks(loop)
-    for task in pending_tasks:
-        task.cancel()
-    # Run the event loop until all tasks are done
-    if pending_tasks:
-        loop.run_until_complete(asyncio.gather(*pending_tasks, return_exceptions=True))
-    loop.close()
+@pytest.fixture
+def faiss_memory(temp_dir):
+    """Create a FAISS memory instance for tests."""
+    memory = FAISSMemory(
+        persist_dir=temp_dir,
+        collection_name="test_memory"
+    )
+    yield memory
 
 
-# Configure pytest-asyncio to use function scope for event loops
-def pytest_configure(config):
-    """Configure pytest.
-
-    This function is called by pytest to configure the test session.
-    We use it to set the default fixture loop scope for pytest-asyncio.
-    """
-    config.option.asyncio_default_fixture_loop_scope = "function"
+@pytest.fixture
+def neo4j_memory_mock():
+    """Create a mocked Neo4j memory instance for tests."""
+    with patch('augment_adam.memory.neo4j_memory.Neo4jClient') as mock_client_class:
+        # Create a mock client instance
+        mock_client = MagicMock()
+        mock_client_class.return_value = mock_client
+        
+        # Create a Neo4j memory instance
+        memory = Neo4jMemory(
+            collection_name="test_memory"
+        )
+        
+        yield memory

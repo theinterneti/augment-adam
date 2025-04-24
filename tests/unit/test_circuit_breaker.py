@@ -13,12 +13,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dukat.core.circuit_breaker import (
+from augment_adam.core.circuit_breaker import (
     CircuitBreaker, CircuitState,
     circuit_breaker, register_circuit_breaker, get_circuit_breaker,
     get_all_circuit_breakers, reset_all_circuit_breakers, get_circuit_breaker_stats
 )
-from dukat.core.errors import CircuitBreakerError, ErrorCategory
+from augment_adam.core.errors import CircuitBreakerError, ErrorCategory
 
 
 class TestCircuitBreaker(unittest.TestCase):

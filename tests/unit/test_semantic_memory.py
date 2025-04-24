@@ -20,7 +20,7 @@ import numpy as np
 if not hasattr(np, 'float_'):
     np.float_ = np.float64
 
-from dukat.memory.semantic import Concept, SemanticMemory
+from augment_adam.memory.semantic import Concept, SemanticMemory
 
 
 def test_concept_init():
@@ -185,7 +185,7 @@ def mock_chroma_client(mock_chroma_collection):
     return mock_client
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_init(mock_client_class, mock_chroma_client):
     """Test that semantic memory initializes correctly."""
     # Set up the mock
@@ -210,7 +210,7 @@ def test_semantic_memory_init(mock_client_class, mock_chroma_client):
 
         # Check that the collection was created
         mock_chroma_client.get_or_create_collection.assert_called_once_with(
-            name="dukat_concepts",
+            name="augment_adam_concepts",
             metadata={"description": "Semantic memory collection for Dukat"},
         )
 
@@ -218,7 +218,7 @@ def test_semantic_memory_init(mock_client_class, mock_chroma_client):
         assert memory.collection == mock_chroma_client.get_or_create_collection.return_value
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_add_concept(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory adds concepts correctly."""
     # Set up the mock
@@ -270,7 +270,7 @@ def test_semantic_memory_add_concept(mock_client_class, mock_chroma_client, mock
             name="Test", description="A test concept", content="")
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_get_concept(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory retrieves concepts correctly."""
     # Set up the mock
@@ -304,7 +304,7 @@ def test_semantic_memory_get_concept(mock_client_class, mock_chroma_client, mock
     assert concept is None
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_search_concepts(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory searches concepts correctly."""
     # Set up the mock
@@ -346,7 +346,7 @@ def test_semantic_memory_search_concepts(mock_client_class, mock_chroma_client, 
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_get_concept_by_name(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory retrieves concepts by name correctly."""
     # Set up the mock
@@ -397,7 +397,7 @@ def test_semantic_memory_get_concept_by_name(mock_client_class, mock_chroma_clie
     assert concept is None
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_update_concept(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory updates concepts correctly."""
     # Set up the mock
@@ -438,7 +438,7 @@ def test_semantic_memory_update_concept(mock_client_class, mock_chroma_client, m
     assert result is False
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_delete_concept(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory deletes concepts correctly."""
     # Set up the mock
@@ -459,7 +459,7 @@ def test_semantic_memory_delete_concept(mock_client_class, mock_chroma_client, m
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_clear(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory clears concepts correctly."""
     # Set up the mock
@@ -480,7 +480,7 @@ def test_semantic_memory_clear(mock_client_class, mock_chroma_client, mock_chrom
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_count_concepts(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory counts concepts correctly."""
     # Set up the mock
@@ -531,7 +531,7 @@ def test_semantic_memory_count_concepts(mock_client_class, mock_chroma_client, m
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_get_all_concepts(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory retrieves all concepts correctly."""
     # Set up the mock
@@ -636,7 +636,7 @@ def test_semantic_memory_get_all_concepts(mock_client_class, mock_chroma_client,
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_get_recently_updated_concepts(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory retrieves recently updated concepts correctly."""
     # Set up the mock
@@ -695,7 +695,7 @@ def test_semantic_memory_get_recently_updated_concepts(mock_client_class, mock_c
     )
 
 
-@patch("dukat.memory.semantic.chromadb.PersistentClient")
+@patch('augment_adam.memory.semantic.chromadb.PersistentClient")
 def test_semantic_memory_get_related_concepts(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that semantic memory retrieves related concepts correctly."""
     # Set up the mock

@@ -9,7 +9,7 @@ Created: 2025-04-23
 import pytest
 from unittest.mock import MagicMock, patch
 
-from dukat.web.interface import (
+from augment_adam.web.interface import (
     WebInterface,
     create_web_interface,
     launch_web_interface,
@@ -201,7 +201,7 @@ def test_load_conversation_callback(web_interface, mock_assistant):
 
 def test_change_model_callback(web_interface, mock_assistant):
     """Test the change model callback."""
-    with patch("dukat.web.interface.ModelManager") as mock_model_manager:
+    with patch('augment_adam.web.interface.ModelManager") as mock_model_manager:
         # Call the callback
         result = web_interface._change_model_callback("new-model")
 
@@ -278,7 +278,7 @@ def test_launch_web_interface(monkeypatch):
 
     # Apply the mocks
     monkeypatch.setattr(
-        "dukat.web.interface.create_web_interface", mock_create_web_interface)
+        "augment_adam.web.interface.create_web_interface", mock_create_web_interface)
 
     # Call the function
     launch_web_interface(
@@ -313,7 +313,7 @@ def test_launch_web_interface(monkeypatch):
 
 def test_create_web_interface():
     """Test creating a web interface."""
-    with patch("dukat.web.interface.WebInterface") as mock_web_interface:
+    with patch('augment_adam.web.interface.WebInterface") as mock_web_interface:
         # Call the function
         result = create_web_interface(
             model_name="test-model",

@@ -15,8 +15,8 @@ import pytest
 import numpy as np
 import faiss
 
-from dukat.memory.faiss_memory import FAISSMemory, get_faiss_memory
-from dukat.core.errors import ResourceError, DatabaseError
+from augment_adam.memory.faiss_memory import FAISSMemory, get_faiss_memory
+from augment_adam.core.errors import ResourceError, DatabaseError
 
 
 class TestFAISSMemory(unittest.TestCase):

@@ -13,7 +13,7 @@ import json
 
 import pytest
 
-from dukat.memory.working import Message, WorkingMemory
+from augment_adam.memory.working import Message, WorkingMemory
 
 
 def test_message_init():

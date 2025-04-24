@@ -12,7 +12,7 @@ import time
 from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock
 
-from dukat.core.task_scheduler import (
+from augment_adam.core.task_scheduler import (
     TaskScheduler,
     ScheduledTask,
 )
@@ -200,7 +200,7 @@ class TestTaskScheduler(unittest.IsolatedAsyncioTestCase):
         self.assertIn("task1", task_ids)
         self.assertIn("task2", task_ids)
     
-    @patch("dukat.core.task_scheduler.add_task")
+    @patch('augment_adam.core.task_scheduler.add_task")
     async def test_run_task(self, mock_add_task):
         """Test running a scheduled task."""
         scheduler = TaskScheduler()
@@ -229,7 +229,7 @@ class TestTaskScheduler(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(task.runs, 1)
         self.assertIsNotNone(task.last_run_time)
     
-    @patch("dukat.core.task_scheduler.add_task")
+    @patch('augment_adam.core.task_scheduler.add_task")
     async def test_check_tasks(self, mock_add_task):
         """Test checking for tasks that need to be run."""
         scheduler = TaskScheduler()

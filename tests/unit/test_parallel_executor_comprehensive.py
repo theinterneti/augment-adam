@@ -15,7 +15,7 @@ import random
 from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, List, Any, Set
 
-from dukat.core.parallel_executor import (
+from augment_adam.core.parallel_executor import (
     ParallelTaskExecutor,
     ResourceRequirement,
     ResourceType,
@@ -23,9 +23,9 @@ from dukat.core.parallel_executor import (
     TaskBatch,
     DependencyGraph,
 )
-from dukat.core.task_queue import Task, TaskStatus
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
-from dukat.core.errors import CircuitBreakerError
+from augment_adam.core.task_queue import Task, TaskStatus
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.errors import CircuitBreakerError
 
 
 class TestResourcePoolComprehensive(unittest.IsolatedAsyncioTestCase):

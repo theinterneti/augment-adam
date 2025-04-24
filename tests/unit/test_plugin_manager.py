@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 
 import gradio as gr
 
-from dukat.web.plugin_manager import PluginManagerUI, create_plugin_tab
-from dukat.plugins.base import Plugin, PluginRegistry
+from augment_adam.web.plugin_manager import PluginManagerUI, create_plugin_tab
+from augment_adam.plugins.base import Plugin, PluginRegistry
 
 
 class TestPlugin(Plugin):
@@ -105,7 +105,7 @@ def test_plugin_manager_ui_get_plugin_names(mock_registry):
     ui = PluginManagerUI(registry=mock_registry)
 
     # Mock the list_plugins function
-    with patch("dukat.web.plugin_manager.list_plugins", return_value=[
+    with patch('augment_adam.web.plugin_manager.list_plugins", return_value=[
         {"name": "test_plugin"},
         {"name": "another_plugin"},
     ]):
@@ -127,7 +127,7 @@ def test_plugin_manager_ui_get_plugin_details(mock_registry):
     test_plugin = TestPlugin()
 
     # Mock the get_plugin function
-    with patch("dukat.web.plugin_manager.get_plugin", return_value=test_plugin):
+    with patch('augment_adam.web.plugin_manager.get_plugin", return_value=test_plugin):
         # Get the plugin details
         details, params = ui._get_plugin_details("test_plugin")
 
@@ -149,7 +149,7 @@ def test_plugin_manager_ui_execute_plugin(mock_registry):
     ui = PluginManagerUI(registry=mock_registry)
 
     # Mock the execute_plugin function
-    with patch("dukat.web.plugin_manager.execute_plugin", return_value={"result": "success"}):
+    with patch('augment_adam.web.plugin_manager.execute_plugin", return_value={"result": "success"}):
         # Execute the plugin
         result = ui._execute_plugin(
             "test_plugin", {"param1": "test", "param2": 42})
@@ -167,7 +167,7 @@ def test_create_plugin_tab(mock_registry):
 
     # Patch the required functions
     with patch("gradio.Tab") as mock_tab_class, \
-            patch("dukat.web.plugin_manager.PluginManagerUI", return_value=mock_plugin_manager) as mock_ui_class:
+            patch('augment_adam.web.plugin_manager.PluginManagerUI", return_value=mock_plugin_manager) as mock_ui_class:
 
         # Set up the mock tab
         mock_tab_class.return_value.__enter__.return_value = mock_tab

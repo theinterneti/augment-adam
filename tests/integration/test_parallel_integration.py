@@ -14,12 +14,12 @@ from datetime import datetime, timedelta
 import logging
 from typing import Dict, List, Any, Set
 
-from dukat.core.async_assistant import get_async_assistant
-from dukat.core.parallel_executor import (
+from augment_adam.core.async_assistant import get_async_assistant
+from augment_adam.core.parallel_executor import (
     ResourceRequirement,
     ResourceType,
 )
-from dukat.core.task_queue import TaskStatus
+from augment_adam.core.task_queue import TaskStatus
 
 
 # Configure logging

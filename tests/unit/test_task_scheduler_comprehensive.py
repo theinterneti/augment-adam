@@ -15,11 +15,11 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock, AsyncMock
 import logging
 
-from dukat.core.task_scheduler import (
+from augment_adam.core.task_scheduler import (
     TaskScheduler,
     ScheduledTask,
 )
-from dukat.core.task_queue import TaskStatus
+from augment_adam.core.task_queue import TaskStatus
 
 
 class TestScheduledTaskComprehensive(unittest.TestCase):
@@ -212,7 +212,7 @@ class TestTaskSchedulerComprehensive(unittest.IsolatedAsyncioTestCase):
         # Mock the add_task function
         self.add_task_mock = AsyncMock()
         self.add_task_patch = patch(
-            "dukat.core.task_scheduler.add_task",
+            "augment_adam.core.task_scheduler.add_task",
             self.add_task_mock
         )
         self.add_task_patch.start()

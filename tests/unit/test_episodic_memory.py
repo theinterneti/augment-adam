@@ -20,7 +20,7 @@ import numpy as np
 if not hasattr(np, 'float_'):
     np.float_ = np.float64
 
-from dukat.memory.episodic import Episode, EpisodicMemory
+from augment_adam.memory.episodic import Episode, EpisodicMemory
 
 
 def test_episode_init():
@@ -153,7 +153,7 @@ def mock_chroma_client(mock_chroma_collection):
     return mock_client
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_init(mock_client_class, mock_chroma_client):
     """Test that episodic memory initializes correctly."""
     # Set up the mock
@@ -178,7 +178,7 @@ def test_episodic_memory_init(mock_client_class, mock_chroma_client):
 
         # Check that the collection was created
         mock_chroma_client.get_or_create_collection.assert_called_once_with(
-            name="dukat_episodes",
+            name="augment_adam_episodes",
             metadata={"description": "Episodic memory collection for Dukat"},
         )
 
@@ -186,7 +186,7 @@ def test_episodic_memory_init(mock_client_class, mock_chroma_client):
         assert memory.collection == mock_chroma_client.get_or_create_collection.return_value
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_add_episode(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory adds episodes correctly."""
     # Set up the mock
@@ -223,7 +223,7 @@ def test_episodic_memory_add_episode(mock_client_class, mock_chroma_client, mock
         memory.add_episode(content="")
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_get_episode(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory retrieves episodes correctly."""
     # Set up the mock
@@ -256,7 +256,7 @@ def test_episodic_memory_get_episode(mock_client_class, mock_chroma_client, mock
     assert episode is None
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_search_episodes(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory searches episodes correctly."""
     # Set up the mock
@@ -297,7 +297,7 @@ def test_episodic_memory_search_episodes(mock_client_class, mock_chroma_client, 
     )
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_get_recent_episodes(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory retrieves recent episodes correctly."""
     # Set up the mock
@@ -349,7 +349,7 @@ def test_episodic_memory_get_recent_episodes(mock_client_class, mock_chroma_clie
     )
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_delete_episode(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory deletes episodes correctly."""
     # Set up the mock
@@ -370,7 +370,7 @@ def test_episodic_memory_delete_episode(mock_client_class, mock_chroma_client, m
     )
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_update_episode(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory updates episodes correctly."""
     # Set up the mock
@@ -408,7 +408,7 @@ def test_episodic_memory_update_episode(mock_client_class, mock_chroma_client, m
     assert result is False
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_clear(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory clears episodes correctly."""
     # Set up the mock
@@ -429,7 +429,7 @@ def test_episodic_memory_clear(mock_client_class, mock_chroma_client, mock_chrom
     )
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_count_episodes(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory counts episodes correctly."""
     # Set up the mock
@@ -470,7 +470,7 @@ def test_episodic_memory_count_episodes(mock_client_class, mock_chroma_client, m
     )
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_get_episode_by_title(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory retrieves episodes by title correctly."""
     # Set up the mock
@@ -537,7 +537,7 @@ def test_episodic_memory_get_episode_by_title(mock_client_class, mock_chroma_cli
     assert episode is None
 
 
-@patch("dukat.memory.episodic.chromadb.PersistentClient")
+@patch('augment_adam.memory.episodic.chromadb.PersistentClient")
 def test_episodic_memory_get_episodes_in_timerange(mock_client_class, mock_chroma_client, mock_chroma_collection):
     """Test that episodic memory retrieves episodes in a time range correctly."""
     # Set up the mock

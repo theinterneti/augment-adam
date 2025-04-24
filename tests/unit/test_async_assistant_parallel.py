@@ -14,14 +14,14 @@ from datetime import datetime, timedelta
 from unittest.mock import patch, MagicMock, AsyncMock
 from typing import Dict, List, Any, Set
 
-from dukat.core.async_assistant import AsyncAssistant, get_async_assistant
-from dukat.core.parallel_executor import (
+from augment_adam.core.async_assistant import AsyncAssistant, get_async_assistant
+from augment_adam.core.parallel_executor import (
     ParallelTaskExecutor,
     ResourceRequirement,
     ResourceType,
 )
-from dukat.core.task_queue import Task, TaskStatus
-from dukat.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
+from augment_adam.core.task_queue import Task, TaskStatus
+from augment_adam.core.circuit_breaker import CircuitBreaker, CircuitBreakerState
 
 
 class TestAsyncAssistantParallel(unittest.IsolatedAsyncioTestCase):
@@ -184,7 +184,7 @@ class TestAsyncAssistantParallel(unittest.IsolatedAsyncioTestCase):
     async def test_get_queue_stats_with_parallel_executor(self):
         """Test getting queue stats with parallel executor metrics."""
         # Mock the get_queue_stats function
-        with patch("dukat.core.async_assistant.get_queue_stats") as mock_get_queue_stats:
+        with patch('augment_adam.core.async_assistant.get_queue_stats") as mock_get_queue_stats:
             mock_get_queue_stats.return_value = {
                 "active_tasks": 2,
                 "completed_tasks": 5,
@@ -239,12 +239,12 @@ class TestAsyncAssistantScheduling(unittest.IsolatedAsyncioTestCase):
         )
 
         # Mock the schedule_task function
-        self.schedule_task_patch = patch("dukat.core.async_assistant.schedule_task")
+        self.schedule_task_patch = patch('augment_adam.core.async_assistant.schedule_task")
         self.mock_schedule_task = self.schedule_task_patch.start()
         self.mock_schedule_task.return_value = "scheduled_task_id"
 
         # Mock the cancel_scheduled_task function
-        self.cancel_task_patch = patch("dukat.core.async_assistant.cancel_scheduled_task")
+        self.cancel_task_patch = patch('augment_adam.core.async_assistant.cancel_scheduled_task")
         self.mock_cancel_task = self.cancel_task_patch.start()
         self.mock_cancel_task.return_value = True
 
@@ -366,7 +366,7 @@ class TestGetAsyncAssistant(unittest.IsolatedAsyncioTestCase):
     async def test_get_async_assistant_with_parallel(self):
         """Test getting an async assistant with parallel execution."""
         # Mock the AsyncAssistant class
-        with patch("dukat.core.async_assistant.AsyncAssistant") as mock_assistant_class:
+        with patch('augment_adam.core.async_assistant.AsyncAssistant") as mock_assistant_class:
             # Create a mock instance
             mock_assistant = MagicMock()
             mock_assistant_class.return_value = mock_assistant

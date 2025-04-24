@@ -11,11 +11,11 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     DukatError, ModelError, NetworkError, TimeoutError, CircuitBreakerError
 )
-from dukat.core.model_manager import ModelManager, get_model_manager
-from dukat.core.settings import Settings, ModelSettings
+from augment_adam.core.model_manager import ModelManager, get_model_manager
+from augment_adam.core.settings import Settings, ModelSettings
 
 
 class TestModelManagerErrorHandling(unittest.TestCase):
@@ -169,7 +169,7 @@ class TestModelManagerCircuitBreaker(unittest.TestCase):
         self.model_manager._generate_circuit.reset()
 
         # Manually set the circuit breaker to open state
-        from dukat.core.errors import CircuitBreakerState
+        from augment_adam.core.errors import CircuitBreakerState
         self.model_manager._generate_circuit._state = CircuitBreakerState.OPEN
         self.model_manager._generate_circuit._failure_count = 5
 

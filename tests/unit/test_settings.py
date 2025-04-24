@@ -15,8 +15,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dukat.core.errors import ValidationError
-from dukat.core.settings import (
+from augment_adam.core.errors import ValidationError
+from augment_adam.core.settings import (
     LoggingSettings,
     MemorySettings,
     ModelSettings,
@@ -386,7 +386,7 @@ class TestGlobalFunctions(unittest.TestCase):
         self.config_dir.mkdir(parents=True, exist_ok=True)
 
         # Clear the global settings manager
-        from dukat.core.settings import _settings_manager
+        from augment_adam.core.settings import _settings_manager
         if _settings_manager is not None:
             _settings_manager = None
 
@@ -419,7 +419,7 @@ class TestGlobalFunctions(unittest.TestCase):
         effective_settings = get_settings()
         self.assertIsInstance(effective_settings, Settings)
 
-    @patch("dukat.core.settings.SettingsManager.save_settings")
+    @patch('augment_adam.core.settings.SettingsManager.save_settings")
     def test_update_settings(self, mock_save):
         """Test update_settings function."""
         # Initialize the settings manager
@@ -439,7 +439,7 @@ class TestGlobalFunctions(unittest.TestCase):
         # Verify save_settings was not called
         mock_save.assert_not_called()
 
-    @patch("dukat.core.settings.SettingsManager.save_settings")
+    @patch('augment_adam.core.settings.SettingsManager.save_settings")
     def test_reset_settings(self, mock_save):
         """Test reset_settings function."""
         # Initialize the settings manager

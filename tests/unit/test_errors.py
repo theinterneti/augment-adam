@@ -13,13 +13,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     ApiError,
     CircuitBreaker,
     CircuitBreakerError,
     CircuitBreakerState,
     DatabaseError,
-    DukatError,
+    AugmentAdamError,
     ErrorCategory,
     ModelError,
     NetworkError,
@@ -54,42 +54,42 @@ class TestErrorCategories(unittest.TestCase):
         self.assertEqual(ErrorCategory.UNKNOWN.value, "unknown")
 
 
-class TestDukatError(unittest.TestCase):
-    """Test DukatError class."""
+class TestAugmentAdamError(unittest.TestCase):
+    """Test AugmentAdamError class."""
 
-    def test_dukat_error_init(self):
-        """Test DukatError initialization."""
-        error = DukatError("Test error")
+    def test_augment_adam_error_init(self):
+        """Test AugmentAdamError initialization."""
+        error = AugmentAdamError("Test error")
         self.assertEqual(error.message, "Test error")
         self.assertEqual(error.category, ErrorCategory.UNKNOWN)
         self.assertIsNone(error.original_error)
         self.assertEqual(error.details, {})
 
-    def test_dukat_error_with_category(self):
-        """Test DukatError with category."""
-        error = DukatError("Test error", category=ErrorCategory.NETWORK)
+    def test_augment_adam_error_with_category(self):
+        """Test AugmentAdamError with category."""
+        error = AugmentAdamError("Test error", category=ErrorCategory.NETWORK)
         self.assertEqual(error.message, "Test error")
         self.assertEqual(error.category, ErrorCategory.NETWORK)
 
-    def test_dukat_error_with_original_error(self):
-        """Test DukatError with original error."""
+    def test_augment_adam_error_with_original_error(self):
+        """Test AugmentAdamError with original error."""
         original = ValueError("Original error")
-        error = DukatError("Test error", original_error=original)
+        error = AugmentAdamError("Test error", original_error=original)
         self.assertEqual(error.message, "Test error")
         self.assertEqual(error.original_error, original)
 
-    def test_dukat_error_with_details(self):
-        """Test DukatError with details."""
+    def test_augment_adam_error_with_details(self):
+        """Test AugmentAdamError with details."""
         details = {"key": "value"}
-        error = DukatError("Test error", details=details)
+        error = AugmentAdamError("Test error", details=details)
         self.assertEqual(error.message, "Test error")
         self.assertEqual(error.details, details)
 
-    def test_dukat_error_to_dict(self):
-        """Test DukatError to_dict method."""
+    def test_augment_adam_error_to_dict(self):
+        """Test AugmentAdamError to_dict method."""
         original = ValueError("Original error")
         details = {"key": "value"}
-        error = DukatError(
+        error = AugmentAdamError(
             "Test error",
             category=ErrorCategory.NETWORK,
             original_error=original,
@@ -159,9 +159,9 @@ class TestSpecificErrors(unittest.TestCase):
 class TestErrorClassification(unittest.TestCase):
     """Test error classification."""
 
-    def test_classify_dukat_error(self):
-        """Test classifying a DukatError."""
-        error = DukatError("Test error", category=ErrorCategory.NETWORK)
+    def test_classify_augment_adam_error(self):
+        """Test classifying an AugmentAdamError."""
+        error = AugmentAdamError("Test error", category=ErrorCategory.NETWORK)
         category = classify_error(error)
         self.assertEqual(category, ErrorCategory.NETWORK)
 
@@ -187,9 +187,9 @@ class TestErrorClassification(unittest.TestCase):
 class TestErrorWrapping(unittest.TestCase):
     """Test error wrapping."""
 
-    def test_wrap_dukat_error(self):
-        """Test wrapping a DukatError."""
-        original = DukatError("Original error", category=ErrorCategory.NETWORK)
+    def test_wrap_augment_adam_error(self):
+        """Test wrapping an AugmentAdamError."""
+        original = AugmentAdamError("Original error", category=ErrorCategory.NETWORK)
         wrapped = wrap_error(original)
         self.assertIs(wrapped, original)
 
@@ -225,9 +225,9 @@ class TestErrorWrapping(unittest.TestCase):
 class TestErrorLogging(unittest.TestCase):
     """Test error logging."""
 
-    def test_log_dukat_error(self):
-        """Test logging a DukatError."""
-        error = DukatError("Test error", category=ErrorCategory.NETWORK)
+    def test_log_augment_adam_error(self):
+        """Test logging an AugmentAdamError."""
+        error = AugmentAdamError("Test error", category=ErrorCategory.NETWORK)
         mock_logger = MagicMock(spec=logging.Logger)
 
         log_error(error, logger=mock_logger)
@@ -257,7 +257,7 @@ class TestErrorLogging(unittest.TestCase):
 
     def test_log_with_context(self):
         """Test logging with context."""
-        error = DukatError("Test error")
+        error = AugmentAdamError("Test error")
         mock_logger = MagicMock(spec=logging.Logger)
         context = {"request_id": "123", "user_id": "456"}
 

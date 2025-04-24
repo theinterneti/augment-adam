@@ -11,9 +11,9 @@ import pytest
 import os
 import tempfile
 
-from dukat.memory.working import WorkingMemory, Message
-from dukat.memory.faiss_episodic import FAISSEpisodicMemory
-from dukat.memory.faiss_semantic import FAISSSemanticMemory, Concept
+from augment_adam.memory.working import WorkingMemory, Message
+from augment_adam.memory.faiss_episodic import FAISSEpisodicMemory
+from augment_adam.memory.faiss_semantic import FAISSSemanticMemory, Concept
 
 
 @pytest.fixture

@@ -14,10 +14,10 @@ import os
 
 import pytest
 
-from dukat.core.errors import (
+from augment_adam.core.errors import (
     DatabaseError, ResourceError, NotFoundError, CircuitBreakerError
 )
-from dukat.core.memory import Memory, get_memory
+from augment_adam.core.memory import Memory, get_memory
 
 
 class TestMemoryErrorHandling(unittest.TestCase):
@@ -157,7 +157,7 @@ class TestMemoryErrorHandling(unittest.TestCase):
         self.assertFalse(result)
 
     @pytest.mark.skip(reason="Test is not reliable in the current implementation")
-    @patch('dukat.core.settings.get_settings')
+    @patch('augment_adam.core.settings.get_settings')
     def test_get_memory_error(self, mock_get_settings):
         """Test handling of errors in get_memory."""
         # This test is skipped because it's not reliable in the current implementation
@@ -209,7 +209,7 @@ class TestMemoryCircuitBreaker(unittest.TestCase):
         self.memory._retrieve_circuit.reset()
 
         # Manually set the circuit breaker to open state
-        from dukat.core.errors import CircuitBreakerState
+        from augment_adam.core.errors import CircuitBreakerState
         self.memory._retrieve_circuit._state = CircuitBreakerState.OPEN
         self.memory._retrieve_circuit._failure_count = 5
 

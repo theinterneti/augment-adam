@@ -15,10 +15,10 @@ import pytest
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-from dukat.ai_agent.models.manager import ModelManager
+from augment_adam.ai_agent.models.manager import ModelManager
 
 # Disable logging during tests
-logging.getLogger("dukat.ai_agent").setLevel(logging.ERROR)
+logging.getLogger("augment_adam.ai_agent").setLevel(logging.ERROR)
 
 class TestModelManager:
     """Tests for the ModelManager class."""
@@ -108,8 +108,8 @@ class TestModelManager:
         assert "test_key" in saved_config
         assert saved_config["test_key"] == "test_value"
     
-    @patch('dukat.ai_agent.models.manager.AutoTokenizer')
-    @patch('dukat.ai_agent.models.manager.AutoModelForCausalLM')
+    @patch('augment_adam.ai_agent.models.manager.AutoTokenizer')
+    @patch('augment_adam.ai_agent.models.manager.AutoModelForCausalLM')
     def test_download_model(self, mock_model_class, mock_tokenizer_class, temp_model_dir):
         """Test downloading a model."""
         # Mock the tokenizer and model
@@ -134,9 +134,9 @@ class TestModelManager:
         # Check that the model was added to config
         assert "test/model" in manager.config["models"]
     
-    @patch('dukat.ai_agent.models.manager.AutoTokenizer')
-    @patch('dukat.ai_agent.models.manager.AutoModelForCausalLM')
-    @patch('dukat.ai_agent.models.manager.pipeline')
+    @patch('augment_adam.ai_agent.models.manager.AutoTokenizer')
+    @patch('augment_adam.ai_agent.models.manager.AutoModelForCausalLM')
+    @patch('augment_adam.ai_agent.models.manager.pipeline')
     def test_load_model(self, mock_pipeline, mock_model_class, mock_tokenizer_class, 
                         temp_model_dir, env_info):
         """Test loading a model."""

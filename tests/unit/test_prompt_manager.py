@@ -17,7 +17,7 @@ from unittest.mock import patch, MagicMock
 
 import dspy
 
-from dukat.core.prompt_manager import PromptTemplate, PromptManager, get_prompt_manager
+from augment_adam.core.prompt_manager import PromptTemplate, PromptManager, get_prompt_manager
 
 
 def test_prompt_template_init():
@@ -369,7 +369,7 @@ def test_prompt_manager_update_template():
         assert result is False
 
 
-@patch("dukat.core.prompt_manager.dspy.ChainOfThought")
+@patch('augment_adam.core.prompt_manager.dspy.ChainOfThought")
 def test_prompt_manager_create_dspy_module_chain_of_thought(mock_cot):
     """Test that a prompt manager creates DSPy modules correctly."""
     # Set up the mock
@@ -416,7 +416,7 @@ def test_prompt_manager_create_dspy_module_chain_of_thought(mock_cot):
             )
 
 
-@patch("dukat.core.prompt_manager.dspy.Predict")
+@patch('augment_adam.core.prompt_manager.dspy.Predict")
 def test_prompt_manager_create_dspy_module_predict(mock_predict):
     """Test that a prompt manager creates DSPy Predict modules correctly."""
     # Set up the mock
@@ -448,7 +448,7 @@ def test_prompt_manager_create_dspy_module_predict(mock_predict):
         assert module == mock_module
 
 
-@patch("dukat.core.prompt_manager.dspy.ReAct")
+@patch('augment_adam.core.prompt_manager.dspy.ReAct")
 def test_prompt_manager_create_dspy_module_react(mock_react):
     """Test that a prompt manager creates DSPy ReAct modules correctly."""
     # Set up the mock
@@ -480,7 +480,7 @@ def test_prompt_manager_create_dspy_module_react(mock_react):
         assert module == mock_module
 
 
-@patch("dukat.core.prompt_manager.PromptManager")
+@patch('augment_adam.core.prompt_manager.PromptManager")
 def test_get_prompt_manager(mock_manager_class):
     """Test that the get_prompt_manager function works correctly."""
     # Set up the mock

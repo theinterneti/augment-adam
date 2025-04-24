@@ -11,9 +11,9 @@ import pytest
 import os
 import tempfile
 
-from dukat.memory.working import WorkingMemory, Message
-from dukat.memory.episodic import EpisodicMemory
-from dukat.memory.semantic import SemanticMemory, Concept
+from augment_adam.memory.working import WorkingMemory, Message
+from augment_adam.memory.episodic import EpisodicMemory
+from augment_adam.memory.semantic import SemanticMemory, Concept
 
 
 @pytest.fixture

@@ -1,1 +1,1 @@
-"""Integration tests for the AI agent module."""
+"""Integration tests for the AI Agent module."""

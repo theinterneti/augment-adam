@@ -12,13 +12,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from dukat.core.progress import (
+from augment_adam.core.progress import (
     ProgressTracker, ProgressState,
     register_progress_tracker, get_progress_tracker,
     remove_progress_tracker, get_all_progress_trackers,
     get_progress_tracker_stats, create_progress_tracker
 )
-from dukat.core.errors import ValidationError
+from augment_adam.core.errors import ValidationError
 
 
 class TestProgressTracker(unittest.TestCase):

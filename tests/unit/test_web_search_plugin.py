@@ -16,7 +16,7 @@ import pytest
 import requests
 from bs4 import BeautifulSoup
 
-from dukat.plugins.web_search import WebSearchPlugin
+from augment_adam.plugins.web_search import WebSearchPlugin
 
 
 @pytest.fixture
@@ -107,7 +107,7 @@ def test_cache_and_get_results(plugin, temp_dir):
     assert cached_results is None
 
 
-@patch("dukat.plugins.web_search.requests.get")
+@patch('augment_adam.plugins.web_search.requests.get")
 def test_search_duckduckgo(mock_get, plugin):
     """Test searching with DuckDuckGo."""
     # Create a mock response
@@ -150,7 +150,7 @@ def test_search_duckduckgo(mock_get, plugin):
     assert results["results"][1]["snippet"] == "This is another example snippet."
 
 
-@patch("dukat.plugins.web_search.requests.get")
+@patch('augment_adam.plugins.web_search.requests.get")
 def test_search_google(mock_get, plugin):
     """Test searching with Google."""
     # Create a mock response
@@ -197,7 +197,7 @@ def test_search_google(mock_get, plugin):
     assert results["results"][1]["snippet"] == "This is another example snippet."
 
 
-@patch("dukat.plugins.web_search.requests.get")
+@patch('augment_adam.plugins.web_search.requests.get")
 def test_fetch_url(mock_get, plugin):
     """Test fetching a URL."""
     # Create a mock response
@@ -241,7 +241,7 @@ def test_fetch_url(mock_get, plugin):
     assert result["links"][1]["text"] == "Page 2"
 
 
-@patch("dukat.plugins.web_search.WebSearchPlugin.search")
+@patch('augment_adam.plugins.web_search.WebSearchPlugin.search")
 def test_execute_search(mock_search, plugin):
     """Test executing a search."""
     # Set up the mock
@@ -271,7 +271,7 @@ def test_execute_search(mock_search, plugin):
     assert result["results"][0]["title"] == "Test Result"
 
 
-@patch("dukat.plugins.web_search.WebSearchPlugin.fetch_url")
+@patch('augment_adam.plugins.web_search.WebSearchPlugin.fetch_url")
 def test_execute_fetch(mock_fetch, plugin):
     """Test executing a fetch."""
     # Set up the mock
