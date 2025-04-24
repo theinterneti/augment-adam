@@ -1,0 +1,67 @@
+FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu22.04
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DEBIAN_FRONTEND=noninteractive \
+    PATH=/usr/local/cuda/bin:$PATH \
+    LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+
+WORKDIR /app
+
+# Configure apt caching for faster builds
+RUN rm -f /etc/apt/apt.conf.d/docker-clean \
+    && echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+
+# Install system dependencies
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends \
+    git \
+    make \
+    gcc \
+    curl \
+    wget \
+    gnupg \
+    software-properties-common \
+    build-essential \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    procps \
+    psmisc \
+    net-tools \
+    htop \
+    vim \
+    nano
+
+# Install Python
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && apt-get install -y --no-install-recommends \
+    python3.10 \
+    python3-pip \
+    python3-dev \
+    python3-venv \
+    && ln -sf /usr/bin/python3.10 /usr/bin/python \
+    && ln -sf /usr/bin/python3.10 /usr/bin/python3
+
+# Install Python dependencies
+COPY requirements-test-gen.txt .
+RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
+    pip install --upgrade pip \
+    && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121 \
+    && pip install pytest pytest-cov hypothesis pynguin \
+    && pip install -r requirements-test-gen.txt
+
+# Copy the test generation script and templates
+COPY scripts/auto_test_generator.py /app/scripts/
+COPY templates/ /app/templates/
+COPY config/ /app/config/
+
+# Create necessary directories
+RUN mkdir -p /app/models
+
+# Set the entrypoint
+ENTRYPOINT ["python", "-m", "scripts.auto_test_generator"]
