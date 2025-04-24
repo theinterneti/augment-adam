@@ -8,6 +8,7 @@ Created: 2025-04-28
 
 import logging
 import os
+import importlib.util
 from typing import Dict, List, Any, Optional, Union, Tuple
 
 from augment_adam.core.errors import (
@@ -17,8 +18,23 @@ from augment_adam.core.settings import get_settings
 from augment_adam.models.model_interface import ModelInterface
 from augment_adam.models.huggingface_model import HuggingFaceModel
 from augment_adam.models.ollama_model import OllamaModel
-from augment_adam.models.openai_model import OpenAIModel
-from augment_adam.models.anthropic_model import AnthropicModel
+
+# Conditionally import models based on available dependencies
+try:
+    from augment_adam.models.openai_model import OpenAIModel
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("OpenAI package not found. OpenAI models will not be available.")
+
+try:
+    from augment_adam.models.anthropic_model import AnthropicModel
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    logger = logging.getLogger(__name__)
+    logger.warning("Anthropic package not found. Anthropic models will not be available.")
 
 # Recommended models for different use cases
 RECOMMENDED_MODELS = {
@@ -77,18 +93,25 @@ class ModelFactory:
 
     def __init__(self):
         """Initialize the Model Factory."""
+        # Initialize with local models that are always available
         self.model_types = {
             "huggingface": HuggingFaceModel,
             "ollama": OllamaModel,
-            "openai": OpenAIModel,
-            "anthropic": AnthropicModel
         }
+
+        # Add cloud models if dependencies are available
+        if 'OPENAI_AVAILABLE' in globals() and OPENAI_AVAILABLE:
+            self.model_types["openai"] = OpenAIModel
+
+        if 'ANTHROPIC_AVAILABLE' in globals() and ANTHROPIC_AVAILABLE:
+            self.model_types["anthropic"] = AnthropicModel
 
         # Local models are prioritized
         self.local_model_types = ["huggingface", "ollama"]
-        self.cloud_model_types = ["openai", "anthropic"]
+        self.cloud_model_types = [model_type for model_type in ["openai", "anthropic"]
+                                 if model_type in self.model_types]
 
-        logger.info("Initialized Model Factory")
+        logger.info(f"Initialized Model Factory with models: {list(self.model_types.keys())}")
 
     def create_model(
         self,
