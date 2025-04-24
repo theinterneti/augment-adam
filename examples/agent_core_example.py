@@ -63,13 +63,15 @@ def initialize_context_engine():
     return context_manager
 
 
-def demo_conversational_agent(model_type=None, model_name=None):
+def demo_conversational_agent(model_type=None, model_name=None, model_kwargs=None):
     """Demonstrate the Conversational Agent.
 
     Args:
         model_type: The type of model to use
         model_name: The name of the model to use
+        model_kwargs: Additional model parameters
     """
+    model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Conversational Agent")
 
     # Create potentials for controlled generation
@@ -86,7 +88,8 @@ def demo_conversational_agent(model_type=None, model_name=None):
         model_type=model_type,
         model_name=model_name,
         potentials=[sentence_ending_potential],
-        num_particles=50
+        num_particles=50,
+        **model_kwargs
     )
 
     # Process some inputs
@@ -109,13 +112,15 @@ def demo_conversational_agent(model_type=None, model_name=None):
         print()
 
 
-def demo_task_agent(model_type=None, model_name=None):
+def demo_task_agent(model_type=None, model_name=None, model_kwargs=None):
     """Demonstrate the Task Agent.
 
     Args:
         model_type: The type of model to use
         model_name: The name of the model to use
+        model_kwargs: Additional model parameters
     """
+    model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Task Agent")
 
     # Create a task agent
@@ -125,7 +130,8 @@ def demo_task_agent(model_type=None, model_name=None):
         description="A task-focused AI agent",
         model_type=model_type,
         model_name=model_name,
-        num_particles=50
+        num_particles=50,
+        **model_kwargs
     )
 
     # Process some inputs
@@ -157,13 +163,15 @@ def demo_task_agent(model_type=None, model_name=None):
         print()
 
 
-def demo_research_agent(model_type=None, model_name=None):
+def demo_research_agent(model_type=None, model_name=None, model_kwargs=None):
     """Demonstrate the Research Agent.
 
     Args:
         model_type: The type of model to use
         model_name: The name of the model to use
+        model_kwargs: Additional model parameters
     """
+    model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Research Agent")
 
     # Create a research agent
@@ -173,7 +181,8 @@ def demo_research_agent(model_type=None, model_name=None):
         description="A research-focused AI agent",
         model_type=model_type,
         model_name=model_name,
-        num_particles=50
+        num_particles=50,
+        **model_kwargs
     )
 
     # Add some sources
@@ -210,13 +219,15 @@ def demo_research_agent(model_type=None, model_name=None):
         print()
 
 
-def demo_creative_agent(model_type=None, model_name=None):
+def demo_creative_agent(model_type=None, model_name=None, model_kwargs=None):
     """Demonstrate the Creative Agent.
 
     Args:
         model_type: The type of model to use
         model_name: The name of the model to use
+        model_kwargs: Additional model parameters
     """
+    model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Creative Agent")
 
     # Create a creative agent
@@ -226,7 +237,8 @@ def demo_creative_agent(model_type=None, model_name=None):
         description="A creative-focused AI agent",
         model_type=model_type,
         model_name=model_name,
-        num_particles=50
+        num_particles=50,
+        **model_kwargs
     )
 
     # Process some inputs
@@ -258,13 +270,15 @@ def demo_creative_agent(model_type=None, model_name=None):
         print()
 
 
-def demo_coding_agent(model_type=None, model_name=None):
+def demo_coding_agent(model_type=None, model_name=None, model_kwargs=None):
     """Demonstrate the Coding Agent.
 
     Args:
         model_type: The type of model to use
         model_name: The name of the model to use
+        model_kwargs: Additional model parameters
     """
+    model_kwargs = model_kwargs or {}
     logger.info("Demonstrating Coding Agent")
 
     # Create a coding agent
@@ -274,7 +288,8 @@ def demo_coding_agent(model_type=None, model_name=None):
         description="A code-focused AI agent",
         model_type=model_type,
         model_name=model_name,
-        num_particles=50
+        num_particles=50,
+        **model_kwargs
     )
 
     # Process some inputs
@@ -319,15 +334,32 @@ def main():
     )
     parser.add_argument(
         "--model-type",
-        choices=["openai", "anthropic", "ollama"],
-        default="ollama",
-        help="The type of model to use"
+        choices=["huggingface", "ollama", "openai", "anthropic"],
+        default="huggingface",
+        help="The type of model to use (local models: huggingface, ollama; cloud models: openai, anthropic)"
     )
     parser.add_argument(
         "--model-name",
         type=str,
         default=None,
         help="The name of the model to use (if not specified, use default for model type)"
+    )
+    parser.add_argument(
+        "--load-in-4bit",
+        action="store_true",
+        help="Load Hugging Face model in 4-bit precision (reduces memory usage)"
+    )
+    parser.add_argument(
+        "--load-in-8bit",
+        action="store_true",
+        help="Load Hugging Face model in 8-bit precision (reduces memory usage)"
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        choices=["cpu", "cuda", "mps"],
+        default=None,
+        help="Device to run the model on (default: auto-detect)"
     )
 
     args = parser.parse_args()
@@ -341,23 +373,37 @@ def main():
     model_type = args.model_type
     model_name = args.model_name
 
+    # Prepare model kwargs
+    model_kwargs = {}
+
+    # Add Hugging Face specific parameters if using Hugging Face
+    if model_type == "huggingface":
+        if args.load_in_4bit:
+            model_kwargs["load_in_4bit"] = True
+        if args.load_in_8bit:
+            model_kwargs["load_in_8bit"] = True
+        if args.device:
+            model_kwargs["device"] = args.device
+
     logger.info(f"Using model type: {model_type}, model name: {model_name or 'default'}")
+    if model_kwargs:
+        logger.info(f"Model parameters: {model_kwargs}")
 
     # Demonstrate the specified agent type
     if args.agent == "conversational" or args.agent == "all":
-        demo_conversational_agent(model_type, model_name)
+        demo_conversational_agent(model_type, model_name, model_kwargs)
 
     if args.agent == "task" or args.agent == "all":
-        demo_task_agent(model_type, model_name)
+        demo_task_agent(model_type, model_name, model_kwargs)
 
     if args.agent == "research" or args.agent == "all":
-        demo_research_agent(model_type, model_name)
+        demo_research_agent(model_type, model_name, model_kwargs)
 
     if args.agent == "creative" or args.agent == "all":
-        demo_creative_agent(model_type, model_name)
+        demo_creative_agent(model_type, model_name, model_kwargs)
 
     if args.agent == "coding" or args.agent == "all":
-        demo_coding_agent(model_type, model_name)
+        demo_coding_agent(model_type, model_name, model_kwargs)
 
     logger.info("Finished Agent Core example")
 
