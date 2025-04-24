@@ -24,7 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-poetry install --with dev
+        poetry install --with dev
         pip install black isort flake8 mypy
     
     - name: Check code formatting with Black
@@ -57,7 +57,7 @@ poetry install --with dev
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-poetry install --with dev
+        poetry install --with dev
     
     - name: Run unit tests
       run: pytest tests/unit -v --cov=augment_adam --cov-report=xml
@@ -86,7 +86,7 @@ poetry install --with dev
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-poetry install --with dev
+        poetry install --with dev
     
     - name: Run integration tests
       run: pytest tests/integration -v
@@ -110,7 +110,7 @@ poetry install --with dev
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-poetry install --with dev
+        poetry install --with dev
     
     - name: Run performance tests
       run: pytest tests/performance -v
@@ -138,7 +138,7 @@ poetry install --with dev
       run: |
         python -m pip install --upgrade pip
         pip install poetry
-poetry install --with dev
+        poetry install --with dev
     
     - name: Run compatibility tests
       run: pytest tests/compatibility -v
