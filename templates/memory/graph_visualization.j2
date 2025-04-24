@@ -1,0 +1,287 @@
+{# Template for generating HTML visualization of the memory graph #}
+{# This template is used to generate an HTML file for visualizing the Neo4j memory graph #}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Graph Visualization</title>
+    <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        #graph-container {
+            width: 100%;
+            height: 800px;
+            border: 1px solid #ccc;
+        }
+        .controls {
+            margin-bottom: 20px;
+        }
+        .node-details {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .legend {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f9f9f9;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <h1>Memory Graph Visualization</h1>
+    
+    <div class="controls">
+        <button id="expand-all">Expand All</button>
+        <button id="collapse-all">Collapse All</button>
+        <button id="refresh">Refresh</button>
+        <select id="layout-select">
+            <option value="hierarchical">Hierarchical</option>
+            <option value="force">Force-Directed</option>
+            <option value="circular">Circular</option>
+        </select>
+        <label for="depth-select">Depth:</label>
+        <select id="depth-select">
+            <option value="1">1</option>
+            <option value="2" selected>2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+        </select>
+        <label for="focus-node">Focus Node:</label>
+        <input type="text" id="focus-node" placeholder="Node ID">
+        <button id="focus-button">Focus</button>
+    </div>
+    
+    <div id="graph-container"></div>
+    
+    <div id="node-details" class="node-details">
+        <h2>Node Details</h2>
+        <div id="node-content"></div>
+    </div>
+    
+    <div class="legend">
+        <h3>Legend</h3>
+        {% for node_type in node_types %}
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: {{ node_type.color }};"></div>
+            <div>{{ node_type.label }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <script>
+        // Graph data
+        const nodes = {{ nodes|tojson }};
+        const edges = {{ edges|tojson }};
+        
+        // Create a network
+        const container = document.getElementById('graph-container');
+        
+        // Configuration options
+        const options = {
+            nodes: {
+                shape: 'dot',
+                size: 16,
+                font: {
+                    size: 12,
+                    face: 'Tahoma'
+                },
+                borderWidth: 2
+            },
+            edges: {
+                width: 1,
+                smooth: {
+                    type: 'continuous'
+                },
+                arrows: {
+                    to: {
+                        enabled: true,
+                        scaleFactor: 0.5
+                    }
+                }
+            },
+            physics: {
+                stabilization: true,
+                barnesHut: {
+                    gravitationalConstant: -80000,
+                    springConstant: 0.001,
+                    springLength: 200
+                }
+            },
+            interaction: {
+                navigationButtons: true,
+                keyboard: true,
+                hover: true
+            }
+        };
+        
+        // Create the network
+        const data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+        
+        const network = new vis.Network(container, data, options);
+        
+        // Event listeners
+        network.on('click', function(params) {
+            if (params.nodes.length > 0) {
+                const nodeId = params.nodes[0];
+                const node = data.nodes.get(nodeId);
+                
+                // Display node details
+                const nodeDetails = document.getElementById('node-details');
+                const nodeContent = document.getElementById('node-content');
+                
+                nodeDetails.style.display = 'block';
+                
+                // Format metadata as JSON with syntax highlighting
+                const metadata = JSON.stringify(node.metadata, null, 2);
+                
+                nodeContent.innerHTML = `
+                    <p><strong>ID:</strong> ${node.id}</p>
+                    <p><strong>Label:</strong> ${node.label}</p>
+                    <p><strong>Metadata:</strong></p>
+                    <pre>${metadata}</pre>
+                `;
+            } else {
+                document.getElementById('node-details').style.display = 'none';
+            }
+        });
+        
+        // Layout controls
+        document.getElementById('layout-select').addEventListener('change', function(event) {
+            const layout = event.target.value;
+            
+            if (layout === 'hierarchical') {
+                network.setOptions({
+                    layout: {
+                        hierarchical: {
+                            direction: 'UD',
+                            sortMethod: 'directed',
+                            nodeSpacing: 150,
+                            levelSeparation: 150
+                        }
+                    }
+                });
+            } else if (layout === 'force') {
+                network.setOptions({
+                    layout: {
+                        hierarchical: false
+                    }
+                });
+            } else if (layout === 'circular') {
+                network.setOptions({
+                    layout: {
+                        improvedLayout: true,
+                        hierarchical: false
+                    }
+                });
+                
+                // Position nodes in a circle
+                const nodeIds = data.nodes.getIds();
+                const radius = 300;
+                const angleStep = (2 * Math.PI) / nodeIds.length;
+                
+                nodeIds.forEach((id, index) => {
+                    const angle = index * angleStep;
+                    const x = radius * Math.cos(angle);
+                    const y = radius * Math.sin(angle);
+                    
+                    data.nodes.update({
+                        id: id,
+                        x: x,
+                        y: y,
+                        fixed: {
+                            x: true,
+                            y: true
+                        }
+                    });
+                });
+                
+                setTimeout(() => {
+                    nodeIds.forEach((id) => {
+                        data.nodes.update({
+                            id: id,
+                            fixed: {
+                                x: false,
+                                y: false
+                            }
+                        });
+                    });
+                }, 3000);
+            }
+        });
+        
+        // Expand/collapse controls
+        document.getElementById('expand-all').addEventListener('click', function() {
+            network.setOptions({
+                physics: {
+                    stabilization: false
+                }
+            });
+            
+            const nodeIds = data.nodes.getIds();
+            const positions = network.getPositions(nodeIds);
+            
+            nodeIds.forEach((id) => {
+                const pos = positions[id];
+                data.nodes.update({
+                    id: id,
+                    x: pos.x + (Math.random() - 0.5) * 100,
+                    y: pos.y + (Math.random() - 0.5) * 100
+                });
+            });
+        });
+        
+        document.getElementById('collapse-all').addEventListener('click', function() {
+            network.setOptions({
+                physics: {
+                    stabilization: true
+                }
+            });
+        });
+        
+        // Refresh button
+        document.getElementById('refresh').addEventListener('click', function() {
+            location.reload();
+        });
+        
+        // Focus node
+        document.getElementById('focus-button').addEventListener('click', function() {
+            const nodeId = document.getElementById('focus-node').value;
+            if (nodeId && data.nodes.get(nodeId)) {
+                network.focus(nodeId, {
+                    scale: 1.0,
+                    animation: true
+                });
+                network.selectNodes([nodeId]);
+            }
+        });
+        
+        // Depth select
+        document.getElementById('depth-select').addEventListener('change', function(event) {
+            const depth = event.target.value;
+            // This would typically trigger a new request to the server with the updated depth
+            // For now, we'll just reload the page with a query parameter
+            window.location.href = `?depth=${depth}`;
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+{# Template for generating docstrings #}
+{# This template is used to generate docstrings for the augment_adam package #}
+
+{% if docstring_type == "function" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if parameters %}Parameters
+----------
+{% for param in parameters %}
+{{ param.name }} : {{ param.type }}
+    {{ param.description }}
+{% endfor %}
+{% endif %}
+{% if returns %}
+Returns
+-------
+{{ returns.type }}
+    {{ returns.description }}
+{% endif %}
+{% if raises %}
+Raises
+------
+{% for exception in raises %}
+{{ exception.type }}
+    {{ exception.description }}
+{% endfor %}
+{% endif %}
+{% if examples %}
+Examples
+--------
+{% for example in examples %}
+{{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes
+-----
+{{ notes }}
+{% endif %}
+"""
+{% elif docstring_type == "class" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if attributes %}
+Attributes
+----------
+{% for attr in attributes %}
+{{ attr.name }} : {{ attr.type }}
+    {{ attr.description }}
+{% endfor %}
+{% endif %}
+{% if examples %}
+Examples
+--------
+{% for example in examples %}
+{{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes
+-----
+{{ notes }}
+{% endif %}
+"""
+{% elif docstring_type == "module" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if examples %}
+Examples
+--------
+{% for example in examples %}
+{{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes
+-----
+{{ notes }}
+{% endif %}
+"""
+{% endif %}
