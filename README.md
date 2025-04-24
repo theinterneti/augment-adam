@@ -292,6 +292,60 @@ Key benefits:
 
 For more details, see the [Small Models with Large Context Windows](docs/guides/small_models_large_context.md) guide.
 
+## Hardware Optimization and Model Analysis
+
+Augment Adam includes tools for automatically detecting your hardware capabilities and optimizing model settings accordingly:
+
+```python
+from augment_adam.utils.hardware_optimizer import get_optimal_model_settings
+from augment_adam.models import create_model
+
+# Get optimal settings for your hardware
+settings = get_optimal_model_settings("huggingface", "small_context")
+
+# Create model with optimal settings
+model = create_model(
+    model_type="huggingface",
+    model_size="small_context",
+    **settings
+)
+
+# Generate text with optimized model
+response = model.generate(
+    prompt="What are the benefits of hardware optimization?",
+    max_tokens=100
+)
+print(response)
+```
+
+Key features:
+
+- **Automatic Hardware Detection**: CPU, memory, GPU, and disk specifications
+- **Optimal Settings**: Quantization, parallel processing, and Monte Carlo parameters
+- **Scientific Analysis**: Compare model performance across different tasks
+- **Task-Specific Recommendations**: Find the best model for each specific task
+
+For more details, see the [Hardware Optimization and Model Analysis](docs/guides/hardware_optimization.md) guide.
+
+## FastAPI Server
+
+Augment Adam includes a FastAPI server for easy integration with web applications:
+
+```bash
+# Start the server
+python -m augment_adam.server
+
+# The server will be available at http://localhost:8000
+```
+
+Key endpoints:
+
+- `/models`: Create and manage models
+- `/agents`: Create and manage agents
+- `/models/{model_id}/generate`: Generate text with a model
+- `/agents/{agent_id}/chat`: Chat with an agent
+- `/hardware`: Get hardware information
+
 ## Documentation
 
 For more detailed documentation, see the [docs](docs/) directory.
