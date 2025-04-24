@@ -345,6 +345,13 @@ def main():
         help="The name of the model to use (if not specified, use default for model type)"
     )
     parser.add_argument(
+        "--model-size",
+        type=str,
+        choices=["small", "medium", "large", "xl", "code"],
+        default=None,
+        help="The size of the model to use (if not specified, use default)"
+    )
+    parser.add_argument(
         "--load-in-4bit",
         action="store_true",
         help="Load Hugging Face model in 4-bit precision (reduces memory usage)"
@@ -372,6 +379,7 @@ def main():
     # Create model
     model_type = args.model_type
     model_name = args.model_name
+    model_size = args.model_size
 
     # Prepare model kwargs
     model_kwargs = {}
@@ -385,9 +393,13 @@ def main():
         if args.device:
             model_kwargs["device"] = args.device
 
-    logger.info(f"Using model type: {model_type}, model name: {model_name or 'default'}")
+    logger.info(f"Using model type: {model_type}, model size: {model_size or 'default'}, model name: {model_name or 'auto'}")
     if model_kwargs:
         logger.info(f"Model parameters: {model_kwargs}")
+
+    # Add model_size to kwargs
+    if model_size:
+        model_kwargs["model_size"] = model_size
 
     # Demonstrate the specified agent type
     if args.agent == "conversational" or args.agent == "all":

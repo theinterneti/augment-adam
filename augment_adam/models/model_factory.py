@@ -20,6 +20,27 @@ from augment_adam.models.ollama_model import OllamaModel
 from augment_adam.models.openai_model import OpenAIModel
 from augment_adam.models.anthropic_model import AnthropicModel
 
+# Recommended models for different use cases
+RECOMMENDED_MODELS = {
+    "huggingface": {
+        "default": "mistralai/Mistral-7B-Instruct-v0.2",
+        "small": "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+        "medium": "microsoft/phi-2",
+        "large": "meta-llama/Llama-3-8b-chat-hf",
+        "xl": "meta-llama/Llama-3-70b-chat-hf",
+        "code": "codellama/CodeLlama-7b-instruct-hf",
+        "embedding": "sentence-transformers/all-MiniLM-L6-v2"
+    },
+    "ollama": {
+        "default": "llama3",
+        "small": "phi2",
+        "medium": "mistral",
+        "large": "llama3",
+        "xl": "llama3:70b",
+        "code": "codellama:7b"
+    }
+}
+
 logger = logging.getLogger(__name__)
 
 
@@ -51,6 +72,7 @@ class ModelFactory:
         self,
         model_type: str = "huggingface",
         model_name: Optional[str] = None,
+        model_size: Optional[str] = None,
         **kwargs
     ) -> ModelInterface:
         """Create a model.
@@ -58,6 +80,7 @@ class ModelFactory:
         Args:
             model_type: The type of model to create (defaults to huggingface)
             model_name: The name of the model
+            model_size: The size of the model (small, medium, large, xl, code)
             **kwargs: Additional arguments for the model
 
         Returns:
@@ -75,9 +98,19 @@ class ModelFactory:
                     details={"supported_types": list(self.model_types.keys())}
                 )
 
+            # Set model name based on model_size if provided
+            if model_size and not model_name:
+                if model_type in RECOMMENDED_MODELS and model_size in RECOMMENDED_MODELS[model_type]:
+                    model_name = RECOMMENDED_MODELS[model_type][model_size]
+                    logger.info(f"Using recommended {model_size} model: {model_name}")
+                else:
+                    logger.warning(f"No recommended {model_size} model for {model_type}, using default")
+
             # Set default model name if not provided
             if not model_name:
-                if model_type == "huggingface":
+                if model_type in RECOMMENDED_MODELS and "default" in RECOMMENDED_MODELS[model_type]:
+                    model_name = RECOMMENDED_MODELS[model_type]["default"]
+                elif model_type == "huggingface":
                     model_name = "mistralai/Mistral-7B-Instruct-v0.2"
                 elif model_type == "ollama":
                     model_name = "llama3"
@@ -144,8 +177,9 @@ def get_model_factory() -> ModelFactory:
 
 
 def create_model(
-    model_type: str = "openai",
+    model_type: str = "huggingface",
     model_name: Optional[str] = None,
+    model_size: Optional[str] = None,
     **kwargs
 ) -> ModelInterface:
     """Create a model using the global Model Factory.
@@ -153,6 +187,7 @@ def create_model(
     Args:
         model_type: The type of model to create
         model_name: The name of the model
+        model_size: The size of the model (small, medium, large, xl, code)
         **kwargs: Additional arguments for the model
 
     Returns:
@@ -162,6 +197,7 @@ def create_model(
     return factory.create_model(
         model_type=model_type,
         model_name=model_name,
+        model_size=model_size,
         **kwargs
     )
 
@@ -185,11 +221,13 @@ def get_default_model() -> ModelInterface:
         # Get model settings, defaulting to huggingface
         model_type = settings.get("model", {}).get("type", "huggingface")
         model_name = settings.get("model", {}).get("name", None)
+        model_size = settings.get("model", {}).get("size", "medium")
 
         # Create model
         _default_model = create_model(
             model_type=model_type,
-            model_name=model_name
+            model_name=model_name,
+            model_size=model_size
         )
 
     return _default_model

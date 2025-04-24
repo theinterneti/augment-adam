@@ -8,14 +8,18 @@ Created: 2025-04-28
 
 import logging
 import os
+import dotenv
 from typing import Dict, List, Any, Optional, Union, Tuple, Generator
 import torch
 from transformers import (
-    AutoModelForCausalLM, AutoTokenizer, 
+    AutoModelForCausalLM, AutoTokenizer,
     AutoModelForSeq2SeqLM, pipeline,
     TextIteratorStreamer
 )
 from threading import Thread
+
+# Load environment variables
+dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), '.env'))
 
 from augment_adam.core.errors import (
     ResourceError, NetworkError, wrap_error, log_error, ErrorCategory
@@ -27,9 +31,9 @@ logger = logging.getLogger(__name__)
 
 class HuggingFaceModel(ModelInterface):
     """Hugging Face Model implementation.
-    
+
     This class provides an implementation of the ModelInterface for Hugging Face models.
-    
+
     Attributes:
         model_name: The name of the Hugging Face model to use
         model: The loaded model
@@ -37,36 +41,52 @@ class HuggingFaceModel(ModelInterface):
         device: The device to run the model on
         model_type: The type of model (causal or seq2seq)
     """
-    
+
     def __init__(
         self,
         model_name: str = "mistralai/Mistral-7B-Instruct-v0.2",
         device: str = None,
         load_in_8bit: bool = False,
         load_in_4bit: bool = True,
+        use_auth_token: bool = True,
         **kwargs
     ):
         """Initialize the Hugging Face Model.
-        
+
         Args:
             model_name: The name of the Hugging Face model to use
             device: The device to run the model on (if None, use CUDA if available)
             load_in_8bit: Whether to load the model in 8-bit precision
             load_in_4bit: Whether to load the model in 4-bit precision
+            use_auth_token: Whether to use the Hugging Face token for authentication
             **kwargs: Additional parameters for model loading
         """
         try:
             self.model_name = model_name
-            
+
+            # Get Hugging Face token from environment
+            self.hf_token = os.environ.get("HF_TOKEN")
+            if use_auth_token and not self.hf_token:
+                logger.warning("HF_TOKEN environment variable not found. Some models may not be accessible.")
+
             # Determine device
             if device is None:
                 self.device = "cuda" if torch.cuda.is_available() else "cpu"
             else:
                 self.device = device
-            
+
+            logger.info(f"Loading model {model_name} on {self.device}")
+            if load_in_8bit:
+                logger.info("Using 8-bit quantization")
+            if load_in_4bit:
+                logger.info("Using 4-bit quantization")
+
             # Load tokenizer
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-            
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                model_name,
+                token=self.hf_token if use_auth_token else None
+            )
+
             # Determine model type and load model
             try:
                 # Try loading as a causal language model first
@@ -75,6 +95,7 @@ class HuggingFaceModel(ModelInterface):
                     device_map=self.device,
                     load_in_8bit=load_in_8bit,
                     load_in_4bit=load_in_4bit,
+                    token=self.hf_token if use_auth_token else None,
                     **kwargs
                 )
                 self.model_type = "causal"
@@ -86,10 +107,11 @@ class HuggingFaceModel(ModelInterface):
                     device_map=self.device,
                     load_in_8bit=load_in_8bit,
                     load_in_4bit=load_in_4bit,
+                    token=self.hf_token if use_auth_token else None,
                     **kwargs
                 )
                 self.model_type = "seq2seq"
-            
+
             # Create generation pipeline
             self.pipeline = pipeline(
                 "text-generation" if self.model_type == "causal" else "text2text-generation",
@@ -97,16 +119,19 @@ class HuggingFaceModel(ModelInterface):
                 tokenizer=self.tokenizer,
                 device=0 if self.device == "cuda" else -1
             )
-            
+
             # Create embedding pipeline if available
             try:
                 from sentence_transformers import SentenceTransformer
-                self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+                self.embedding_model = SentenceTransformer(
+                    "all-MiniLM-L6-v2",
+                    token=self.hf_token if use_auth_token else None
+                )
                 self.has_embeddings = True
             except (ImportError, Exception) as e:
                 logger.warning(f"Sentence transformers not available, embeddings will be disabled: {e}")
                 self.has_embeddings = False
-            
+
             logger.info(f"Initialized Hugging Face Model: {model_name} on {self.device}")
         except Exception as e:
             error = wrap_error(
@@ -117,7 +142,7 @@ class HuggingFaceModel(ModelInterface):
             )
             log_error(error, logger=logger)
             raise error
-    
+
     def generate(
         self,
         prompt: str,
@@ -128,7 +153,7 @@ class HuggingFaceModel(ModelInterface):
         **kwargs
     ) -> str:
         """Generate text based on a prompt.
-        
+
         Args:
             prompt: The prompt to generate from
             max_tokens: Maximum number of tokens to generate
@@ -136,14 +161,14 @@ class HuggingFaceModel(ModelInterface):
             top_p: Nucleus sampling parameter (1.0 = no nucleus sampling)
             stop: List of strings that stop generation when encountered
             **kwargs: Additional model-specific parameters
-            
+
         Returns:
             The generated text
         """
         try:
             # Format prompt based on model type
             formatted_prompt = self._format_prompt(prompt)
-            
+
             # Set generation parameters
             generation_kwargs = {
                 "max_new_tokens": max_tokens,
@@ -153,17 +178,17 @@ class HuggingFaceModel(ModelInterface):
                 "pad_token_id": self.tokenizer.eos_token_id,
                 **kwargs
             }
-            
+
             # Add stop sequences if provided
             if stop:
                 generation_kwargs["stopping_criteria"] = self._create_stopping_criteria(stop)
-            
+
             # Generate text
             outputs = self.pipeline(
                 formatted_prompt,
                 **generation_kwargs
             )
-            
+
             # Extract generated text
             if self.model_type == "causal":
                 generated_text = outputs[0]["generated_text"]
@@ -172,7 +197,7 @@ class HuggingFaceModel(ModelInterface):
                     generated_text = generated_text[len(formatted_prompt):]
             else:
                 generated_text = outputs[0]["generated_text"]
-            
+
             logger.info(f"Generated {len(generated_text)} characters with {self.model_name}")
             return generated_text
         except Exception as e:
@@ -184,7 +209,7 @@ class HuggingFaceModel(ModelInterface):
             )
             log_error(error, logger=logger)
             return f"Error generating text: {str(error)}"
-    
+
     def generate_stream(
         self,
         prompt: str,
@@ -195,7 +220,7 @@ class HuggingFaceModel(ModelInterface):
         **kwargs
     ) -> Generator[str, None, None]:
         """Generate text based on a prompt, streaming the results.
-        
+
         Args:
             prompt: The prompt to generate from
             max_tokens: Maximum number of tokens to generate
@@ -203,17 +228,17 @@ class HuggingFaceModel(ModelInterface):
             top_p: Nucleus sampling parameter (1.0 = no nucleus sampling)
             stop: List of strings that stop generation when encountered
             **kwargs: Additional model-specific parameters
-            
+
         Returns:
             A generator yielding chunks of generated text
         """
         try:
             # Format prompt based on model type
             formatted_prompt = self._format_prompt(prompt)
-            
+
             # Create streamer
             streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True)
-            
+
             # Set generation parameters
             generation_kwargs = {
                 "max_new_tokens": max_tokens,
@@ -224,18 +249,18 @@ class HuggingFaceModel(ModelInterface):
                 "streamer": streamer,
                 **kwargs
             }
-            
+
             # Add stop sequences if provided
             if stop:
                 generation_kwargs["stopping_criteria"] = self._create_stopping_criteria(stop)
-            
+
             # Tokenize input
             inputs = self.tokenizer(formatted_prompt, return_tensors="pt").to(self.device)
-            
+
             # Start generation in a separate thread
             thread = Thread(target=self._generate_thread, args=(inputs, generation_kwargs))
             thread.start()
-            
+
             # Yield from streamer
             for text in streamer:
                 yield text
@@ -248,10 +273,10 @@ class HuggingFaceModel(ModelInterface):
             )
             log_error(error, logger=logger)
             yield f"Error generating text: {str(error)}"
-    
+
     def _generate_thread(self, inputs, generation_kwargs):
         """Generate text in a separate thread.
-        
+
         Args:
             inputs: Tokenized inputs
             generation_kwargs: Generation parameters
@@ -260,13 +285,13 @@ class HuggingFaceModel(ModelInterface):
             self.model.generate(**inputs, **generation_kwargs)
         except Exception as e:
             logger.error(f"Error in generation thread: {e}")
-    
+
     def _format_prompt(self, prompt: str) -> str:
         """Format the prompt based on the model type.
-        
+
         Args:
             prompt: The prompt to format
-            
+
         Returns:
             The formatted prompt
         """
@@ -284,47 +309,47 @@ class HuggingFaceModel(ModelInterface):
         else:
             # For non-instruction models, just return the prompt
             return prompt
-    
+
     def _create_stopping_criteria(self, stop_sequences: List[str]):
         """Create stopping criteria for generation.
-        
+
         Args:
             stop_sequences: List of sequences that stop generation
-            
+
         Returns:
             Stopping criteria for generation
         """
         from transformers import StoppingCriteria, StoppingCriteriaList
-        
+
         class StopSequenceCriteria(StoppingCriteria):
             def __init__(self, tokenizer, stop_sequences, prompt_length):
                 self.tokenizer = tokenizer
                 self.stop_sequences = stop_sequences
                 self.prompt_length = prompt_length
-            
+
             def __call__(self, input_ids, scores, **kwargs):
                 # Get the generated text
                 generated_text = self.tokenizer.decode(input_ids[0][self.prompt_length:])
                 # Check if any stop sequence is in the generated text
                 return any(seq in generated_text for seq in self.stop_sequences)
-        
+
         # Get the token IDs for the prompt
         prompt_ids = self.tokenizer.encode(self._format_prompt(""), return_tensors="pt")
         prompt_length = prompt_ids.shape[1]
-        
+
         # Create stopping criteria
         stopping_criteria = StoppingCriteriaList([
             StopSequenceCriteria(self.tokenizer, stop_sequences, prompt_length)
         ])
-        
+
         return stopping_criteria
-    
+
     def get_token_count(self, text: str) -> int:
         """Get the number of tokens in a text.
-        
+
         Args:
             text: The text to count tokens for
-            
+
         Returns:
             The number of tokens
         """
@@ -339,16 +364,16 @@ class HuggingFaceModel(ModelInterface):
                 details={"model_name": self.model_name}
             )
             log_error(error, logger=logger)
-            
+
             # Fall back to a simple approximation
             return len(text.split()) * 4 // 3  # Rough approximation
-    
+
     def get_embedding(self, text: str) -> List[float]:
         """Get the embedding for a text.
-        
+
         Args:
             text: The text to get an embedding for
-            
+
         Returns:
             The embedding as a list of floats
         """
@@ -358,10 +383,10 @@ class HuggingFaceModel(ModelInterface):
                     message="Embeddings are not available for this model",
                     details={"model_name": self.model_name}
                 )
-            
+
             # Generate embedding
             embedding = self.embedding_model.encode(text)
-            
+
             logger.info(f"Generated embedding with {len(embedding)} dimensions")
             return embedding.tolist()
         except Exception as e:
@@ -372,19 +397,19 @@ class HuggingFaceModel(ModelInterface):
                 details={"model_name": self.model_name}
             )
             log_error(error, logger=logger)
-            
+
             # Return a zero vector as fallback
             return [0.0] * 384  # Default embedding size for all-MiniLM-L6-v2
-    
+
     def get_model_info(self) -> Dict[str, Any]:
         """Get information about the model.
-        
+
         Returns:
             A dictionary containing model information
         """
         # Get model configuration
         config = self.model.config.to_dict()
-        
+
         return {
             "name": self.model_name,
             "provider": "Hugging Face",
