@@ -9,6 +9,7 @@ Welcome! This site contains both user/developer guides and a full API reference 
 docs/ARCHITECTURE.md
 docs/CONTRIBUTING.md
 docs/DIRECTORY_STRUCTURE.md
+docs/MIGRATION_GUIDE.md
 docs/container_optimization.md
 docs/docker-mcp-tools.md
 docs/error_handling.md
