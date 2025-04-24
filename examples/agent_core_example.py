@@ -21,6 +21,7 @@ from augment_adam.context_engine.retrieval import MemoryRetriever, WebRetriever
 from augment_adam.context_engine.composition import ContextComposer, ContextOptimizer
 from augment_adam.context_engine.chunking import IntelligentChunker, Summarizer
 from augment_adam.context_engine.prompt import PromptComposer, PromptTemplates
+from augment_adam.models import create_model
 
 # Configure logging
 logging.basicConfig(
@@ -62,8 +63,13 @@ def initialize_context_engine():
     return context_manager
 
 
-def demo_conversational_agent():
-    """Demonstrate the Conversational Agent."""
+def demo_conversational_agent(model_type=None, model_name=None):
+    """Demonstrate the Conversational Agent.
+
+    Args:
+        model_type: The type of model to use
+        model_name: The name of the model to use
+    """
     logger.info("Demonstrating Conversational Agent")
 
     # Create potentials for controlled generation
@@ -77,6 +83,8 @@ def demo_conversational_agent():
         agent_type="conversational",
         name="Conversational Agent",
         description="A conversational AI agent",
+        model_type=model_type,
+        model_name=model_name,
         potentials=[sentence_ending_potential],
         num_particles=50
     )
@@ -101,8 +109,13 @@ def demo_conversational_agent():
         print()
 
 
-def demo_task_agent():
-    """Demonstrate the Task Agent."""
+def demo_task_agent(model_type=None, model_name=None):
+    """Demonstrate the Task Agent.
+
+    Args:
+        model_type: The type of model to use
+        model_name: The name of the model to use
+    """
     logger.info("Demonstrating Task Agent")
 
     # Create a task agent
@@ -110,6 +123,8 @@ def demo_task_agent():
         agent_type="task",
         name="Task Agent",
         description="A task-focused AI agent",
+        model_type=model_type,
+        model_name=model_name,
         num_particles=50
     )
 
@@ -142,8 +157,13 @@ def demo_task_agent():
         print()
 
 
-def demo_research_agent():
-    """Demonstrate the Research Agent."""
+def demo_research_agent(model_type=None, model_name=None):
+    """Demonstrate the Research Agent.
+
+    Args:
+        model_type: The type of model to use
+        model_name: The name of the model to use
+    """
     logger.info("Demonstrating Research Agent")
 
     # Create a research agent
@@ -151,6 +171,8 @@ def demo_research_agent():
         agent_type="research",
         name="Research Agent",
         description="A research-focused AI agent",
+        model_type=model_type,
+        model_name=model_name,
         num_particles=50
     )
 
@@ -188,8 +210,13 @@ def demo_research_agent():
         print()
 
 
-def demo_creative_agent():
-    """Demonstrate the Creative Agent."""
+def demo_creative_agent(model_type=None, model_name=None):
+    """Demonstrate the Creative Agent.
+
+    Args:
+        model_type: The type of model to use
+        model_name: The name of the model to use
+    """
     logger.info("Demonstrating Creative Agent")
 
     # Create a creative agent
@@ -197,6 +224,8 @@ def demo_creative_agent():
         agent_type="creative",
         name="Creative Agent",
         description="A creative-focused AI agent",
+        model_type=model_type,
+        model_name=model_name,
         num_particles=50
     )
 
@@ -229,8 +258,13 @@ def demo_creative_agent():
         print()
 
 
-def demo_coding_agent():
-    """Demonstrate the Coding Agent."""
+def demo_coding_agent(model_type=None, model_name=None):
+    """Demonstrate the Coding Agent.
+
+    Args:
+        model_type: The type of model to use
+        model_name: The name of the model to use
+    """
     logger.info("Demonstrating Coding Agent")
 
     # Create a coding agent
@@ -238,6 +272,8 @@ def demo_coding_agent():
         agent_type="coding",
         name="Coding Agent",
         description="A code-focused AI agent",
+        model_type=model_type,
+        model_name=model_name,
         num_particles=50
     )
 
@@ -281,6 +317,18 @@ def main():
         default="all",
         help="The type of agent to demonstrate"
     )
+    parser.add_argument(
+        "--model-type",
+        choices=["openai", "anthropic", "ollama"],
+        default="ollama",
+        help="The type of model to use"
+    )
+    parser.add_argument(
+        "--model-name",
+        type=str,
+        default=None,
+        help="The name of the model to use (if not specified, use default for model type)"
+    )
 
     args = parser.parse_args()
 
@@ -289,21 +337,27 @@ def main():
     # Initialize Context Engine
     initialize_context_engine()
 
+    # Create model
+    model_type = args.model_type
+    model_name = args.model_name
+
+    logger.info(f"Using model type: {model_type}, model name: {model_name or 'default'}")
+
     # Demonstrate the specified agent type
     if args.agent == "conversational" or args.agent == "all":
-        demo_conversational_agent()
+        demo_conversational_agent(model_type, model_name)
 
     if args.agent == "task" or args.agent == "all":
-        demo_task_agent()
+        demo_task_agent(model_type, model_name)
 
     if args.agent == "research" or args.agent == "all":
-        demo_research_agent()
+        demo_research_agent(model_type, model_name)
 
     if args.agent == "creative" or args.agent == "all":
-        demo_creative_agent()
+        demo_creative_agent(model_type, model_name)
 
     if args.agent == "coding" or args.agent == "all":
-        demo_coding_agent()
+        demo_coding_agent(model_type, model_name)
 
     logger.info("Finished Agent Core example")
 
