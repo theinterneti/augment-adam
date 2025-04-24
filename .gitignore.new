@@ -1,0 +1,95 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Documentation
+docs/_build/
+docs/api/_build/
+docs/user_guide/_build/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.log
+logs/
+data/
+.faiss/
+.neo4j/
+.redis/
+.backup/
+
+# Docker
+.docker/
+
+# Jupyter Notebooks
+.ipynb_checkpoints
+*.ipynb
+
+# Virtual Environment
+.python-version
+
+# Poetry
+poetry.lock
+
+# Ruff
+.ruff_cache/
+
+# MyPy
+.mypy_cache/
+
+# Backup files
+backup/
+*.bak
