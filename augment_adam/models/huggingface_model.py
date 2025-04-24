@@ -14,12 +14,15 @@ import torch
 from transformers import (
     AutoModelForCausalLM, AutoTokenizer,
     AutoModelForSeq2SeqLM, pipeline,
-    TextIteratorStreamer
+    TextIteratorStreamer, BitsAndBytesConfig
 )
 from threading import Thread
+import gc
 
 # Load environment variables
 dotenv.load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__)))), '.env'))
+
+from augment_adam.models.caching import get_model_cache
 
 from augment_adam.core.errors import (
     ResourceError, NetworkError, wrap_error, log_error, ErrorCategory
@@ -49,6 +52,11 @@ class HuggingFaceModel(ModelInterface):
         load_in_8bit: bool = False,
         load_in_4bit: bool = True,
         use_auth_token: bool = True,
+        use_cache: bool = True,
+        max_cache_size: int = 1024 * 1024 * 1024,  # 1 GB
+        context_window_size: Optional[int] = None,
+        use_flash_attention: bool = True,
+        use_bettertransformer: bool = True,
         **kwargs
     ):
         """Initialize the Hugging Face Model.
@@ -59,6 +67,11 @@ class HuggingFaceModel(ModelInterface):
             load_in_8bit: Whether to load the model in 8-bit precision
             load_in_4bit: Whether to load the model in 4-bit precision
             use_auth_token: Whether to use the Hugging Face token for authentication
+            use_cache: Whether to use the model cache
+            max_cache_size: Maximum cache size in bytes
+            context_window_size: Size of the context window (if None, use model default)
+            use_flash_attention: Whether to use Flash Attention for faster inference
+            use_bettertransformer: Whether to use BetterTransformer for faster inference
             **kwargs: Additional parameters for model loading
         """
         try:
@@ -75,42 +88,147 @@ class HuggingFaceModel(ModelInterface):
             else:
                 self.device = device
 
+            # Initialize cache
+            self.use_cache = use_cache
+            if use_cache:
+                self.cache = get_model_cache(
+                    model_name=model_name,
+                    provider="huggingface",
+                    max_cache_size=max_cache_size
+                )
+            else:
+                self.cache = None
+
             logger.info(f"Loading model {model_name} on {self.device}")
             if load_in_8bit:
                 logger.info("Using 8-bit quantization")
             if load_in_4bit:
                 logger.info("Using 4-bit quantization")
 
+            # Set up quantization config
+            quantization_config = None
+            if load_in_4bit or load_in_8bit:
+                quantization_config = BitsAndBytesConfig(
+                    load_in_4bit=load_in_4bit,
+                    load_in_8bit=load_in_8bit,
+                    bnb_4bit_compute_dtype=torch.float16,
+                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_quant_type="nf4"
+                )
+
+            # Check if tokenizer is in cache
+            tokenizer_path = None
+            if self.cache:
+                tokenizer_path = self.cache.get_tokenizer_path()
+
             # Load tokenizer
-            self.tokenizer = AutoTokenizer.from_pretrained(
-                model_name,
-                token=self.hf_token if use_auth_token else None
-            )
+            if tokenizer_path:
+                logger.info(f"Loading tokenizer from cache: {tokenizer_path}")
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    tokenizer_path,
+                    token=self.hf_token if use_auth_token else None
+                )
+            else:
+                logger.info("Loading tokenizer from Hugging Face")
+                self.tokenizer = AutoTokenizer.from_pretrained(
+                    model_name,
+                    token=self.hf_token if use_auth_token else None
+                )
+
+                # Save tokenizer to cache
+                if self.cache:
+                    self.cache.save_tokenizer(self.tokenizer)
+
+            # Set up model loading kwargs
+            model_kwargs = {
+                "device_map": self.device,
+                "quantization_config": quantization_config,
+                "token": self.hf_token if use_auth_token else None,
+                **kwargs
+            }
+
+            # Add Flash Attention if requested and available
+            if use_flash_attention and self.device == "cuda":
+                try:
+                    from transformers import AutoConfig
+                    config = AutoConfig.from_pretrained(model_name)
+
+                    # Check if model supports attention implementation
+                    if hasattr(config, "attn_implementation"):
+                        model_kwargs["attn_implementation"] = "flash_attention_2"
+                        logger.info("Using Flash Attention 2")
+                except Exception as e:
+                    logger.warning(f"Failed to set up Flash Attention: {e}")
+
+            # Set context window size if provided
+            if context_window_size:
+                model_kwargs["max_position_embeddings"] = context_window_size
+                model_kwargs["rope_scaling"] = {"type": "dynamic", "factor": 2.0}
+                logger.info(f"Setting context window size to {context_window_size}")
+
+            # Check if model is in cache
+            model_path = None
+            if self.cache:
+                model_path = self.cache.get_model_path()
 
             # Determine model type and load model
             try:
                 # Try loading as a causal language model first
-                self.model = AutoModelForCausalLM.from_pretrained(
-                    model_name,
-                    device_map=self.device,
-                    load_in_8bit=load_in_8bit,
-                    load_in_4bit=load_in_4bit,
-                    token=self.hf_token if use_auth_token else None,
-                    **kwargs
-                )
+                if model_path:
+                    logger.info(f"Loading causal model from cache: {model_path}")
+                    self.model = AutoModelForCausalLM.from_pretrained(
+                        model_path,
+                        **model_kwargs
+                    )
+                else:
+                    logger.info("Loading causal model from Hugging Face")
+                    self.model = AutoModelForCausalLM.from_pretrained(
+                        model_name,
+                        **model_kwargs
+                    )
+
+                    # Save model to cache
+                    if self.cache:
+                        self.cache.save_model_weights(self.model)
+
                 self.model_type = "causal"
             except Exception as e:
                 logger.info(f"Failed to load as causal model, trying seq2seq: {e}")
+
+                # Free up memory
+                if 'self.model' in locals():
+                    del self.model
+                    gc.collect()
+                    torch.cuda.empty_cache()
+
                 # Try loading as a seq2seq model
-                self.model = AutoModelForSeq2SeqLM.from_pretrained(
-                    model_name,
-                    device_map=self.device,
-                    load_in_8bit=load_in_8bit,
-                    load_in_4bit=load_in_4bit,
-                    token=self.hf_token if use_auth_token else None,
-                    **kwargs
-                )
+                if model_path:
+                    logger.info(f"Loading seq2seq model from cache: {model_path}")
+                    self.model = AutoModelForSeq2SeqLM.from_pretrained(
+                        model_path,
+                        **model_kwargs
+                    )
+                else:
+                    logger.info("Loading seq2seq model from Hugging Face")
+                    self.model = AutoModelForSeq2SeqLM.from_pretrained(
+                        model_name,
+                        **model_kwargs
+                    )
+
+                    # Save model to cache
+                    if self.cache:
+                        self.cache.save_model_weights(self.model)
+
                 self.model_type = "seq2seq"
+
+            # Apply BetterTransformer if requested
+            if use_bettertransformer:
+                try:
+                    from optimum.bettertransformer import BetterTransformer
+                    self.model = BetterTransformer.transform(self.model)
+                    logger.info("Applied BetterTransformer optimization")
+                except Exception as e:
+                    logger.warning(f"Failed to apply BetterTransformer: {e}")
 
             # Create generation pipeline
             self.pipeline = pipeline(
@@ -150,6 +268,10 @@ class HuggingFaceModel(ModelInterface):
         temperature: float = 0.7,
         top_p: float = 1.0,
         stop: Optional[List[str]] = None,
+        use_cache: Optional[bool] = None,
+        use_monte_carlo: bool = True,
+        monte_carlo_particles: int = 50,
+        monte_carlo_potentials: Optional[List[Any]] = None,
         **kwargs
     ) -> str:
         """Generate text based on a prompt.
@@ -160,12 +282,62 @@ class HuggingFaceModel(ModelInterface):
             temperature: Sampling temperature (higher = more random)
             top_p: Nucleus sampling parameter (1.0 = no nucleus sampling)
             stop: List of strings that stop generation when encountered
+            use_cache: Whether to use the cache (if None, use the instance setting)
+            use_monte_carlo: Whether to use Monte Carlo sampling
+            monte_carlo_particles: Number of particles for Monte Carlo sampling
+            monte_carlo_potentials: Potentials for Monte Carlo sampling
             **kwargs: Additional model-specific parameters
 
         Returns:
             The generated text
         """
         try:
+            # Check if we should use the cache
+            should_use_cache = self.use_cache if use_cache is None else use_cache
+
+            # Create cache key parameters
+            cache_params = {
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+                "top_p": top_p,
+                "stop": stop,
+                "use_monte_carlo": use_monte_carlo,
+                "monte_carlo_particles": monte_carlo_particles,
+                **kwargs
+            }
+
+            # Check if result is in cache
+            if should_use_cache and self.cache:
+                cached_result = self.cache.get_generation(prompt, cache_params)
+                if cached_result:
+                    logger.info(f"Using cached generation for {prompt[:20]}...")
+                    return cached_result
+
+            # If Monte Carlo sampling is requested and potentials are provided, use SMC
+            if use_monte_carlo and monte_carlo_potentials:
+                from augment_adam.ai_agent.smc.sampler import SequentialMonteCarlo
+
+                # Create SMC sampler
+                smc_sampler = SequentialMonteCarlo(
+                    num_particles=monte_carlo_particles,
+                    potentials=monte_carlo_potentials,
+                    model=self
+                )
+
+                # Generate with SMC
+                generated_text = smc_sampler.sample(
+                    prompt=prompt,
+                    max_tokens=max_tokens,
+                    temperature=temperature,
+                    stop=stop
+                )
+
+                # Cache the result
+                if should_use_cache and self.cache:
+                    self.cache.save_generation(prompt, cache_params, generated_text)
+
+                return generated_text
+
             # Format prompt based on model type
             formatted_prompt = self._format_prompt(prompt)
 
@@ -197,6 +369,10 @@ class HuggingFaceModel(ModelInterface):
                     generated_text = generated_text[len(formatted_prompt):]
             else:
                 generated_text = outputs[0]["generated_text"]
+
+            # Cache the result
+            if should_use_cache and self.cache:
+                self.cache.save_generation(prompt, cache_params, generated_text)
 
             logger.info(f"Generated {len(generated_text)} characters with {self.model_name}")
             return generated_text
@@ -368,11 +544,12 @@ class HuggingFaceModel(ModelInterface):
             # Fall back to a simple approximation
             return len(text.split()) * 4 // 3  # Rough approximation
 
-    def get_embedding(self, text: str) -> List[float]:
+    def get_embedding(self, text: str, use_cache: Optional[bool] = None) -> List[float]:
         """Get the embedding for a text.
 
         Args:
             text: The text to get an embedding for
+            use_cache: Whether to use the cache (if None, use the instance setting)
 
         Returns:
             The embedding as a list of floats
@@ -384,11 +561,26 @@ class HuggingFaceModel(ModelInterface):
                     details={"model_name": self.model_name}
                 )
 
+            # Check if we should use the cache
+            should_use_cache = self.use_cache if use_cache is None else use_cache
+
+            # Check if embedding is in cache
+            if should_use_cache and self.cache:
+                cached_embedding = self.cache.get_embedding(text)
+                if cached_embedding:
+                    logger.info(f"Using cached embedding for {text[:20]}...")
+                    return cached_embedding
+
             # Generate embedding
             embedding = self.embedding_model.encode(text)
+            embedding_list = embedding.tolist()
+
+            # Cache the embedding
+            if should_use_cache and self.cache:
+                self.cache.save_embedding(text, embedding_list)
 
             logger.info(f"Generated embedding with {len(embedding)} dimensions")
-            return embedding.tolist()
+            return embedding_list
         except Exception as e:
             error = wrap_error(
                 e,

@@ -139,7 +139,7 @@ Augment Adam provides a flexible AI agent architecture with model management, me
 - **Specialized Agents**: Conversational, Task, Research, Creative, and Coding agents
 - **Memory Integration**: Agent-specific memory with global memory access
 - **Reasoning Components**: Chain of thought, reflection, planning, and more
-- **Sequential Monte Carlo**: Controlled generation with syntactic and semantic constraints
+- **Sequential Monte Carlo**: Controlled generation with syntactic and semantic constraints, enabling smaller models to produce higher-quality outputs
 
 ### Agent Factory
 
@@ -236,6 +236,60 @@ prompt = context_manager.process_query(
     prompt_type="qa"
 )
 ```
+
+## Small Models with Large Context Windows
+
+Augment Adam supports small models with large context windows, leveraging our Monte Carlo approach for better performance:
+
+```python
+from augment_adam.models import create_model
+from augment_adam.ai_agent import create_agent
+from augment_adam.ai_agent.smc.potential import RegexPotential
+from augment_adam.ai_agent.smc.advanced_potentials import StylePotential, CONVERSATIONAL_STYLE
+
+# Create a small model with large context window
+model = create_model(
+    model_type="huggingface",
+    model_size="small_context",  # Uses Qwen/Qwen1.5-0.5B-Chat with 32K context
+    use_cache=True,
+    use_monte_carlo=True,
+    monte_carlo_particles=100
+)
+
+# Create potentials for guided generation
+potentials = [
+    RegexPotential(
+        pattern=r".*[.!?]$",
+        name="sentence_ending_potential"
+    ),
+    StylePotential(
+        style_patterns=CONVERSATIONAL_STYLE,
+        name="conversational_style_potential"
+    )
+]
+
+# Create an agent using the model
+agent = create_agent(
+    agent_type="conversational",
+    name="Conversational Agent",
+    description="A conversational AI assistant",
+    model=model,
+    potentials=potentials
+)
+
+# Generate a response
+response = agent.process("Tell me about the benefits of small models with large context windows.")
+print(f"Agent: {response['response']}")
+```
+
+Key benefits:
+
+- **Efficiency**: Small models require less computational resources
+- **Large Context**: Support for context windows up to 32K tokens
+- **Guided Generation**: Monte Carlo approach enhances output quality
+- **Persistent Caching**: Docker named volumes for efficient caching
+
+For more details, see the [Small Models with Large Context Windows](docs/guides/small_models_large_context.md) guide.
 
 ## Documentation
 

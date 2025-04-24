@@ -29,7 +29,12 @@ RECOMMENDED_MODELS = {
         "large": "meta-llama/Llama-3-8b-chat-hf",
         "xl": "meta-llama/Llama-3-70b-chat-hf",
         "code": "codellama/CodeLlama-7b-instruct-hf",
-        "embedding": "sentence-transformers/all-MiniLM-L6-v2"
+        "embedding": "sentence-transformers/all-MiniLM-L6-v2",
+        # Small models with large context windows
+        "small_context": "Qwen/Qwen1.5-0.5B-Chat",  # 32K context
+        "tiny_context": "Qwen/Qwen1.5-0.5B-Chat",   # 32K context
+        "medium_context": "Qwen/Qwen1.5-1.8B-Chat", # 32K context
+        "long_context": "Qwen/Qwen1.5-7B-Chat"      # 32K context
     },
     "ollama": {
         "default": "llama3",
@@ -37,8 +42,25 @@ RECOMMENDED_MODELS = {
         "medium": "mistral",
         "large": "llama3",
         "xl": "llama3:70b",
-        "code": "codellama:7b"
+        "code": "codellama:7b",
+        # Small models with large context windows
+        "small_context": "qwen:0.5b",  # 32K context
+        "tiny_context": "qwen:0.5b",   # 32K context
+        "medium_context": "qwen:1.8b", # 32K context
+        "long_context": "qwen:7b"      # 32K context
     }
+}
+
+# Default context window sizes for different model sizes
+DEFAULT_CONTEXT_SIZES = {
+    "small": 2048,
+    "medium": 4096,
+    "large": 8192,
+    "xl": 16384,
+    "small_context": 32768,
+    "tiny_context": 32768,
+    "medium_context": 32768,
+    "long_context": 32768
 }
 
 logger = logging.getLogger(__name__)
@@ -98,11 +120,18 @@ class ModelFactory:
                     details={"supported_types": list(self.model_types.keys())}
                 )
 
-            # Set model name based on model_size if provided
+            # Set model name and context window size based on model_size if provided
+            context_window_size = kwargs.get("context_window_size")
             if model_size and not model_name:
                 if model_type in RECOMMENDED_MODELS and model_size in RECOMMENDED_MODELS[model_type]:
                     model_name = RECOMMENDED_MODELS[model_type][model_size]
                     logger.info(f"Using recommended {model_size} model: {model_name}")
+
+                    # Set context window size if not explicitly provided
+                    if not context_window_size and model_size in DEFAULT_CONTEXT_SIZES:
+                        context_window_size = DEFAULT_CONTEXT_SIZES[model_size]
+                        kwargs["context_window_size"] = context_window_size
+                        logger.info(f"Using default context window size for {model_size}: {context_window_size}")
                 else:
                     logger.warning(f"No recommended {model_size} model for {model_type}, using default")
 
@@ -118,6 +147,18 @@ class ModelFactory:
                     model_name = "gpt-4o"
                 elif model_type == "anthropic":
                     model_name = "claude-3-opus-20240229"
+
+            # Set Monte Carlo parameters for small models
+            if model_size in ["small", "tiny_context", "small_context"] and model_type in ["huggingface", "ollama"]:
+                # Enable Monte Carlo by default for small models
+                if "use_monte_carlo" not in kwargs:
+                    kwargs["use_monte_carlo"] = True
+                    logger.info(f"Enabling Monte Carlo sampling for small model: {model_name}")
+
+                # Set higher number of particles for small models
+                if "monte_carlo_particles" not in kwargs:
+                    kwargs["monte_carlo_particles"] = 100
+                    logger.info(f"Using 100 particles for Monte Carlo sampling with small model: {model_name}")
 
             # Create model
             model = model_class(

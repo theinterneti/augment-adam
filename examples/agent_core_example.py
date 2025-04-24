@@ -472,7 +472,7 @@ def main():
     parser.add_argument(
         "--model-size",
         type=str,
-        choices=["small", "medium", "large", "xl", "code"],
+        choices=["small", "medium", "large", "xl", "code", "small_context", "tiny_context", "medium_context", "long_context"],
         default=None,
         help="The size of the model to use (if not specified, use default)"
     )
@@ -492,6 +492,28 @@ def main():
         choices=["cpu", "cuda", "mps"],
         default=None,
         help="Device to run the model on (default: auto-detect)"
+    )
+    parser.add_argument(
+        "--use-cache",
+        action="store_true",
+        help="Use model cache for faster loading and generation"
+    )
+    parser.add_argument(
+        "--context-window-size",
+        type=int,
+        default=None,
+        help="Size of the context window (if not specified, use model default)"
+    )
+    parser.add_argument(
+        "--use-monte-carlo",
+        action="store_true",
+        help="Use Monte Carlo sampling for generation (automatically enabled for small models)"
+    )
+    parser.add_argument(
+        "--monte-carlo-particles",
+        type=int,
+        default=None,
+        help="Number of particles for Monte Carlo sampling (default: 50 for medium/large models, 100 for small models)"
     )
 
     args = parser.parse_args()
@@ -517,6 +539,16 @@ def main():
             model_kwargs["load_in_8bit"] = True
         if args.device:
             model_kwargs["device"] = args.device
+
+    # Add common parameters
+    if args.use_cache:
+        model_kwargs["use_cache"] = True
+    if args.context_window_size:
+        model_kwargs["context_window_size"] = args.context_window_size
+    if args.use_monte_carlo:
+        model_kwargs["use_monte_carlo"] = True
+    if args.monte_carlo_particles:
+        model_kwargs["monte_carlo_particles"] = args.monte_carlo_particles
 
     logger.info(f"Using model type: {model_type}, model size: {model_size or 'default'}, model name: {model_name or 'auto'}")
     if model_kwargs:
