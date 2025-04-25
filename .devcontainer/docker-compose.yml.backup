@@ -1,0 +1,71 @@
+version: '3.8'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    volumes:
+      # Mount the root folder that contains .devcontainer folder
+      - ..:/workspace:cached
+
+      # Mount Docker socket for Docker-in-Docker
+      - /var/run/docker.sock:/var/run/docker.sock
+
+      # Mount existing volumes for large files and models
+      - OllamaModels:/root/.ollama:cached
+      - model-cache:/workspace/.cache/models:cached
+      - huggingface-cache:/workspace/.cache/huggingface:cached
+
+      # Cache volumes for faster builds and package installations
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+
+      # Mount Git config
+      - ~/.gitconfig:/home/vscode/.gitconfig:ro
+
+    # Overrides default command so things don't shut down after the process ends
+    command: sleep infinity
+
+    # Forward ports for services
+    ports:
+      - "8888:8888"  # Jupyter
+      - "11434:11434"  # Ollama
+
+    # Set environment variables
+    environment:
+      - PYTHONPATH=/workspace
+      - HF_HOME=/workspace/.cache/huggingface
+
+    # Use the "remoteUser" property in devcontainer.json to specify a non-root user
+    # Commented out to let the Dockerfile and devcontainer.json handle user setup
+    # user: vscode
+
+    # GPU configuration for NVIDIA GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+volumes:
+  # Define named volumes
+  OllamaModels:
+    external: true
+  model-cache:
+    external: false  # Will be created if it doesn't exist
+  huggingface-cache:
+    external: false  # Will be created if it doesn't exist
+
+  # Cache volumes for faster builds
+  pip-cache:
+    external: false  # Cache pip packages
+  apt-cache:
+    external: false  # Cache apt packages
+  torch-cache:
+    external: false  # Cache PyTorch models and weights
