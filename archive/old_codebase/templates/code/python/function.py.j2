@@ -1,0 +1,45 @@
+{# @tags: code, function, python #}
+{# @description: This template is used to generate Python functions #}
+{# @variables: function_name:str, description:str, args:list, return_type:str, body:str, imports:list, decorators:list #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: function_name="greet", description="Greet a person", args=[{"name": "name", "type": "str", "default": "'World'"}], return_type="str", body="return f'Hello, {name}!'" #}
+{# @related_templates: class.py.j2, module.py.j2 #}
+{% if imports %}
+{{ imports | format_imports }}
+
+{% endif %}
+{% for decorator in decorators %}
+{{ decorator }}
+{% endfor %}
+def {{ function_name }}({% for arg in args %}{{ arg.name }}{% if arg.type %}: {{ arg.type }}{% endif %}{% if arg.default %} = {{ arg.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if return_type %} -> {{ return_type }}{% endif %}:
+    """
+    {{ description }}
+    
+    {% if args %}
+    Args:
+        {% for arg in args %}
+        {{ arg.name }}: {{ arg.description if arg.description else 'The ' + arg.name }}
+        {% endfor %}
+    {% endif %}
+    
+    {% if return_type and return_type != 'None' %}
+    Returns:
+        {{ return_description if return_description else 'The result of the operation' }}
+    {% endif %}
+    
+    {% if raises %}
+    Raises:
+        {% for exception in raises %}
+        {{ exception.type }}: {{ exception.description }}
+        {% endfor %}
+    {% endif %}
+    
+    {% if examples %}
+    Examples:
+        {% for example in examples %}
+        >>> {{ example }}
+        {% endfor %}
+    {% endif %}
+    """
+    {{ body | indent(4) }}

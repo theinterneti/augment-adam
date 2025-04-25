@@ -1,0 +1,78 @@
+{# Template for generating Neo4j Cypher queries #}
+{# @tags: memory, neo4j, cypher, query #}
+{# @description: This template is used to generate Cypher queries for the Neo4j memory graph #}
+{# @variables: query_type:str, node_label:str, collection_name:str, relationship_type:str, index_name:str, vector_dimensions:int, similarity_function:str, custom_query:str #}
+
+{% if query_type == "create_node" %}
+// Create a node with the given properties
+MERGE (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $id})
+SET n.embedding = $embedding,
+    n.metadata = $metadata,
+    n.timestamp = timestamp()
+{% if return_node %}RETURN n{% endif %}
+
+{% elif query_type == "create_relationship" %}
+// Create a relationship between two nodes
+MATCH (from:{{ from_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $from_id})
+MATCH (to:{{ to_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $to_id})
+MERGE (from)-[r:{{ relationship_type }}]->(to)
+{% if properties %}SET r += $properties{% endif %}
+{% if return_relationship %}RETURN r{% endif %}
+
+{% elif query_type == "search_vector" %}
+// Search for similar vectors
+CALL db.index.vector.queryNodes('{{ index_name }}', $k, $embedding)
+YIELD node, score
+WITH node, score, apoc.convert.fromJsonMap(node.metadata) AS json
+{% if filter_conditions %}WHERE {{ filter_conditions }}{% endif %}
+RETURN node.id AS id, score, node.metadata AS metadata
+ORDER BY score DESC
+LIMIT $k
+
+{% elif query_type == "get_by_id" %}
+// Get a node by ID
+MATCH (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $id})
+RETURN n.metadata AS metadata
+
+{% elif query_type == "delete_node" %}
+// Delete a node by ID
+MATCH (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $id})
+{% if delete_relationships %}DETACH DELETE n{% else %}DELETE n{% endif %}
+RETURN count(n) as deleted_count
+
+{% elif query_type == "clear_collection" %}
+// Clear all nodes in a collection
+MATCH (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %})
+{% if delete_relationships %}DETACH DELETE n{% else %}DELETE n{% endif %}
+RETURN count(n) as deleted_count
+
+{% elif query_type == "create_index" %}
+// Create a vector index
+CREATE VECTOR INDEX {{ index_name }} IF NOT EXISTS
+FOR (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %}) ON (n.embedding)
+OPTIONS {
+  indexConfig: {
+    `vector.dimensions`: {{ vector_dimensions }},
+    `vector.similarity_function`: '{{ similarity_function }}'
+  }
+}
+
+{% elif query_type == "get_neighbors" %}
+// Get neighbors of a node
+MATCH (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $id})-[r{% if relationship_type %}:{{ relationship_type }}{% endif %}]->(neighbor)
+RETURN type(r) as relationship_type, r as relationship, neighbor.id as neighbor_id, neighbor.metadata as neighbor_metadata
+{% if limit %}LIMIT {{ limit }}{% endif %}
+
+{% elif query_type == "get_graph" %}
+// Get a subgraph centered on a node
+MATCH path = (n:{{ node_label }}{% if collection_name %} :{{ collection_name }}{% endif %} {id: $id})-[*1..{{ depth }}]-(related)
+RETURN path
+{% if limit %}LIMIT {{ limit }}{% endif %}
+
+{% elif query_type == "custom" %}
+// Custom query
+{{ custom_query }}
+
+{% else %}
+// Unknown query type: {{ query_type }}
+{% endif %}

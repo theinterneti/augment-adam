@@ -1,0 +1,392 @@
+{# Template for generating a tagging system #}
+{# @tags: code, tagging, python #}
+{# @description: This template is used to generate a tagging system for the augment_adam package #}
+{# @variables: module_name:str, tag_categories:list, tag_hierarchies:list #}
+
+"""
+{{ module_name }}: A tagging system for categorizing and organizing code.
+
+This module provides a tagging system for categorizing and organizing code
+in the augment_adam package. It defines tag categories, hierarchies, and
+utilities for working with tags.
+"""
+
+from enum import Enum, auto
+from typing import Dict, List, Optional, Set, Union, Any
+from dataclasses import dataclass, field
+
+
+class TagCategory(Enum):
+    """Categories for tags."""
+    {% for category in tag_categories %}
+    {{ category.name }} = auto()  # {{ category.description }}
+    {% endfor %}
+
+
+@dataclass
+class Tag:
+    """
+    Represents a tag that can be applied to code.
+    
+    Tags are used to categorize and organize code. They can be hierarchical
+    and belong to different categories.
+    
+    Attributes:
+        name: The name of the tag.
+        category: The category of the tag.
+        parent: Optional parent tag.
+        attributes: Optional attributes for the tag.
+        children: Child tags.
+    """
+    
+    name: str
+    category: TagCategory
+    parent: Optional['Tag'] = None
+    attributes: Dict[str, Any] = field(default_factory=dict)
+    children: List['Tag'] = field(default_factory=list)
+    
+    def __post_init__(self):
+        """Initialize the tag."""
+        if self.parent:
+            self.parent.children.append(self)
+    
+    def __str__(self) -> str:
+        """Return the string representation of the tag."""
+        return self.name
+    
+    def __repr__(self) -> str:
+        """Return the string representation of the tag."""
+        return f"Tag({self.name}, {self.category})"
+    
+    def get_full_path(self) -> str:
+        """
+        Get the full hierarchical path of the tag.
+        
+        Returns:
+            The full path of the tag (e.g., "memory.vector.faiss").
+        """
+        if self.parent:
+            return f"{self.parent.get_full_path()}.{self.name}"
+        return self.name
+    
+    def has_attribute(self, key: str) -> bool:
+        """
+        Check if the tag has a specific attribute.
+        
+        Args:
+            key: The attribute key to check.
+            
+        Returns:
+            True if the tag has the attribute, False otherwise.
+        """
+        return key in self.attributes
+    
+    def get_attribute(self, key: str, default: Any = None) -> Any:
+        """
+        Get the value of a tag attribute.
+        
+        Args:
+            key: The attribute key.
+            default: The default value to return if the attribute doesn't exist.
+            
+        Returns:
+            The attribute value or the default value.
+        """
+        return self.attributes.get(key, default)
+    
+    def set_attribute(self, key: str, value: Any) -> None:
+        """
+        Set the value of a tag attribute.
+        
+        Args:
+            key: The attribute key.
+            value: The attribute value.
+        """
+        self.attributes[key] = value
+    
+    def is_child_of(self, tag: Union[str, 'Tag']) -> bool:
+        """
+        Check if this tag is a child of another tag.
+        
+        Args:
+            tag: The parent tag to check against.
+            
+        Returns:
+            True if this tag is a child of the specified tag, False otherwise.
+        """
+        if isinstance(tag, str):
+            tag_name = tag
+        else:
+            tag_name = tag.name
+            
+        if self.parent is None:
+            return False
+            
+        if self.parent.name == tag_name:
+            return True
+            
+        return self.parent.is_child_of(tag_name)
+
+
+class TagRegistry:
+    """
+    Registry for tags.
+    
+    The TagRegistry is responsible for creating, retrieving, and organizing tags.
+    It maintains a hierarchical structure of tags and provides methods for
+    filtering and searching tags.
+    
+    Attributes:
+        tags: Dictionary of all tags, keyed by name.
+    """
+    
+    def __init__(self):
+        """Initialize the tag registry."""
+        self.tags: Dict[str, Tag] = {}
+        self._initialize_tags()
+    
+    def _initialize_tags(self):
+        """Initialize the predefined tags."""
+        {% for hierarchy in tag_hierarchies %}
+        # {{ hierarchy.name }} hierarchy
+        {% for tag in hierarchy.tags %}
+        {% if tag.parent %}
+        self.create_tag("{{ tag.name }}", TagCategory.{{ tag.category }}, "{{ tag.parent }}")
+        {% else %}
+        self.create_tag("{{ tag.name }}", TagCategory.{{ tag.category }})
+        {% endif %}
+        {% endfor %}
+        
+        {% endfor %}
+    
+    def create_tag(self, name: str, category: TagCategory, 
+                  parent: Optional[Union[str, Tag]] = None,
+                  attributes: Optional[Dict[str, Any]] = None) -> Tag:
+        """
+        Create a new tag.
+        
+        Args:
+            name: The name of the tag.
+            category: The category of the tag.
+            parent: Optional parent tag or parent tag name.
+            attributes: Optional attributes for the tag.
+            
+        Returns:
+            The created tag.
+            
+        Raises:
+            ValueError: If a tag with the same name already exists.
+        """
+        if name in self.tags:
+            raise ValueError(f"Tag '{name}' already exists")
+        
+        parent_tag = None
+        if parent:
+            if isinstance(parent, str):
+                if parent not in self.tags:
+                    raise ValueError(f"Parent tag '{parent}' does not exist")
+                parent_tag = self.tags[parent]
+            else:
+                parent_tag = parent
+        
+        tag = Tag(name, category, parent_tag, attributes or {})
+        self.tags[name] = tag
+        return tag
+    
+    def get_tag(self, name: str) -> Optional[Tag]:
+        """
+        Get a tag by name.
+        
+        Args:
+            name: The name of the tag.
+            
+        Returns:
+            The tag or None if it doesn't exist.
+        """
+        return self.tags.get(name)
+    
+    def get_or_create_tag(self, name: str, category: TagCategory, 
+                         parent: Optional[Union[str, Tag]] = None,
+                         attributes: Optional[Dict[str, Any]] = None) -> Tag:
+        """
+        Get a tag by name or create it if it doesn't exist.
+        
+        Args:
+            name: The name of the tag.
+            category: The category of the tag.
+            parent: Optional parent tag or parent tag name.
+            attributes: Optional attributes for the tag.
+            
+        Returns:
+            The existing or created tag.
+        """
+        tag = self.get_tag(name)
+        if tag:
+            return tag
+        return self.create_tag(name, category, parent, attributes)
+    
+    def delete_tag(self, name: str) -> None:
+        """
+        Delete a tag by name.
+        
+        Args:
+            name: The name of the tag.
+            
+        Raises:
+            ValueError: If the tag doesn't exist.
+        """
+        if name not in self.tags:
+            raise ValueError(f"Tag '{name}' does not exist")
+        
+        tag = self.tags[name]
+        
+        # Update parent's children list
+        if tag.parent:
+            tag.parent.children.remove(tag)
+        
+        # Recursively delete children
+        for child in tag.children[:]:  # Create a copy to avoid modification during iteration
+            self.delete_tag(child.name)
+        
+        # Remove the tag
+        del self.tags[name]
+    
+    def get_tags_by_category(self, category: TagCategory) -> List[Tag]:
+        """
+        Get tags by category.
+        
+        Args:
+            category: The category to filter by.
+            
+        Returns:
+            List of tags in the specified category.
+        """
+        return [tag for tag in self.tags.values() if tag.category == category]
+    
+    def get_tags_by_attribute(self, key: str, value: Optional[Any] = None) -> List[Tag]:
+        """
+        Get tags that have a specific attribute.
+        
+        Args:
+            key: The attribute key.
+            value: Optional attribute value to match.
+            
+        Returns:
+            List of tags that have the specified attribute.
+        """
+        result = []
+        for tag in self.tags.values():
+            if tag.has_attribute(key):
+                if value is None or tag.get_attribute(key) == value:
+                    result.append(tag)
+        return result
+    
+    def get_children(self, name: str) -> List[Tag]:
+        """
+        Get all children of a tag.
+        
+        Args:
+            name: The name of the parent tag.
+            
+        Returns:
+            List of child tags.
+            
+        Raises:
+            ValueError: If the parent tag doesn't exist.
+        """
+        if name not in self.tags:
+            raise ValueError(f"Tag '{name}' does not exist")
+        
+        return self.tags[name].children
+    
+    def get_all_tags(self) -> List[Tag]:
+        """
+        Get all tags.
+        
+        Returns:
+            List of all tags.
+        """
+        return list(self.tags.values())
+    
+    def get_root_tags(self) -> List[Tag]:
+        """
+        Get all root tags (tags without parents).
+        
+        Returns:
+            List of root tags.
+        """
+        return [tag for tag in self.tags.values() if tag.parent is None]
+
+
+# Singleton instance
+_tag_registry: Optional[TagRegistry] = None
+
+def get_tag_registry() -> TagRegistry:
+    """
+    Get the singleton instance of the tag registry.
+    
+    Returns:
+        The tag registry instance.
+    """
+    global _tag_registry
+    if _tag_registry is None:
+        _tag_registry = TagRegistry()
+    return _tag_registry
+
+def get_tag(name: str) -> Optional[Tag]:
+    """
+    Get a tag by name.
+    
+    Args:
+        name: The name of the tag.
+        
+    Returns:
+        The tag or None if it doesn't exist.
+    """
+    return get_tag_registry().get_tag(name)
+
+def create_tag(name: str, category: TagCategory, 
+              parent: Optional[Union[str, Tag]] = None,
+              attributes: Optional[Dict[str, Any]] = None) -> Tag:
+    """
+    Create a new tag.
+    
+    Args:
+        name: The name of the tag.
+        category: The category of the tag.
+        parent: Optional parent tag or parent tag name.
+        attributes: Optional attributes for the tag.
+        
+    Returns:
+        The created tag.
+    """
+    return get_tag_registry().create_tag(name, category, parent, attributes)
+
+def get_or_create_tag(name: str, category: TagCategory, 
+                     parent: Optional[Union[str, Tag]] = None,
+                     attributes: Optional[Dict[str, Any]] = None) -> Tag:
+    """
+    Get a tag by name or create it if it doesn't exist.
+    
+    Args:
+        name: The name of the tag.
+        category: The category of the tag.
+        parent: Optional parent tag or parent tag name.
+        attributes: Optional attributes for the tag.
+        
+    Returns:
+        The existing or created tag.
+    """
+    return get_tag_registry().get_or_create_tag(name, category, parent, attributes)
+
+def get_tags_by_category(category: TagCategory) -> List[Tag]:
+    """
+    Get tags by category.
+    
+    Args:
+        category: The category to filter by.
+        
+    Returns:
+        List of tags in the specified category.
+    """
+    return get_tag_registry().get_tags_by_category(category)

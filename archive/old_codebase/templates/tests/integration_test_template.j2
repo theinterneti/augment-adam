@@ -1,0 +1,55 @@
+{# Template for generating integration test files #}
+{# @tags: test, pytest, integration-test #}
+{# @description: This template is used to generate integration test files with pytest #}
+{# @variables: module_name:str, imports:list, fixtures:list, tests:list #}
+
+"""Integration tests for {{ module_name }}.
+
+This module contains integration tests for the {{ module_name }} module.
+"""
+
+import pytest
+import asyncio
+from unittest.mock import Mock, patch, MagicMock
+{% for import_statement in imports %}
+{{ import_statement }}
+{% endfor %}
+
+{% for fixture in fixtures %}
+@pytest.fixture
+{% if fixture.scope %}
+@pytest.mark.scope("{{ fixture.scope }}")
+{% endif %}
+def {{ fixture.name }}():
+    """{{ fixture.description }}"""
+    {{ fixture.code|indent(4) }}
+
+{% endfor %}
+{% for test in tests %}
+{% if test.async %}
+@pytest.mark.asyncio
+{% endif %}
+{% if test.hypothesis %}
+@given({{ test.hypothesis.strategies }})
+{% endif %}
+{% if test.parametrize %}
+@pytest.mark.parametrize({{ test.parametrize.args }})
+{% endif %}
+def {{ test.name }}({% if test.fixtures %}{{ test.fixtures|join(', ') }}{% endif %}{% if test.hypothesis %}{% if test.fixtures %}, {% endif %}{{ test.hypothesis.args|join(', ') }}{% endif %}):
+    """{{ test.description }}"""
+    {% if test.arrange %}
+    # Arrange
+    {{ test.arrange|indent(4) }}
+    {% endif %}
+    
+    {% if test.act %}
+    # Act
+    {{ test.act|indent(4) }}
+    {% endif %}
+    
+    {% if test.assert %}
+    # Assert
+    {{ test.assert|indent(4) }}
+    {% endif %}
+
+{% endfor %}

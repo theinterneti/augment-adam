@@ -1,0 +1,189 @@
+version: 1.0.0
+project: augment-adam
+description: Guidelines for the Augment Adam project
+
+# Rebase Checklist
+rebase:
+  status: in-progress
+  features:
+    - name: AI-Optimized Tagging System
+      status: completed
+      description: Enhanced tagging system with relationships and semantic information
+      priority: high
+      issue: 4
+      completed_date: "2025-04-25"
+      todo: |
+        - Add support for tag versioning
+        - Implement tag validation against a schema
+        - Add tag analytics to track usage and coverage
+        - Add persistence support (save/load from database)
+        - Add tag recommendation based on code content
+
+    - name: Enhanced Template Engine
+      status: completed
+      description: Powerful template engine with tagging support
+      priority: high
+      issue: 5
+      completed_date: "2025-04-25"
+      todo: |
+        - Add template versioning support
+        - Implement template validation against a schema
+        - Add template analytics to track usage and coverage
+        - Add support for template inheritance
+        - Add support for template includes
+        - Add support for template macros
+
+    - name: Memory System
+      status: completed
+      description: Advanced memory systems (vector, graph, episodic, semantic)
+      priority: high
+      issue: 6
+      completed_date: "2025-04-25"
+      todo: |
+        - Add memory persistence support
+        - Implement memory validation against a schema
+        - Add memory analytics to track usage and performance
+        - Add support for memory item versioning
+        - Implement memory item validation
+        - Add memory integration with agents
+
+    - name: Agent Coordination
+      status: completed
+      description: Coordinate multiple agents to work together
+      priority: medium
+      issue: 8
+      completed_date: "2025-04-25"
+      todo: |
+        - Add support for agent coordination analytics
+        - Implement more coordination patterns
+        - Add support for dynamic agent discovery
+        - Add support for agent versioning
+        - Implement agent validation
+        - Add support for message encryption
+        - Implement message validation
+
+    - name: Context Engine
+      status: completed
+      description: Intelligent context management and retrieval
+      priority: high
+      issue: 7
+      completed_date: "2025-04-25"
+      todo: |
+        - Add context versioning support
+        - Implement context validation against a schema
+        - Add context analytics to track usage and performance
+        - Add support for more embedding models
+        - Implement more sophisticated chunking strategies
+        - Add support for more storage backends
+        - Implement more advanced retrieval methods
+
+    - name: Monte Carlo Techniques
+      status: completed
+      description: Probabilistic modeling and sampling
+      priority: medium
+      issue: 9
+      completed_date: "2025-04-25"
+      todo: |
+        - Add support for parallel Monte Carlo simulations
+        - Implement adaptive sampling techniques
+        - Add visualization tools for Monte Carlo results
+        - Implement more advanced MCMC methods
+        - Add support for custom proposal distributions
+
+    - name: Parallel Processing
+      status: completed
+      description: Parallel and async processing
+      priority: medium
+      issue: 10
+      completed_date: "2025-04-25"
+      todo: |
+        - Add support for distributed processing
+        - Implement adaptive resource allocation
+        - Add monitoring and visualization
+        - Implement more sophisticated scheduling algorithms
+        - Add support for GPU acceleration
+
+    - name: Plugin System
+      status: completed
+      description: Extend and customize the assistant with plugins
+      priority: low
+      issue: 11
+      completed_date: "2025-04-25"
+      todo: |
+        - Add plugin marketplace
+        - Implement plugin versioning
+        - Add plugin analytics
+        - Implement plugin dependencies management
+        - Add support for remote plugins
+
+    - name: Documentation
+      status: completed
+      description: Comprehensive documentation
+      priority: medium
+      issue: 12
+      completed_date: "2025-04-25"
+      todo: |
+        - Add interactive examples
+        - Implement documentation versioning
+        - Add documentation search
+        - Implement documentation analytics
+        - Add support for multiple languages
+
+    - name: Testing
+      status: completed
+      description: Comprehensive test suite
+      priority: high
+      issue: 13
+      completed_date: "2025-04-25"
+      todo: |
+        - Add property-based testing
+        - Implement mutation testing
+        - Add performance testing
+        - Implement security testing
+        - Add load testing
+
+# Code Style Guidelines
+code_style:
+  docstrings: google
+  type_hints: required
+  line_length: 88
+  formatting: black
+  linting: ruff
+  imports: isort
+
+# Documentation Guidelines
+documentation:
+  architecture:
+    - MCP_CONTEXT_ENGINE.md
+    - TAGGING_SYSTEM.md
+    - TEMPLATE_ENGINE.md
+    - MEMORY_SYSTEM.md
+    - AGENT_COORDINATION.md
+  user_guides:
+    - getting_started.md
+    - installation.md
+    - configuration.md
+  developer_guides:
+    - contributing.md
+    - extending.md
+    - plugins.md
+  api:
+    - memory.md
+    - models.md
+    - agents.md
+    - context.md
+    - utils.md
+
+# Testing Guidelines
+testing:
+  unit_tests: required
+  integration_tests: required
+  e2e_tests: recommended
+  coverage: 80%
+
+# Git Guidelines
+git:
+  branch_naming: feature/fix/refactor-description
+  commit_message: conventional
+  pr_template: required
+  code_review: required

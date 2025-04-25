@@ -1,0 +1,59 @@
+{# @tags: test, class, python, unit #}
+{# @description: This template is used to generate unit tests for Python classes #}
+{# @variables: class_name:str, module_path:str, description:str, methods:list, imports:list, setup:str, teardown:str #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: class_name="MyClass", module_path="my_module", description="Tests for the MyClass class", methods=[{"name": "test_init", "description": "Test initialization", "body": "assert obj.name == 'test'"}] #}
+{# @related_templates: function_test.py.j2, module_test.py.j2 #}
+"""
+{{ description }}
+"""
+
+{% if imports %}
+{{ imports | format_imports }}
+{% else %}
+import pytest
+from unittest.mock import Mock, patch
+
+from {{ module_path }} import {{ class_name }}
+{% endif %}
+
+
+class Test{{ class_name }}:
+    """Tests for the {{ class_name }} class."""
+    
+    {% if setup %}
+    @pytest.fixture
+    def setup(self):
+        """Set up test fixtures."""
+        {{ setup | indent(8) }}
+    
+    {% endif %}
+    {% if teardown %}
+    def teardown(self):
+        """Tear down test fixtures."""
+        {{ teardown | indent(8) }}
+    
+    {% endif %}
+    {% for method in methods %}
+    def {{ method.name }}(self{% if setup %}, setup{% endif %}):
+        """{{ method.description }}"""
+        # Arrange
+        {% if method.arrange %}
+        {{ method.arrange | indent(8) }}
+        {% else %}
+        obj = {{ class_name }}()
+        {% endif %}
+        
+        # Act
+        {% if method.act %}
+        {{ method.act | indent(8) }}
+        {% endif %}
+        
+        # Assert
+        {% if method.assert %}
+        {{ method.assert | indent(8) }}
+        {% else %}
+        {{ method.body | indent(8) }}
+        {% endif %}
+    {% endfor %}

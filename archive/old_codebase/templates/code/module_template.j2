@@ -1,0 +1,141 @@
+{# Template for generating Python modules #}
+{# @tags: code, module, python #}
+{# @description: This template is used to generate Python modules with Google-style docstrings #}
+{# @variables: module_name:str, imports:list, classes:list, functions:list, constants:list, module_docstring:dict #}
+
+"""{{ module_docstring.summary }}
+
+{% if module_docstring.description %}{{ module_docstring.description }}
+
+{% endif %}
+{% if module_docstring.examples %}
+Examples:
+{% for example in module_docstring.examples %}
+    {{ example }}
+{% endfor %}
+{% endif %}
+{% if module_docstring.notes %}
+Notes:
+    {{ module_docstring.notes }}
+{% endif %}
+"""
+
+{% for import_statement in imports %}
+{{ import_statement }}
+{% endfor %}
+
+{% if imports %}
+
+{% endif %}
+{% for constant in constants %}
+{{ constant.name }}: {{ constant.type }} = {{ constant.value }}
+{% endfor %}
+
+{% if constants %}
+
+{% endif %}
+{% for function in functions %}
+def {{ function.name }}({% for param in function.parameters %}{{ param.name }}{% if param.default %} = {{ param.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}):
+    """{{ function.docstring.summary }}
+    
+    {% if function.docstring.description %}{{ function.docstring.description }}
+    
+    {% endif %}
+    {% if function.parameters %}
+    Args:
+    {% for param in function.parameters %}
+        {{ param.name }}: {{ param.description }}{% if param.type %} ({{ param.type }}){% endif %}{% if param.default %} Defaults to {{ param.default }}.{% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if function.docstring.returns %}
+    Returns:
+        {% if function.docstring.returns.type %}{{ function.docstring.returns.type }}: {% endif %}{{ function.docstring.returns.description }}
+    {% endif %}
+    {% if function.docstring.raises %}
+    Raises:
+    {% for exception in function.docstring.raises %}
+        {{ exception.type }}: {{ exception.description }}
+    {% endfor %}
+    {% endif %}
+    """
+    {{ function.body|indent(4) }}
+
+{% endfor %}
+{% for class_def in classes %}
+class {{ class_def.name }}{% if class_def.base_classes %}({{ class_def.base_classes|join(', ') }}){% endif %}:
+    """{{ class_def.docstring.summary }}
+
+    {% if class_def.docstring.description %}{{ class_def.docstring.description }}
+
+    {% endif %}
+    {% if class_def.attributes %}
+    Attributes:
+    {% for attr in class_def.attributes %}
+        {{ attr.name }}: {{ attr.description }}{% if attr.type %} ({{ attr.type }}){% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if class_def.docstring.examples %}
+    Examples:
+    {% for example in class_def.docstring.examples %}
+        {{ example }}
+    {% endfor %}
+    {% endif %}
+    {% if class_def.docstring.notes %}
+    Notes:
+        {{ class_def.docstring.notes }}
+    {% endif %}
+    """
+    
+    {% for attr in class_def.attributes %}
+    {% if attr.default %}
+    {{ attr.name }}: {{ attr.type }} = {{ attr.default }}
+    {% else %}
+    {{ attr.name }}: {{ attr.type }}
+    {% endif %}
+    {% endfor %}
+    
+    {% if class_def.attributes %}
+    
+    {% endif %}
+    def __init__(self{% for attr in class_def.attributes %}{% if attr.init %}, {{ attr.name }}{% if attr.default %} = {{ attr.default }}{% endif %}{% endif %}{% endfor %}):
+        """Initialize the {{ class_def.name }}.
+        
+        {% if class_def.attributes|selectattr('init')|list %}
+        Args:
+        {% for attr in class_def.attributes %}{% if attr.init %}
+            {{ attr.name }}: {{ attr.description }}{% if attr.default %} Defaults to {{ attr.default }}.{% endif %}
+        {% endif %}{% endfor %}
+        {% endif %}
+        """
+        {% for attr in class_def.attributes %}{% if attr.init %}
+        self.{{ attr.name }} = {{ attr.name }}
+        {% endif %}{% endfor %}
+    
+    {% for method in class_def.methods %}
+    def {{ method.name }}(self{% if method.parameters %}{% for param in method.parameters %}, {{ param.name }}{% if param.default %} = {{ param.default }}{% endif %}{% endfor %}{% endif %}):
+        """{{ method.docstring.summary }}
+        
+        {% if method.docstring.description %}{{ method.docstring.description }}
+        
+        {% endif %}
+        {% if method.parameters %}
+        Args:
+        {% for param in method.parameters %}
+            {{ param.name }}: {{ param.description }}{% if param.type %} ({{ param.type }}){% endif %}{% if param.default %} Defaults to {{ param.default }}.{% endif %}
+        {% endfor %}
+        {% endif %}
+        {% if method.docstring.returns %}
+        Returns:
+            {% if method.docstring.returns.type %}{{ method.docstring.returns.type }}: {% endif %}{{ method.docstring.returns.description }}
+        {% endif %}
+        {% if method.docstring.raises %}
+        Raises:
+        {% for exception in method.docstring.raises %}
+            {{ exception.type }}: {{ exception.description }}
+        {% endfor %}
+        {% endif %}
+        """
+        {{ method.body|indent(8) }}
+    
+    {% endfor %}
+{% endfor %}

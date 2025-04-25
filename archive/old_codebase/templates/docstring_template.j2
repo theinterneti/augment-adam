@@ -1,0 +1,78 @@
+{# Template for generating Google-style docstrings #}
+{# @tags: docstring, google-style #}
+{# @description: This template is used to generate Google-style docstrings for the augment_adam package #}
+{# @variables: docstring_type:str, summary:str, description:str, parameters:list, returns:dict, raises:list, examples:list, notes:str #}
+
+{% if docstring_type == "function" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if parameters %}Args:
+{% for param in parameters %}
+    {{ param.name }}: {{ param.description }}{% if param.type %} ({{ param.type }}){% endif %}{% if param.default %} Defaults to {{ param.default }}.{% endif %}
+{% endfor %}
+{% endif %}
+{% if returns %}
+Returns:
+    {% if returns.type %}{{ returns.type }}: {% endif %}{{ returns.description }}
+{% endif %}
+{% if raises %}
+Raises:
+{% for exception in raises %}
+    {{ exception.type }}: {{ exception.description }}
+{% endfor %}
+{% endif %}
+{% if examples %}
+Examples:
+{% for example in examples %}
+    {{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes:
+    {{ notes }}
+{% endif %}
+"""
+{% elif docstring_type == "class" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if attributes %}
+Attributes:
+{% for attr in attributes %}
+    {{ attr.name }}: {{ attr.description }}{% if attr.type %} ({{ attr.type }}){% endif %}
+{% endfor %}
+{% endif %}
+{% if examples %}
+Examples:
+{% for example in examples %}
+    {{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes:
+    {{ notes }}
+{% endif %}
+"""
+{% elif docstring_type == "module" %}
+"""{{ summary }}
+
+{% if description %}{{ description }}
+
+{% endif %}
+{% if examples %}
+Examples:
+{% for example in examples %}
+    {{ example }}
+{% endfor %}
+{% endif %}
+{% if notes %}
+Notes:
+    {{ notes }}
+{% endif %}
+"""
+{% endif %}

@@ -1,0 +1,99 @@
+{# @tags: code, module, python #}
+{# @description: This template is used to generate Python modules #}
+{# @variables: module_name:str, description:str, imports:list, classes:list, functions:list, constants:list #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: module_name="my_module", description="A sample module", imports=["from typing import List, Dict", "import os"], classes=[{"name": "MyClass", "description": "A sample class"}], functions=[{"name": "my_function", "description": "A sample function"}], constants=[{"name": "MY_CONSTANT", "value": "42", "description": "A sample constant"}] #}
+{# @related_templates: class.py.j2, function.py.j2 #}
+"""
+{{ description }}
+"""
+
+{% if imports %}
+{{ imports | format_imports }}
+
+{% endif %}
+{% if constants %}
+{% for constant in constants %}
+{{ constant.name }} = {{ constant.value }}{% if constant.description %} # {{ constant.description }}{% endif %}
+{% endfor %}
+
+{% endif %}
+{% for function in functions %}
+def {{ function.name }}({% for arg in function.args %}{{ arg.name }}{% if arg.type %}: {{ arg.type }}{% endif %}{% if arg.default %} = {{ arg.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if function.return_type %} -> {{ function.return_type }}{% endif %}:
+    """
+    {{ function.description }}
+    
+    {% if function.args %}
+    Args:
+        {% for arg in function.args %}
+        {{ arg.name }}: {{ arg.description if arg.description else 'The ' + arg.name }}
+        {% endfor %}
+    {% endif %}
+    
+    {% if function.return_type and function.return_type != 'None' %}
+    Returns:
+        {{ function.return_description if function.return_description else 'The result of the operation' }}
+    {% endif %}
+    """
+    {{ function.body | indent(4) }}
+
+{% endfor %}
+{% for class in classes %}
+class {{ class.name }}{% if class.base_classes %}({{ class.base_classes | join(', ') }}){% endif %}:
+    """
+    {{ class.description }}
+    
+    {% if class.attributes %}
+    Attributes:
+        {% for attribute in class.attributes %}
+        {{ attribute.name }}: {{ attribute.description if attribute.description else 'The ' + attribute.name + ' of the ' + class.name | to_snake_case }}
+        {% endfor %}
+    {% endif %}
+    """
+    
+    {% for attribute in class.attributes %}
+    {{ attribute.name }}: {{ attribute.type }}{% if attribute.default %} = {{ attribute.default }}{% endif %}
+    {% endfor %}
+    
+    {% if class.attributes %}
+    
+    {% endif %}
+    def __init__(self{% for attribute in class.attributes %}, {{ attribute.name }}{% if attribute.default %} = {{ attribute.default }}{% endif %}{% endfor %}):
+        """
+        Initialize the {{ class.name }}.
+        
+        {% if class.attributes %}
+        Args:
+            {% for attribute in class.attributes %}
+            {{ attribute.name }}: {{ attribute.description if attribute.description else 'The ' + attribute.name + ' of the ' + class.name | to_snake_case }}
+            {% endfor %}
+        {% endif %}
+        """
+        {% for attribute in class.attributes %}
+        self.{{ attribute.name }} = {{ attribute.name }}
+        {% endfor %}
+    
+    {% for method in class.methods %}
+    def {{ method.name }}({% for arg in method.args %}{{ arg.name }}{% if arg.type %}: {{ arg.type }}{% endif %}{% if arg.default %} = {{ arg.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return_type %} -> {{ method.return_type }}{% endif %}:
+        """
+        {{ method.description if method.description else method.name | to_snake_case | humanize }}.
+        
+        {% if method.args and method.args | length > 1 %}
+        Args:
+            {% for arg in method.args %}
+            {% if arg.name != 'self' %}
+            {{ arg.name }}: {{ arg.description if arg.description else 'The ' + arg.name }}
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        {% if method.return_type and method.return_type != 'None' %}
+        Returns:
+            {{ method.return_description if method.return_description else 'The result of the operation' }}
+        {% endif %}
+        """
+        {{ method.body | indent(8) }}
+    {% endfor %}
+
+{% endfor %}

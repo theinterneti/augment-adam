@@ -1,0 +1,120 @@
+{# Template for generating API documentation #}
+{# @tags: docs, markdown, api #}
+{# @description: This template is used to generate markdown documentation for APIs #}
+{# @variables: api_name:str, api_description:str, endpoints:list, models:list, examples:list #}
+
+# {{ api_name }} API
+
+{{ api_description }}
+
+{% if endpoints %}
+## Endpoints
+
+{% for endpoint in endpoints %}
+### {{ endpoint.method }} {{ endpoint.path }}
+
+{{ endpoint.description }}
+
+{% if endpoint.parameters %}
+#### Parameters
+
+{% if endpoint.parameters.path %}
+**Path Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+{% for param in endpoint.parameters.path %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ "Yes" if param.required else "No" }} | {{ param.description }} |
+{% endfor %}
+{% endif %}
+
+{% if endpoint.parameters.query %}
+**Query Parameters:**
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+{% for param in endpoint.parameters.query %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ "Yes" if param.required else "No" }} | {{ param.description }} |
+{% endfor %}
+{% endif %}
+
+{% if endpoint.parameters.body %}
+**Request Body:**
+
+```json
+{{ endpoint.parameters.body.example }}
+```
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+{% for param in endpoint.parameters.body.fields %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ "Yes" if param.required else "No" }} | {{ param.description }} |
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% if endpoint.responses %}
+#### Responses
+
+{% for response in endpoint.responses %}
+**{{ response.status_code }} {{ response.description }}**
+
+{% if response.schema %}
+```json
+{{ response.schema.example }}
+```
+
+{% if response.schema.fields %}
+| Name | Type | Description |
+|------|------|-------------|
+{% for field in response.schema.fields %}
+| `{{ field.name }}` | `{{ field.type }}` | {{ field.description }} |
+{% endfor %}
+{% endif %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if models %}
+## Models
+
+{% for model in models %}
+### {{ model.name }}
+
+{{ model.description }}
+
+| Name | Type | Required | Description |
+|------|------|----------|-------------|
+{% for field in model.fields %}
+| `{{ field.name }}` | `{{ field.type }}` | {{ "Yes" if field.required else "No" }} | {{ field.description }} |
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+### {{ example.title }}
+
+{{ example.description }}
+
+**Request:**
+
+```bash
+{{ example.request }}
+```
+
+**Response:**
+
+```json
+{{ example.response }}
+```
+
+{% endfor %}
+{% endif %}

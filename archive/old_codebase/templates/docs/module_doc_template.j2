@@ -1,0 +1,109 @@
+{# Template for generating module documentation #}
+{# @tags: docs, markdown, module #}
+{# @description: This template is used to generate markdown documentation for modules #}
+{# @variables: module_name:str, module_description:str, classes:list, functions:list, examples:list #}
+
+# {{ module_name }}
+
+{{ module_description }}
+
+{% if classes %}
+## Classes
+
+{% for class_def in classes %}
+### {{ class_def.name }}
+
+{{ class_def.description }}
+
+{% if class_def.attributes %}
+#### Attributes
+
+| Name | Type | Description |
+|------|------|-------------|
+{% for attr in class_def.attributes %}
+| `{{ attr.name }}` | `{{ attr.type }}` | {{ attr.description }} |
+{% endfor %}
+{% endif %}
+
+{% if class_def.methods %}
+#### Methods
+
+{% for method in class_def.methods %}
+##### `{{ method.name }}({% for param in method.parameters %}{{ param.name }}{% if param.default %} = {{ param.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %})`
+
+{{ method.description }}
+
+{% if method.parameters %}
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+{% for param in method.parameters %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ param.description }} |
+{% endfor %}
+{% endif %}
+
+{% if method.returns %}
+**Returns:**
+
+`{{ method.returns.type }}`: {{ method.returns.description }}
+{% endif %}
+
+{% if method.raises %}
+**Raises:**
+
+{% for exception in method.raises %}
+- `{{ exception.type }}`: {{ exception.description }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if functions %}
+## Functions
+
+{% for function in functions %}
+### `{{ function.name }}({% for param in function.parameters %}{{ param.name }}{% if param.default %} = {{ param.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %})`
+
+{{ function.description }}
+
+{% if function.parameters %}
+**Parameters:**
+
+| Name | Type | Description |
+|------|------|-------------|
+{% for param in function.parameters %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ param.description }} |
+{% endfor %}
+{% endif %}
+
+{% if function.returns %}
+**Returns:**
+
+`{{ function.returns.type }}`: {{ function.returns.description }}
+{% endif %}
+
+{% if function.raises %}
+**Raises:**
+
+{% for exception in function.raises %}
+- `{{ exception.type }}`: {{ exception.description }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+```python
+{{ example }}
+```
+{% endfor %}
+{% endif %}
