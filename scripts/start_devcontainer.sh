@@ -16,7 +16,7 @@ cd "${REPO_ROOT}/.devcontainer"
 
 # Start the container
 echo "Starting container..."
-docker-compose up -d
+docker compose up -d
 
 # Verify that the volumes were created
 echo "Verifying volumes..."
