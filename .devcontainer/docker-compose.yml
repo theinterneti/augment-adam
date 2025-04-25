@@ -10,7 +10,7 @@ services:
         BUILDKIT_INLINE_CACHE: 1
     volumes:
       # Mount the root folder that contains .devcontainer folder
-      - ..:/workspace:cached
+      - /workspace:/workspace:cached
 
       # Mount Docker socket for Docker-in-Docker
       - /var/run/docker.sock:/var/run/docker.sock
