@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.0.1
 project: augment-adam
 description: Guidelines for the Augment Adam project
 
@@ -18,6 +18,8 @@ rebase:
         - Add tag analytics to track usage and coverage
         - Add persistence support (save/load from database)
         - Add tag recommendation based on code content
+        - Add tag visualization capabilities
+        - Implement tag inference from code
 
     - name: Enhanced Template Engine
       status: completed
@@ -29,9 +31,10 @@ rebase:
         - Add template versioning support
         - Implement template validation against a schema
         - Add template analytics to track usage and coverage
-        - Add support for template inheritance
+        - Enhance template inheritance capabilities
         - Add support for template includes
         - Add support for template macros
+        - Implement template recommendation system
 
     - name: Memory System
       status: completed
@@ -45,7 +48,8 @@ rebase:
         - Add memory analytics to track usage and performance
         - Add support for memory item versioning
         - Implement memory item validation
-        - Add memory integration with agents
+        - Enhance memory integration with agents
+        - Add support for Redis Vector and Chroma backends
 
     - name: Agent Coordination
       status: completed
@@ -61,6 +65,7 @@ rebase:
         - Implement agent validation
         - Add support for message encryption
         - Implement message validation
+        - Add support for agent coordination visualization
 
     - name: Context Engine
       status: completed
@@ -74,8 +79,9 @@ rebase:
         - Add context analytics to track usage and performance
         - Add support for more embedding models
         - Implement more sophisticated chunking strategies
-        - Add support for more storage backends
+        - Add support for Redis Vector and Chroma backends
         - Implement more advanced retrieval methods
+        - Add async component for preparing expected contexts
 
     - name: Monte Carlo Techniques
       status: completed
@@ -89,6 +95,7 @@ rebase:
         - Add visualization tools for Monte Carlo results
         - Implement more advanced MCMC methods
         - Add support for custom proposal distributions
+        - Enhance integration with agent reasoning
 
     - name: Parallel Processing
       status: completed
@@ -102,6 +109,7 @@ rebase:
         - Add monitoring and visualization
         - Implement more sophisticated scheduling algorithms
         - Add support for GPU acceleration
+        - Enhance integration with Monte Carlo techniques
 
     - name: Plugin System
       status: completed
@@ -115,10 +123,11 @@ rebase:
         - Add plugin analytics
         - Implement plugin dependencies management
         - Add support for remote plugins
+        - Enhance plugin discovery mechanism
 
-    - name: Documentation
+    - name: Documentation System
       status: completed
-      description: Comprehensive documentation
+      description: Comprehensive documentation generation and management
       priority: medium
       issue: 12
       completed_date: "2025-04-25"
@@ -128,10 +137,12 @@ rebase:
         - Add documentation search
         - Implement documentation analytics
         - Add support for multiple languages
+        - Enhance integration with template engine
+        - Add support for automatic API documentation generation
 
-    - name: Testing
+    - name: Testing Framework
       status: completed
-      description: Comprehensive test suite
+      description: Comprehensive test suite and testing utilities
       priority: high
       issue: 13
       completed_date: "2025-04-25"
@@ -141,6 +152,8 @@ rebase:
         - Add performance testing
         - Implement security testing
         - Add load testing
+        - Enhance test coverage reporting
+        - Add support for parallel test execution
 
 # Code Style Guidelines
 code_style:
@@ -159,20 +172,36 @@ documentation:
     - TEMPLATE_ENGINE.md
     - MEMORY_SYSTEM.md
     - AGENT_COORDINATION.md
+    - DOCUMENTATION_SYSTEM.md
+    - TESTING_FRAMEWORK.md
+    - CONTEXT_ENGINE.md
+    - PLUGIN_SYSTEM.md
   user_guides:
     - getting_started.md
     - installation.md
     - configuration.md
+    - hardware_optimization.md
+    - parallel_monte_carlo.md
+    - building_agents.md
+    - agent_coordination.md
   developer_guides:
     - contributing.md
     - extending.md
     - plugins.md
+    - directory_structure.md
+    - testing.md
+    - documentation.md
+    - release.md
   api:
     - memory.md
     - models.md
     - agents.md
     - context.md
     - utils.md
+    - templates.md
+    - tagging.md
+    - monte_carlo.md
+    - parallel.md
 
 # Testing Guidelines
 testing:
