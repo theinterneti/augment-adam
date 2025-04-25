@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  augment-adam:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - model-cache:/cache
+    environment:
+      - AUGMENT_CACHE_DIR=/cache
+      - HF_TOKEN=${HF_TOKEN}
+    ports:
+      - "8000:8000"
+    command: python -m augment_adam.server
+
+volumes:
+  model-cache:
+    name: augment-adam-model-cache

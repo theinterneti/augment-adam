@@ -1,0 +1,46 @@
+{# @tags: doc, readme, markdown #}
+{# @description: This template is used to generate README.md files #}
+{# @variables: project_name:str, description:str, installation:str, usage:str, features:list, contributing:str, license:str #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: project_name="My Project", description="A sample project", features=["Feature 1", "Feature 2"] #}
+{# @related_templates: api.md.j2, user_guide.md.j2 #}
+# {{ project_name }}
+
+{{ description }}
+
+{% if features %}
+## Features
+
+{% for feature in features %}
+- {{ feature }}
+{% endfor %}
+{% endif %}
+
+{% if installation %}
+## Installation
+
+```bash
+{{ installation }}
+```
+{% endif %}
+
+{% if usage %}
+## Usage
+
+```python
+{{ usage }}
+```
+{% endif %}
+
+{% if contributing %}
+## Contributing
+
+{{ contributing }}
+{% endif %}
+
+{% if license %}
+## License
+
+{{ license }}
+{% endif %}

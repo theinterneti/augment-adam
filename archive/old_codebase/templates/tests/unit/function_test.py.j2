@@ -1,0 +1,55 @@
+{# @tags: test, function, python, unit #}
+{# @description: This template is used to generate unit tests for Python functions #}
+{# @variables: function_name:str, module_path:str, description:str, tests:list, imports:list, setup:str, teardown:str #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: function_name="my_function", module_path="my_module", description="Tests for the my_function function", tests=[{"name": "test_my_function", "description": "Test my_function with valid input", "body": "assert result == 'expected'"}] #}
+{# @related_templates: class_test.py.j2, module_test.py.j2 #}
+"""
+{{ description }}
+"""
+
+{% if imports %}
+{{ imports | format_imports }}
+{% else %}
+import pytest
+from unittest.mock import Mock, patch
+
+from {{ module_path }} import {{ function_name }}
+{% endif %}
+
+{% if setup %}
+@pytest.fixture
+def setup():
+    """Set up test fixtures."""
+    {{ setup | indent(4) }}
+
+{% endif %}
+{% if teardown %}
+def teardown():
+    """Tear down test fixtures."""
+    {{ teardown | indent(4) }}
+
+{% endif %}
+{% for test in tests %}
+def {{ test.name }}({% if setup %}setup{% endif %}):
+    """{{ test.description }}"""
+    # Arrange
+    {% if test.arrange %}
+    {{ test.arrange | indent(4) }}
+    {% endif %}
+    
+    # Act
+    {% if test.act %}
+    {{ test.act | indent(4) }}
+    {% else %}
+    result = {{ function_name }}()
+    {% endif %}
+    
+    # Assert
+    {% if test.assert %}
+    {{ test.assert | indent(4) }}
+    {% else %}
+    {{ test.body | indent(4) }}
+    {% endif %}
+{% endfor %}

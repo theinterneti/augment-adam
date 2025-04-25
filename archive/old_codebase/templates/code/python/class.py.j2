@@ -1,0 +1,87 @@
+{# @tags: code, class, python #}
+{# @description: This template is used to generate Python classes #}
+{# @variables: class_name:str, description:str, attributes:list, methods:list, imports:list, decorators:list, base_classes:list #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: class_name="MyClass", description="A sample class", attributes=[{"name": "name", "type": "str", "default": "''"}], methods=[{"name": "greet", "args": [{"name": "self"}], "return_type": "str", "body": "return f'Hello, {self.name}!'"}] #}
+{# @related_templates: function.py.j2, module.py.j2 #}
+"""
+{{ description }}
+"""
+
+{% if imports %}
+{{ imports | format_imports }}
+
+{% endif %}
+{% for decorator in decorators %}
+{{ decorator }}
+{% endfor %}
+class {{ class_name }}{% if base_classes %}({{ base_classes | join(', ') }}){% endif %}:
+    """
+    {{ description }}
+    
+    {% if attributes %}
+    Attributes:
+        {% for attribute in attributes %}
+        {{ attribute.name }}: {{ attribute.description if attribute.description else 'The ' + attribute.name + ' of the ' + class_name | to_snake_case }}
+        {% endfor %}
+    {% endif %}
+    """
+    
+    {% for attribute in attributes %}
+    {{ attribute.name }}: {{ attribute.type }}{% if attribute.default %} = {{ attribute.default }}{% endif %}
+    {% endfor %}
+    
+    {% if attributes %}
+    
+    {% endif %}
+    def __init__(self{% for attribute in attributes %}, {{ attribute.name }}{% if attribute.default %} = {{ attribute.default }}{% endif %}{% endfor %}):
+        """
+        Initialize the {{ class_name }}.
+        
+        {% if attributes %}
+        Args:
+            {% for attribute in attributes %}
+            {{ attribute.name }}: {{ attribute.description if attribute.description else 'The ' + attribute.name + ' of the ' + class_name | to_snake_case }}
+            {% endfor %}
+        {% endif %}
+        """
+        {% for attribute in attributes %}
+        self.{{ attribute.name }} = {{ attribute.name }}
+        {% endfor %}
+    
+    {% for method in methods %}
+    def {{ method.name }}({% for arg in method.args %}{{ arg.name }}{% if arg.type %}: {{ arg.type }}{% endif %}{% if arg.default %} = {{ arg.default }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return_type %} -> {{ method.return_type }}{% endif %}:
+        """
+        {{ method.description if method.description else method.name | to_snake_case | humanize }}.
+        
+        {% if method.args and method.args | length > 1 %}
+        Args:
+            {% for arg in method.args %}
+            {% if arg.name != 'self' %}
+            {{ arg.name }}: {{ arg.description if arg.description else 'The ' + arg.name }}
+            {% endif %}
+            {% endfor %}
+        {% endif %}
+        
+        {% if method.return_type and method.return_type != 'None' %}
+        Returns:
+            {{ method.return_description if method.return_description else 'The result of the operation' }}
+        {% endif %}
+        
+        {% if method.raises %}
+        Raises:
+            {% for exception in method.raises %}
+            {{ exception.type }}: {{ exception.description }}
+            {% endfor %}
+        {% endif %}
+        
+        {% if method.examples %}
+        Examples:
+            {% for example in method.examples %}
+            >>> {{ example }}
+            {% endfor %}
+        {% endif %}
+        """
+        {{ method.body | indent(8) }}
+    {% endfor %}

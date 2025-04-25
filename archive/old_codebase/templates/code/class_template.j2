@@ -1,0 +1,107 @@
+{# Template for generating Python classes #}
+{# @tags: code, class, python #}
+{# @description: This template is used to generate Python classes with Google-style docstrings #}
+{# @variables: class_name:str, base_classes:list, attributes:list, methods:list, imports:list, module_docstring:str, class_docstring:dict #}
+
+{% if module_docstring %}
+"""{{ module_docstring.summary }}
+
+{% if module_docstring.description %}{{ module_docstring.description }}
+
+{% endif %}
+{% if module_docstring.examples %}
+Examples:
+{% for example in module_docstring.examples %}
+    {{ example }}
+{% endfor %}
+{% endif %}
+{% if module_docstring.notes %}
+Notes:
+    {{ module_docstring.notes }}
+{% endif %}
+"""
+
+{% endif %}
+{% for import_statement in imports %}
+{{ import_statement }}
+{% endfor %}
+
+{% if imports %}
+
+{% endif %}
+class {{ class_name }}{% if base_classes %}({{ base_classes|join(', ') }}){% endif %}:
+    """{{ class_docstring.summary }}
+
+    {% if class_docstring.description %}{{ class_docstring.description }}
+
+    {% endif %}
+    {% if attributes %}
+    Attributes:
+    {% for attr in attributes %}
+        {{ attr.name }}: {{ attr.description }}{% if attr.type %} ({{ attr.type }}){% endif %}
+    {% endfor %}
+    {% endif %}
+    {% if class_docstring.examples %}
+    Examples:
+    {% for example in class_docstring.examples %}
+        {{ example }}
+    {% endfor %}
+    {% endif %}
+    {% if class_docstring.notes %}
+    Notes:
+        {{ class_docstring.notes }}
+    {% endif %}
+    """
+    
+    {% for attr in attributes %}
+    {% if attr.default %}
+    {{ attr.name }}: {{ attr.type }} = {{ attr.default }}
+    {% else %}
+    {{ attr.name }}: {{ attr.type }}
+    {% endif %}
+    {% endfor %}
+    
+    {% if attributes %}
+    
+    {% endif %}
+    def __init__(self{% for attr in attributes %}{% if attr.init %}, {{ attr.name }}{% if attr.default %} = {{ attr.default }}{% endif %}{% endif %}{% endfor %}):
+        """Initialize the {{ class_name }}.
+        
+        {% if attributes|selectattr('init')|list %}
+        Args:
+        {% for attr in attributes %}{% if attr.init %}
+            {{ attr.name }}: {{ attr.description }}{% if attr.default %} Defaults to {{ attr.default }}.{% endif %}
+        {% endif %}{% endfor %}
+        {% endif %}
+        """
+        {% for attr in attributes %}{% if attr.init %}
+        self.{{ attr.name }} = {{ attr.name }}
+        {% endif %}{% endfor %}
+    
+    {% for method in methods %}
+    def {{ method.name }}(self{% if method.parameters %}{% for param in method.parameters %}, {{ param.name }}{% if param.default %} = {{ param.default }}{% endif %}{% endfor %}{% endif %}):
+        """{{ method.docstring.summary }}
+        
+        {% if method.docstring.description %}{{ method.docstring.description }}
+        
+        {% endif %}
+        {% if method.parameters %}
+        Args:
+        {% for param in method.parameters %}
+            {{ param.name }}: {{ param.description }}{% if param.type %} ({{ param.type }}){% endif %}{% if param.default %} Defaults to {{ param.default }}.{% endif %}
+        {% endfor %}
+        {% endif %}
+        {% if method.docstring.returns %}
+        Returns:
+            {% if method.docstring.returns.type %}{{ method.docstring.returns.type }}: {% endif %}{{ method.docstring.returns.description }}
+        {% endif %}
+        {% if method.docstring.raises %}
+        Raises:
+        {% for exception in method.docstring.raises %}
+            {{ exception.type }}: {{ exception.description }}
+        {% endfor %}
+        {% endif %}
+        """
+        {{ method.body|indent(8) }}
+    
+    {% endfor %}

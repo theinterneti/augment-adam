@@ -93,3 +93,8 @@ poetry.lock
 # Backup files
 backup/
 *.bak
+
+# Archived code
+archive/code/*.tar.gz
+archive/docs/*.tar.gz
+archive/tests/*.tar.gz

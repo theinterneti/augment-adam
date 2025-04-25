@@ -13,6 +13,10 @@ This context engine uses a hybrid approach combining Redis for real-time vector 
 - **Tiered Memory**: Hot, warm, and cold tiers for optimal performance and resource usage
 - **Asynchronous Processing**: Background tasks for resource-intensive operations
 - **MCP Integration**: Standardized tool interface for AI models
+- **Sophisticated Tagging System**: Hierarchical tagging for better organization and retrieval
+- **Enhanced Template Engine**: Generate code, tests, and documentation with a powerful template engine
+- **Google-Style Docstrings**: All code includes comprehensive Google-style docstrings
+- **Type Hints**: Extensive use of type hints for better code quality and IDE support
 
 ## Architecture
 
@@ -22,6 +26,8 @@ The context engine consists of the following components:
 2. **Neo4j Graph Database**: Stores relationships and provides graph-aware context
 3. **FastAPI MCP Server**: Exposes the context engine's capabilities as MCP tools
 4. **Background Worker**: Handles resource-intensive tasks in the background
+5. **Tagging System**: Hierarchical tagging for better organization and retrieval
+6. **Template Engine**: Generate code, tests, and documentation with a powerful template engine
 
 ## Getting Started
 
@@ -141,6 +147,8 @@ async def main():
 For more detailed information, see the following documentation:
 
 - [MCP Context Engine](MCP_CONTEXT_ENGINE.md): Detailed documentation of the context engine
+- [Tagging System](TAGGING_SYSTEM.md): Documentation of the tagging system
+- [Template Engine](TEMPLATE_ENGINE.md): Documentation of the template engine
 - [Guidelines](.augment.guidelines.yaml): Guidelines for using and extending the context engine
 
 ## License

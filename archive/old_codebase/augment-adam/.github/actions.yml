@@ -1,0 +1,16 @@
+name: Augment Adam CI/CD
+description: GitHub Actions configuration for Augment Adam
+
+# Default settings for all workflows
+defaults:
+  run:
+    shell: bash
+
+# Permissions required for workflows
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  packages: write
+  actions: read
+  security-events: write

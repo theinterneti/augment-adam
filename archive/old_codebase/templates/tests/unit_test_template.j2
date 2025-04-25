@@ -1,0 +1,87 @@
+{# Template for generating unit test files #}
+{# @tags: test, pytest, unit-test #}
+{# @description: This template is used to generate unit test files with pytest #}
+{# @variables: module_name:str, imports:list, class_under_test:dict, fixtures:list, tests:list #}
+
+"""Unit tests for {{ module_name }}.
+
+This module contains unit tests for the {{ module_name }} module.
+"""
+
+import pytest
+from unittest.mock import Mock, patch, MagicMock
+{% for import_statement in imports %}
+{{ import_statement }}
+{% endfor %}
+
+{% for fixture in fixtures %}
+@pytest.fixture
+def {{ fixture.name }}():
+    """{{ fixture.description }}"""
+    {{ fixture.code|indent(4) }}
+
+{% endfor %}
+{% if class_under_test %}
+class Test{{ class_under_test.name }}:
+    """Tests for the {{ class_under_test.name }} class."""
+    
+    {% for fixture in class_under_test.fixtures %}
+    @pytest.fixture
+    def {{ fixture.name }}(self):
+        """{{ fixture.description }}"""
+        {{ fixture.code|indent(8) }}
+    
+    {% endfor %}
+    
+    {% for test in tests %}
+    {% if test.hypothesis %}
+    @given({{ test.hypothesis.strategies }})
+    {% endif %}
+    {% if test.parametrize %}
+    @pytest.mark.parametrize({{ test.parametrize.args }})
+    {% endif %}
+    def {{ test.name }}(self{% if test.fixtures %}, {% endif %}{{ test.fixtures|join(', ') }}{% if test.hypothesis %}{% if test.fixtures %}, {% endif %}{{ test.hypothesis.args|join(', ') }}{% endif %}):
+        """{{ test.description }}"""
+        {% if test.arrange %}
+        # Arrange
+        {{ test.arrange|indent(8) }}
+        {% endif %}
+        
+        {% if test.act %}
+        # Act
+        {{ test.act|indent(8) }}
+        {% endif %}
+        
+        {% if test.assert %}
+        # Assert
+        {{ test.assert|indent(8) }}
+        {% endif %}
+    
+    {% endfor %}
+{% else %}
+{% for test in tests %}
+{% if test.hypothesis %}
+@given({{ test.hypothesis.strategies }})
+{% endif %}
+{% if test.parametrize %}
+@pytest.mark.parametrize({{ test.parametrize.args }})
+{% endif %}
+def {{ test.name }}({% if test.fixtures %}{{ test.fixtures|join(', ') }}{% endif %}{% if test.hypothesis %}{% if test.fixtures %}, {% endif %}{{ test.hypothesis.args|join(', ') }}{% endif %}):
+    """{{ test.description }}"""
+    {% if test.arrange %}
+    # Arrange
+    {{ test.arrange|indent(4) }}
+    {% endif %}
+    
+    {% if test.act %}
+    # Act
+    {{ test.act|indent(4) }}
+    {% endif %}
+    
+    {% if test.assert %}
+    # Assert
+    {{ test.assert|indent(4) }}
+    {% endif %}
+
+{% endfor %}
+{% endif %}

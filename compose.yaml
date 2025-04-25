@@ -1,0 +1,58 @@
+services:
+  python-augment-adam:
+    build:
+      context: ./augment-adam
+    container_name: python-augment-adam
+    restart: unless-stopped
+    init: true
+    # env_file: ./.env  # Uncomment if .env file exists in ./augment-adam
+    ports:
+      - "8000:8000"  # Exposes FastAPI server
+    networks:
+      - augment-adam-net
+    # If you use Neo4j memory, uncomment the following line to depend on the database
+    # depends_on:
+    #   - neo4j
+
+  python-augment-adam-legacy:
+    build:
+      context: ./backup_before_migration/augment-adam
+    container_name: python-augment-adam-legacy
+    restart: unless-stopped
+    init: true
+    # env_file: ./.env  # Uncomment if .env file exists in ./backup_before_migration/augment-adam
+    ports:
+      - "8001:8000"  # Exposes FastAPI server for legacy version on a different host port
+    networks:
+      - augment-adam-net
+    # If you use Neo4j memory, uncomment the following line to depend on the database
+    # depends_on:
+    #   - neo4j
+
+  # External service: Neo4j (required for graph memory, see README)
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    networks:
+      - augment-adam-net
+    environment:
+      NEO4J_AUTH: "neo4j/testpassword"  # Change password for production
+    volumes:
+      - neo4j-data:/data
+    healthcheck:
+      test: ["CMD", "cypher-shell", "-u", "neo4j", "-p", "testpassword", "MATCH (n) RETURN count(n)"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+networks:
+  augment-adam-net:
+    driver: bridge
+
+volumes:
+  neo4j-data:
+    # Persistent storage for Neo4j database

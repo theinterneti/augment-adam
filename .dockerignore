@@ -1,0 +1,95 @@
+# 1. Python-specific ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.coverage
+*.egg-info/
+*.eggs/
+dist/
+build/
+
+# 2. Node.js (not detected, but safe to include for completeness)
+node_modules/
+npm-debug.log
+yarn-debug.log
+
+# 3. Go (not detected, but safe to include for completeness)
+/vendor/
+*.test
+.go-cache/
+
+# 4. Java (not detected, but safe to include for completeness)
+target/
+*.class
+.gradle/
+
+# 5. IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+*.bak
+
+# 6. Build and output directories
+out/
+
+# 7. Test files and directories
+test/
+tests/
+*_test.go
+
+# 8. Debug and log files
+debug/
+*.log
+
+# 9. Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# 10. Environment and secrets
+.env
+.env.*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# 11. Project-specific patterns
+# Documentation
+/docs/
+*.md
+README*
+
+# Docker files
+Dockerfile*
+docker-compose*
+compose.yaml
+
+# Temporary and local files
+tmp/
+temp/
+*.tmp
+.local/
+local/
+.cache/
+
+# Miscellaneous
+*.DS_Store
+*.orig
+
+# Exclude files/folders that should always be included (negation)
+!requirements.txt
+!setup.py
+!pyproject.toml
+!src/
+!augment_adam/
+!augment-adam/
+!backup_before_migration/augment-adam/
+!examples/

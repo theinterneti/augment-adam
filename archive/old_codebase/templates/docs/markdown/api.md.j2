@@ -1,0 +1,158 @@
+{# @tags: doc, api, markdown #}
+{# @description: This template is used to generate API documentation #}
+{# @variables: project_name:str, description:str, modules:list, classes:list, functions:list #}
+{# @author: Augment Adam #}
+{# @version: 1.0.0 #}
+{# @examples: project_name="My Project", description="API documentation for My Project", modules=[{"name": "my_module", "description": "A sample module"}] #}
+{# @related_templates: readme.md.j2, user_guide.md.j2 #}
+# {{ project_name }} API Documentation
+
+{{ description }}
+
+{% if modules %}
+## Modules
+
+{% for module in modules %}
+### {{ module.name }}
+
+{{ module.description }}
+
+{% if module.classes %}
+#### Classes
+
+{% for class in module.classes %}
+##### {{ class.name }}
+
+{{ class.description }}
+
+{% if class.methods %}
+###### Methods
+
+{% for method in class.methods %}
+- `{{ method.name }}({% for arg in method.args %}{{ arg.name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return_type %} -> {{ method.return_type }}{% endif %}`: {{ method.description }}
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if module.functions %}
+#### Functions
+
+{% for function in module.functions %}
+##### `{{ function.name }}({% for arg in function.args %}{{ arg.name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if function.return_type %} -> {{ function.return_type }}{% endif %}`
+
+{{ function.description }}
+
+{% if function.args %}
+###### Arguments
+
+{% for arg in function.args %}
+- `{{ arg.name }}`: {{ arg.description }}
+{% endfor %}
+{% endif %}
+
+{% if function.return_type and function.return_type != 'None' %}
+###### Returns
+
+{{ function.return_description }}
+{% endif %}
+
+{% if function.examples %}
+###### Examples
+
+```python
+{% for example in function.examples %}
+{{ example }}
+{% endfor %}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if classes %}
+## Classes
+
+{% for class in classes %}
+### {{ class.name }}
+
+{{ class.description }}
+
+{% if class.methods %}
+#### Methods
+
+{% for method in class.methods %}
+##### `{{ method.name }}({% for arg in method.args %}{{ arg.name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if method.return_type %} -> {{ method.return_type }}{% endif %}`
+
+{{ method.description }}
+
+{% if method.args and method.args | length > 1 %}
+###### Arguments
+
+{% for arg in method.args %}
+{% if arg.name != 'self' %}
+- `{{ arg.name }}`: {{ arg.description }}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if method.return_type and method.return_type != 'None' %}
+###### Returns
+
+{{ method.return_description }}
+{% endif %}
+
+{% if method.examples %}
+###### Examples
+
+```python
+{% for example in method.examples %}
+{{ example }}
+{% endfor %}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if functions %}
+## Functions
+
+{% for function in functions %}
+### `{{ function.name }}({% for arg in function.args %}{{ arg.name }}{% if not loop.last %}, {% endif %}{% endfor %}){% if function.return_type %} -> {{ function.return_type }}{% endif %}`
+
+{{ function.description }}
+
+{% if function.args %}
+#### Arguments
+
+{% for arg in function.args %}
+- `{{ arg.name }}`: {{ arg.description }}
+{% endfor %}
+{% endif %}
+
+{% if function.return_type and function.return_type != 'None' %}
+#### Returns
+
+{{ function.return_description }}
+{% endif %}
+
+{% if function.examples %}
+#### Examples
+
+```python
+{% for example in function.examples %}
+{{ example }}
+{% endfor %}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}
