@@ -1,139 +1,276 @@
-# Getting Started with Dukat v0.1.0
+# Getting Started
 
-*Last updated: 2025-04-22*
-
-This guide will help you get started with Dukat, an open-source AI assistant focused on personal automation.
-
-## Prerequisites
-
-Before you begin, make sure you have the following installed:
-
-- Python 3.10 or higher
-- [Ollama](https://ollama.ai/) for running models locally
+This guide explains how to get started with Augment Adam.
 
 ## Installation
 
-### 1. Install Dukat
+Before you can use Augment Adam, you need to install it. You can install it using pip:
 
-You can install Dukat using pip:
-
-```bash
+```python
 pip install augment-adam
 ```
 
-Or, if you prefer to install from source:
+### Development Installation
 
-```bash
-git clone https://github.com/augment-adam/augment-adam.git
+If you want to contribute to Augment Adam, you can install it in development mode:
+
+```python
+git clone https://github.com/theinterneti/augment-adam.git
 cd augment-adam
-pip install -e .
-```
-
-### 2. Set Up Ollama
-
-If you haven't already, install Ollama:
-
-```bash
-# On Linux or macOS
-curl -fsSL https://ollama.ai/install.sh | sh
-
-# On Windows, download from https://ollama.ai/download
-```
-
-Then, pull a model:
-
-```bash
-ollama pull llama3:8b
-```
-
-## Configuration
-
-Dukat can be configured through a `config.yaml` file in your home directory:
-
-```yaml
-# ~/.augment_adam/config.yaml
-model: llama3:8b  # Model to use for inference
-ollama_host: http://localhost:11434  # Ollama API endpoint
-memory:
-  vector_db: chroma  # Vector database for memory (chroma or faiss)
-  persist_dir: ~/.augment_adam/memory  # Directory to store memory
-log_level: INFO  # Logging level
+pip install -e ".[dev]"
 ```
 
 ## Basic Usage
 
-### Command Line Interface
-
-To start the Dukat CLI:
-
-```bash
-augment-adam
-```
-
-This will launch an interactive session where you can chat with the assistant.
-
-### Web Interface
-
-To start the Dukat web interface:
-
-```bash
-augment-adam web
-```
-
-This will start a web server at http://localhost:7860 where you can interact with the assistant through a browser.
-
-### Python API
-
-You can also use Dukat programmatically in your Python code:
+Once you have installed Augment Adam, you can start using it. Here's a simple example:
 
 ```python
 from augment_adam.core import Assistant
 
-# Initialize the assistant
+# Create an assistant
 assistant = Assistant()
 
-# Ask a question
-response = assistant.ask("What can you help me with?")
-print(response)
-
-# Start a new conversation
-assistant.new_conversation()
-
-# Ask another question
-response = assistant.ask("Tell me about DSPy.")
+# Chat with the assistant
+response = assistant.chat("Hello, how are you?")
 print(response)
 ```
 
-## Next Steps
+### Using Memory
 
-- Check out the [API Documentation](../api/index.md) for more details on using Dukat programmatically
-- Learn about [Creating Plugins](plugins.md) to extend Dukat's capabilities
-- Explore [Advanced Configuration](configuration.md) options
+You can use memory to store and retrieve information:
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.memory import FAISSMemory
+
+# Create a memory
+memory = FAISSMemory(path="./data/faiss")
+
+# Create an assistant with memory
+assistant = Assistant(memory=memory)
+
+# Chat with the assistant
+response = assistant.chat("Remember that my name is Alice.")
+print(response)
+
+response = assistant.chat("What's my name?")
+print(response)
+```
+
+### Using Models
+
+You can use different models with the assistant:
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.models import OpenAIModel
+
+# Create a model
+model = OpenAIModel(api_key="your-api-key", model_name="gpt-4")
+
+# Create an assistant with the model
+assistant = Assistant(model=model)
+
+# Chat with the assistant
+response = assistant.chat("What is the capital of France?")
+print(response)
+```
+
+## Using the Context Engine
+
+The context engine helps the assistant understand the context of the conversation:
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.context_engine import ContextEngine
+
+# Create a context engine
+context_engine = ContextEngine()
+
+# Add documents to the context engine
+context_engine.add_document("France is a country in Western Europe. Its capital is Paris.")
+context_engine.add_document("Paris is known for the Eiffel Tower and the Louvre Museum.")
+
+# Create an assistant with the context engine
+assistant = Assistant(context_engine=context_engine)
+
+# Chat with the assistant
+response = assistant.chat("What is the capital of France?")
+print(response)
+
+response = assistant.chat("What is it known for?")
+print(response)
+```
+
+## Using Plugins
+
+You can extend the assistant's capabilities with plugins:
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.plugins import FileManagerPlugin, WebSearchPlugin
+
+# Create plugins
+file_manager = FileManagerPlugin()
+web_search = WebSearchPlugin(api_key="your-api-key")
+
+# Create an assistant with plugins
+assistant = Assistant(plugins=[file_manager, web_search])
+
+# Chat with the assistant
+response = assistant.chat("Create a file called hello.txt with the content 'Hello, World!'")
+print(response)
+
+response = assistant.chat("Search for information about Python programming language")
+print(response)
+```
+
+## Using Agents
+
+You can use multiple agents to work together:
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.ai_agent import MCPAgent, WorkerAgent
+
+# Create agents
+mcp_agent = MCPAgent()
+worker_agent = WorkerAgent()
+
+# Create an assistant with agents
+assistant = Assistant(agents=[mcp_agent, worker_agent])
+
+# Chat with the assistant
+response = assistant.chat("Solve this complex problem: What is the optimal strategy for the Prisoner's Dilemma?")
+print(response)
+```
+
+
+
+## Examples
+
+### Simple Conversation
+
+A simple conversation with the assistant.
+
+```python
+from augment_adam.core import Assistant
+
+# Create an assistant
+assistant = Assistant()
+
+# Chat with the assistant
+response = assistant.chat("Hello, how are you?")
+print(f"Assistant: {response}")
+
+response = assistant.chat("What can you do?")
+print(f"Assistant: {response}")
+
+response = assistant.chat("Tell me a joke.")
+print(f"Assistant: {response}")
+```
+
+Output:
+```
+Assistant: I'm doing well, thank you for asking! How can I help you today?
+
+Assistant: I can assist you with a variety of tasks, including answering questions, generating text, providing information, and having conversations. I can also help with more specific tasks like coding, writing, summarizing, and creative content generation. What would you like help with?
+
+Assistant: Why don't scientists trust atoms? Because they make up everything!
+```
+
+### Using Memory and Context
+
+Using memory and context to maintain a conversation.
+
+```python
+from augment_adam.core import Assistant
+from augment_adam.memory import FAISSMemory
+from augment_adam.context_engine import ContextEngine
+
+# Create a memory
+memory = FAISSMemory(path="./data/faiss")
+
+# Create a context engine
+context_engine = ContextEngine()
+context_engine.add_document("Alice is a software engineer who likes Python and machine learning.")
+
+# Create an assistant with memory and context
+assistant = Assistant(memory=memory, context_engine=context_engine)
+
+# Chat with the assistant
+response = assistant.chat("Hi, I'm Alice.")
+print(f"Assistant: {response}")
+
+response = assistant.chat("What do I do for a living?")
+print(f"Assistant: {response}")
+
+response = assistant.chat("What programming languages do I like?")
+print(f"Assistant: {response}")
+```
+
+Output:
+```
+Assistant: Hello Alice! It's nice to meet you. How can I assist you today?
+
+Assistant: You're a software engineer, Alice.
+
+Assistant: Based on the information I have, you like Python as a programming language. You're also interested in machine learning.
+```
+
+
 
 ## Troubleshooting
 
-### Common Issues
+### Installation Errors
 
-#### Ollama Connection Error
+If you encounter errors during installation, make sure you have the latest version of pip and the required dependencies:
 
-If you see an error like "Failed to connect to Ollama", make sure:
+```bash
+pip install --upgrade pip
+pip install -r requirements.txt
+```
 
-1. Ollama is running (`ollama serve`)
-2. The Ollama host in your config is correct
-3. You have pulled the model you're trying to use
+If you're still having issues, check the error message for specific dependency problems.
 
-#### Memory Errors
+### API Key Errors
 
-If you encounter memory-related errors:
+If you're using a model that requires an API key (like OpenAI or Anthropic), make sure you've set the API key correctly:
 
-1. Check that the memory directory exists and is writable
-2. Try clearing the memory: `rm -rf ~/.augment_adam/memory/*`
-3. Ensure you have enough disk space
+```python
+from augment_adam.models import OpenAIModel
 
-### Getting Help
+# Create a model with your API key
+model = OpenAIModel(api_key="your-api-key")
+```
 
-If you encounter any issues not covered here, please:
+You can also set the API key as an environment variable:
 
-1. Check the [FAQ](faq.md) for common questions
-2. Search for similar issues in the [GitHub repository](https://github.com/yourusername/augment_adam/issues)
-3. Open a new issue if your problem is not already reported
+```bash
+export AUGMENT_ADAM_API_KEY=your-api-key
+```
+
+### Memory Persistence Issues
+
+If you're having issues with memory persistence, make sure the directory exists and is writable:
+
+```python
+import os
+from augment_adam.memory import FAISSMemory
+
+# Create the directory if it doesn't exist
+os.makedirs("./data/faiss", exist_ok=True)
+
+# Create a memory
+memory = FAISSMemory(path="./data/faiss")
+```
+
+
+
+## Next Steps
+
+- [Configuration](configuration.md): Learn how to configure Augment Adam
+- [Memory System](../architecture/MEMORY_SYSTEM.md): Learn about the memory system architecture
+- [Context Engine](../architecture/CONTEXT_ENGINE.md): Learn about the context engine architecture
+- [Agent Coordination](agent_coordination.md): Learn how to coordinate multiple agents
+

@@ -1,0 +1,115 @@
+{
+  "api": [
+    {
+      "module": "augment_adam.memory",
+      "output": "docs/api/memory.md",
+      "data": "docs/data/memory_api.json"
+    },
+    {
+      "module": "augment_adam.models",
+      "output": "docs/api/models.md",
+      "data": "docs/data/models_api.json"
+    },
+    {
+      "module": "augment_adam.ai_agent",
+      "output": "docs/api/agents.md",
+      "data": "docs/data/agents_api.json"
+    },
+    {
+      "module": "augment_adam.context_engine",
+      "output": "docs/api/context.md",
+      "data": "docs/data/context_api.json"
+    },
+    {
+      "module": "augment_adam.utils",
+      "output": "docs/api/utils.md",
+      "data": "docs/data/utils_api.json"
+    },
+    {
+      "module": "augment_adam.utils.monte_carlo",
+      "output": "docs/api/monte_carlo.md",
+      "data": "docs/data/monte_carlo_api.json"
+    },
+    {
+      "module": "augment_adam.utils.parallel",
+      "output": "docs/api/parallel.md",
+      "data": "docs/data/parallel_api.json"
+    }
+  ],
+  "user": [
+    {
+      "title": "Getting Started",
+      "output": "docs/user_guide/getting_started.md",
+      "data": "docs/data/getting_started.json"
+    },
+    {
+      "title": "Hardware Optimization",
+      "output": "docs/user_guide/hardware_optimization.md",
+      "data": "docs/data/hardware_optimization.json"
+    },
+    {
+      "title": "Parallel Monte Carlo",
+      "output": "docs/user_guide/parallel_monte_carlo.md",
+      "data": "docs/data/parallel_monte_carlo.json"
+    },
+    {
+      "title": "Building Agents",
+      "output": "docs/user_guide/building_agents.md",
+      "data": "docs/data/building_agents.json"
+    },
+    {
+      "title": "Agent Coordination",
+      "output": "docs/user_guide/agent_coordination.md",
+      "data": "docs/data/agent_coordination.json"
+    }
+  ],
+  "dev": [
+    {
+      "title": "Contributing",
+      "output": "docs/developer_guides/contributing.md",
+      "data": "docs/data/contributing.json"
+    },
+    {
+      "title": "Testing",
+      "output": "docs/developer_guides/testing.md",
+      "data": "docs/data/testing.json"
+    },
+    {
+      "title": "Documentation",
+      "output": "docs/developer_guides/documentation.md",
+      "data": "docs/data/documentation.json"
+    },
+    {
+      "title": "Release",
+      "output": "docs/developer_guides/release.md",
+      "data": "docs/data/release.json"
+    }
+  ],
+  "arch": [
+    {
+      "title": "Memory System",
+      "output": "docs/architecture/MEMORY_SYSTEM.md",
+      "data": "docs/data/memory_system_arch.json"
+    },
+    {
+      "title": "Agent Coordination",
+      "output": "docs/architecture/AGENT_COORDINATION.md",
+      "data": "docs/data/agent_coordination_arch.json"
+    },
+    {
+      "title": "Testing Framework",
+      "output": "docs/architecture/TESTING_FRAMEWORK.md",
+      "data": "docs/data/testing_framework_arch.json"
+    },
+    {
+      "title": "Context Engine",
+      "output": "docs/architecture/CONTEXT_ENGINE.md",
+      "data": "docs/data/context_engine_arch.json"
+    },
+    {
+      "title": "Plugin System",
+      "output": "docs/architecture/PLUGIN_SYSTEM.md",
+      "data": "docs/data/plugin_system_arch.json"
+    }
+  ]
+}

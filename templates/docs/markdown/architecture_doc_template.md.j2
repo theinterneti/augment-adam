@@ -1,0 +1,135 @@
+{# Template for generating architecture documentation #}
+{# @tags: documentation, architecture, markdown #}
+{# @description: This template is used to generate architecture documentation in Markdown format #}
+{# @variables: title:str, description:str, components:list, diagrams:list, interfaces:list, examples:list, future_enhancements:list #}
+{# @examples: [{"title": "Memory System", "description": "This document describes the architecture of the Memory System"}] #}
+
+# {{ title }}
+
+## Overview
+
+{{ description }}
+
+{% if architecture_diagram %}
+## Architecture Diagram
+
+{{ architecture_diagram.description }}
+
+```
+{{ architecture_diagram.diagram }}
+```
+{% endif %}
+
+{% if components %}
+## Components
+
+{% for component in components %}
+### {{ component.name }}
+
+{{ component.description }}
+
+{% if component.responsibilities %}
+#### Responsibilities
+
+{% for responsibility in component.responsibilities %}
+- {{ responsibility }}
+{% endfor %}
+{% endif %}
+
+{% if component.interfaces %}
+#### Interfaces
+
+{% for interface in component.interfaces %}
+- `{{ interface.name }}`: {{ interface.description }}
+{% endfor %}
+{% endif %}
+
+{% if component.implementation %}
+#### Implementation
+
+{{ component.implementation }}
+
+```python
+{{ component.code }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if interfaces %}
+## Interfaces
+
+{% for interface in interfaces %}
+### {{ interface.name }}
+
+{{ interface.description }}
+
+```python
+{{ interface.code }}
+```
+{% endfor %}
+{% endif %}
+
+{% if workflows %}
+## Workflows
+
+{% for workflow in workflows %}
+### {{ workflow.name }}
+
+{{ workflow.description }}
+
+{% if workflow.steps %}
+#### Steps
+
+{% for step in workflow.steps %}
+1. {{ step }}
+{% endfor %}
+{% endif %}
+
+{% if workflow.diagram %}
+#### Diagram
+
+```
+{{ workflow.diagram }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+### {{ example.title }}
+
+{{ example.description }}
+
+```python
+{{ example.code }}
+```
+{% endfor %}
+{% endif %}
+
+{% if integration %}
+## Integration with Other Components
+
+{% for integration_item in integration %}
+### {{ integration_item.component }}
+
+{{ integration_item.description }}
+
+{% if integration_item.code %}
+```python
+{{ integration_item.code }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if future_enhancements %}
+## Future Enhancements
+
+{% for enhancement in future_enhancements %}
+- **{{ enhancement.title }}**: {{ enhancement.description }}
+{% endfor %}
+{% endif %}
