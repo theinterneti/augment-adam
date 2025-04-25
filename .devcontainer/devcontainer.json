@@ -1,5 +1,5 @@
 {
-  "name": "Dukat: Development Environment Assistant",
+  "name": "Augment Adam: Development Environment",
   "dockerComposeFile": "docker-compose.yml",
   "service": "dev",
   "workspaceFolder": "/workspace",
@@ -46,7 +46,7 @@
   "postCreateCommand": "pip install --upgrade pip && pip install -r /workspace/requirements.txt && chmod +x /workspace/scripts/*.py || echo 'Setup completed with warnings'",
 
   // Forward ports for services
-  "forwardPorts": [11434, 8888],
+  "forwardPorts": [11434, 8888, 8000, 7474, 7687, 6379, 6380, 8001, 8080],
 
   // Run commands after the container is created and started
   "postStartCommand": "bash .devcontainer/post-start.sh",

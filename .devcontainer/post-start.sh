@@ -6,46 +6,55 @@ echo "Running post-start setup..."
 # Make sure scripts are executable
 chmod +x /workspace/scripts/*.py 2>/dev/null || echo "Warning: Could not make scripts executable"
 
-# Check if Ollama is installed
-if ! command -v ollama &> /dev/null; then
-    echo "Ollama is not installed. Installing now..."
-    curl -fsSL https://ollama.com/install.sh | sh
-    echo "Ollama installed. Starting service..."
-    nohup ollama serve > /tmp/ollama.log 2>&1 &
-fi
-
-# Wait for Ollama to be fully started
-echo "Waiting for Ollama to be ready..."
+# Wait for Ollama service to be fully started
+echo "Waiting for Ollama service to be ready..."
 for i in {1..20}; do
-    if curl -s http://localhost:11434/api/tags >/dev/null 2>&1; then
-        echo "Ollama is ready"
+    if curl -s http://ollama:11434/api/tags >/dev/null 2>&1; then
+        echo "Ollama service is ready"
         break
     fi
     if [ $i -eq 20 ]; then
-        echo "Ollama failed to start in time. Check /tmp/ollama.log for details."
-        cat /tmp/ollama.log 2>/dev/null || echo "Log file not found"
+        echo "Ollama service failed to start in time."
         echo "Continuing anyway..."
     fi
-    echo "Waiting for Ollama... ($i/20)"
+    echo "Waiting for Ollama service... ($i/20)"
+    sleep 3
+done
+
+# Check for other services
+echo "Checking for ChromaDB service..."
+for i in {1..10}; do
+    if curl -s http://chroma:8000/api/v1/heartbeat >/dev/null 2>&1; then
+        echo "ChromaDB service is ready"
+        break
+    fi
+    if [ $i -eq 10 ]; then
+        echo "ChromaDB service failed to start in time."
+        echo "Continuing anyway..."
+    fi
+    echo "Waiting for ChromaDB service... ($i/10)"
+    sleep 3
+done
+
+# Check for Neo4j
+echo "Checking for Neo4j service..."
+for i in {1..15}; do
+    if curl -s http://neo4j:7474 >/dev/null 2>&1; then
+        echo "Neo4j service is ready"
+        break
+    fi
+    if [ $i -eq 15 ]; then
+        echo "Neo4j service failed to start in time."
+        echo "Continuing anyway..."
+    fi
+    echo "Waiting for Neo4j service... ($i/15)"
     sleep 3
 done
 
 # Check for NVIDIA GPU
 if command -v nvidia-smi &> /dev/null; then
-    echo "NVIDIA GPU detected, configuring Ollama for GPU usage..."
-    # Set Ollama to use GPU
-    export OLLAMA_HOST=0.0.0.0
-    export OLLAMA_KEEP_ALIVE=1h
-    # Restart Ollama to apply settings
-    pkill ollama || echo "No Ollama process to kill"
-    sleep 2
-    nohup ollama serve > /tmp/ollama.log 2>&1 &
-    echo "Waiting for Ollama to restart..."
-    sleep 5
-
-    # Verify Ollama is using GPU
-    echo "Verifying Ollama GPU configuration..."
-    curl -s http://localhost:11434/api/tags >/dev/null 2>&1 && echo "Ollama restarted successfully" || echo "Warning: Ollama may not have restarted properly"
+    echo "NVIDIA GPU detected, verifying configuration..."
+    nvidia-smi || echo "Failed to run nvidia-smi"
 fi
 
 # Pull required models
