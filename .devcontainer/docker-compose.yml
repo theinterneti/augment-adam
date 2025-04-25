@@ -33,7 +33,7 @@ services:
 
     # Forward ports for services
     ports:
-      - "8888:8888"  # Jupyter
+      - "8889:8888"  # Jupyter (changed from 8888 to avoid port conflict)
 
     # Set environment variables
     environment:
