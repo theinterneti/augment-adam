@@ -1,6 +1,6 @@
 
 Plugin Example
-============
+==============
 
 This document provides an example of using the Plugin System.
 

@@ -1,18 +1,18 @@
 
 Quickstart
-=========
+==========
 
 This document provides a quickstart guide for Augment Adam.
 
 Installation
-----------
+------------
 
 .. code-block:: bash
 
     pip install augment-adam
 
 Basic Usage
----------
+-----------
 
 .. code-block:: python
 
@@ -35,7 +35,7 @@ Basic Usage
     print(response)  # "The capital of France is Paris."
 
 Next Steps
----------
+----------
 
 * :doc:`installation` - Installation guide
 * :doc:`getting_started` - Getting started guide

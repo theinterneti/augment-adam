@@ -1,6 +1,6 @@
 
 Plugin System
-============
+=============
 
 This document provides information about the plugin system.
 
@@ -8,7 +8,7 @@ This document provides information about the plugin system.
    :parser: myst_parser.sphinx_
 
 Plugin System Architecture
-------------------------
+--------------------------
 
 .. mermaid::
 

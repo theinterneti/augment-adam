@@ -1,6 +1,6 @@
 
 Agent Coordination
-=================
+==================
 
 This document provides information about agent coordination.
 
@@ -8,7 +8,7 @@ This document provides information about agent coordination.
    :parser: myst_parser.sphinx_
 
 Agent Coordination Architecture
------------------------------
+-------------------------------
 
 .. mermaid::
 

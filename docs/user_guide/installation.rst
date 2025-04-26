@@ -1,18 +1,18 @@
 
 Installation
-===========
+============
 
 This document provides instructions for installing Augment Adam.
 
 Requirements
------------
+------------
 
 * Python 3.8 or higher
 * pip
 * virtualenv (recommended)
 
 Installation Steps
-----------------
+------------------
 
 1. Clone the repository:
 

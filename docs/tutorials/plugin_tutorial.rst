@@ -1,16 +1,16 @@
 
 Plugin Tutorial
-=============
+===============
 
 This document provides a tutorial for using the Plugin System.
 
 Introduction
------------
+------------
 
 The Plugin System enables the extension of the assistant's capabilities through plugins.
 
 Creating a Plugin
---------------
+-----------------
 
 .. code-block:: python
 
@@ -35,7 +35,7 @@ Creating a Plugin
             return a / b
 
 Registering and Using a Plugin
----------------------------
+------------------------------
 
 .. code-block:: python
 
@@ -56,7 +56,7 @@ Registering and Using a Plugin
     print(result)  # 20
 
 Next Steps
----------
+----------
 
 - Learn more about the :doc:`memory_tutorial`
 - Learn more about the :doc:`context_engine_tutorial`

@@ -1,11 +1,11 @@
 
 Documentation Guide
-=================
+===================
 
 This document provides guidelines for contributing to the Augment Adam documentation.
 
 Documentation Structure
----------------------
+-----------------------
 
 The Augment Adam documentation is organized into the following sections:
 
@@ -17,7 +17,7 @@ The Augment Adam documentation is organized into the following sections:
 * **Examples**: Example code for using Augment Adam
 
 Writing Documentation
-------------------
+---------------------
 
 When writing documentation, please follow these guidelines:
 
@@ -29,12 +29,12 @@ When writing documentation, please follow these guidelines:
 * Use diagrams to illustrate complex concepts
 
 reStructuredText Syntax
----------------------
+-----------------------
 
 The Augment Adam documentation uses reStructuredText (RST) syntax. Here are some common RST constructs:
 
 Headings
-~~~~~~~
+~~~~~~~~
 
 ::
 
@@ -48,7 +48,7 @@ Headings
     ~~~~~~~~~
 
 Lists
-~~~~
+~~~~~
 
 ::
 
@@ -61,7 +61,7 @@ Lists
     3. Item 3
 
 Code Blocks
-~~~~~~~~~~
+~~~~~~~~~~~
 
 ::
 
@@ -71,7 +71,7 @@ Code Blocks
             print("Hello, world!")
 
 Links
-~~~~
+~~~~~
 
 ::
 
@@ -80,7 +80,7 @@ Links
     :doc:`Link to another document <document_name>`
 
 Images
-~~~~~
+~~~~~~
 
 ::
 
@@ -89,7 +89,7 @@ Images
        :width: 400px
 
 Tables
-~~~~~
+~~~~~~
 
 ::
 
@@ -102,7 +102,7 @@ Tables
     +------------+------------+------------+
 
 Building the Documentation
------------------------
+--------------------------
 
 To build the documentation, run:
 
@@ -119,7 +119,7 @@ To view the documentation, run:
 Then open a browser and navigate to http://localhost:8033.
 
 Contributing Documentation
------------------------
+--------------------------
 
 To contribute documentation:
 

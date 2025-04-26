@@ -1,6 +1,6 @@
 
 Memory System
-============
+=============
 
 This document provides information about the memory system.
 
@@ -8,7 +8,7 @@ This document provides information about the memory system.
    :parser: myst_parser.sphinx_
 
 Memory System Architecture
--------------------------
+--------------------------
 
 .. mermaid::
 

@@ -1,11 +1,11 @@
 
 Getting Started
-=============
+===============
 
 This document provides a guide to getting started with Augment Adam.
 
 Basic Usage
----------
+-----------
 
 To get started with Augment Adam, follow these steps:
 
@@ -33,7 +33,7 @@ To get started with Augment Adam, follow these steps:
       print(response)
 
 Advanced Usage
-------------
+--------------
 
 For more advanced usage, see the following sections:
 

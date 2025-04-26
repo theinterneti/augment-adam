@@ -1,6 +1,6 @@
 
 Contributing
-===========
+============
 
 This document provides guidelines for contributing to Augment Adam.
 

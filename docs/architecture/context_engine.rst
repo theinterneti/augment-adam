@@ -1,6 +1,6 @@
 
 Context Engine
-=============
+==============
 
 This document provides information about the context engine.
 
@@ -8,7 +8,7 @@ This document provides information about the context engine.
    :parser: myst_parser.sphinx_
 
 Context Engine Architecture
--------------------------
+---------------------------
 
 .. mermaid::
 

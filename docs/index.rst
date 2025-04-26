@@ -1,6 +1,6 @@
 
 Augment Adam Documentation
-=======================
+==========================
 
 Welcome to the Augment Adam documentation!
 
@@ -12,6 +12,7 @@ Welcome to the Augment Adam documentation!
    user_guide/getting_started
    user_guide/configuration
    user_guide/quickstart
+   user_guide/search
 
 .. toctree::
    :maxdepth: 2

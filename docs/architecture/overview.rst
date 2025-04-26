@@ -8,7 +8,7 @@ This document provides an overview of the Augment Adam architecture.
    :parser: myst_parser.sphinx_
 
 System Architecture Diagram
---------------------------
+---------------------------
 
 .. mermaid::
 

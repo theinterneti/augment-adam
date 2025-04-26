@@ -1,16 +1,16 @@
 
 Memory Tutorial
-=============
+===============
 
 This document provides a tutorial for using the Memory System.
 
 Introduction
------------
+------------
 
 The Memory System provides various memory implementations for storing and retrieving information.
 
 Vector Memory
------------
+-------------
 
 The most common memory implementation is the Vector Memory, which stores and retrieves information using vector embeddings.
 
@@ -31,7 +31,7 @@ The most common memory implementation is the Vector Memory, which stores and ret
     print(results)  # ["Paris is the capital of France"]
 
 Advanced Usage
-------------
+--------------
 
 You can also add metadata to your memory entries:
 
@@ -51,7 +51,7 @@ You can also add metadata to your memory entries:
     print(results)  # ["Madrid is the capital of Spain"]
 
 Next Steps
----------
+----------
 
 - Learn more about the :doc:`context_engine_tutorial`
 - Learn more about the :doc:`agent_tutorial`

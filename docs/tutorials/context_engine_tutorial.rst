@@ -1,16 +1,16 @@
 
 Context Engine Tutorial
-====================
+=======================
 
 This document provides a tutorial for using the Context Engine.
 
 Introduction
------------
+------------
 
 The Context Engine is responsible for managing and retrieving relevant context for the assistant.
 
 Basic Usage
----------
+-----------
 
 .. code-block:: python
 
@@ -31,7 +31,7 @@ Basic Usage
     print(context)  # ["Paris is the capital of France"]
 
 Advanced Usage
-------------
+--------------
 
 You can customize the context retrieval with additional parameters:
 
@@ -46,7 +46,7 @@ You can customize the context retrieval with additional parameters:
     print(context)  # ["Paris is the capital of France", "Berlin is the capital of Germany", "Rome is the capital of Italy"]
 
 Next Steps
----------
+----------
 
 - Learn more about the :doc:`memory_tutorial`
 - Learn more about the :doc:`agent_tutorial`

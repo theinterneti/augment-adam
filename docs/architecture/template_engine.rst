@@ -1,6 +1,6 @@
 
 Template Engine
-==============
+===============
 
 This document provides information about the template engine.
 
@@ -8,7 +8,7 @@ This document provides information about the template engine.
    :parser: myst_parser.sphinx_
 
 Template Engine Architecture
---------------------------
+----------------------------
 
 .. mermaid::
 

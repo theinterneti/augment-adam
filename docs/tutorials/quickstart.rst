@@ -1,11 +1,11 @@
 
 Quickstart
-=========
+==========
 
 This document provides a quickstart guide for Augment Adam.
 
 Getting Started
--------------
+---------------
 
 To get started with Augment Adam, follow these steps:
 
@@ -39,7 +39,7 @@ To get started with Augment Adam, follow these steps:
       print(response)
 
 Next Steps
----------
+----------
 
 - Learn more about the :doc:`memory_tutorial`
 - Learn more about the :doc:`context_engine_tutorial`

@@ -1,6 +1,6 @@
 
 Basic Example
-============
+=============
 
 This document provides a basic example of using Augment Adam.
 

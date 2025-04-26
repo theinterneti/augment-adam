@@ -1,11 +1,11 @@
 
 Configuration
-============
+=============
 
 This document provides information about configuring Augment Adam.
 
 Configuration Options
-------------------
+---------------------
 
 Augment Adam can be configured using the following options:
 
@@ -16,7 +16,7 @@ Augment Adam can be configured using the following options:
 * **Template Engine**: Configure the template engine
 
 Memory System Configuration
-------------------------
+---------------------------
 
 The Memory System can be configured using the following options:
 
@@ -32,7 +32,7 @@ The Memory System can be configured using the following options:
     )
 
 Context Engine Configuration
--------------------------
+----------------------------
 
 The Context Engine can be configured using the following options:
 
@@ -49,7 +49,7 @@ The Context Engine can be configured using the following options:
     )
 
 Agent Configuration
----------------
+-------------------
 
 The Agent can be configured using the following options:
 
@@ -66,7 +66,7 @@ The Agent can be configured using the following options:
     )
 
 Plugin System Configuration
-------------------------
+---------------------------
 
 The Plugin System can be configured using the following options:
 
@@ -81,7 +81,7 @@ The Plugin System can be configured using the following options:
     )
 
 Template Engine Configuration
--------------------------
+-----------------------------
 
 The Template Engine can be configured using the following options:
 

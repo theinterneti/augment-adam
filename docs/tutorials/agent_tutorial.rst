@@ -1,16 +1,16 @@
 
 Agent Tutorial
-============
+==============
 
 This document provides a tutorial for using the Agent API.
 
 Introduction
------------
+------------
 
 The Agent API provides a high-level interface for creating and running AI agents.
 
 Basic Usage
----------
+-----------
 
 .. code-block:: python
 
@@ -35,7 +35,7 @@ Basic Usage
     print(response)  # "The capital of France is Paris."
 
 Advanced Usage
-------------
+--------------
 
 You can customize the agent's behavior with additional parameters:
 
@@ -50,7 +50,7 @@ You can customize the agent's behavior with additional parameters:
     print(response)  # "The capitals in Europe include Paris (France), Berlin (Germany), and Rome (Italy)."
 
 Next Steps
----------
+----------
 
 - Learn more about the :doc:`memory_tutorial`
 - Learn more about the :doc:`context_engine_tutorial`
