@@ -5,20 +5,14 @@ This module contains tests for the tagging system, including tests for
 hierarchical tags and tag attributes.
 """
 
-import pytest
 from augment_adam.utils.tagging import (
     TagCategory,
-    Tag,
-    TagRegistry,
     TagRelationship,
-    get_tag,
     create_tag,
-    get_or_create_tag,
     tag,
     get_tags,
 )
 from augment_adam.testing.utils.tag_utils import (
-    reset_tag_registry,
     isolated_tag_registry,
     safe_tag,
 )
@@ -163,7 +157,8 @@ def test_multiple_tags():
         # Check that both tags were applied
         tags = get_tags(FAISSMemory)
         assert len(tags) == 2
-        assert any(tag.get_full_path() == "memory.vector.faiss" for tag in tags)
+        assert any(
+            tag.get_full_path() == "memory.vector.faiss" for tag in tags)
         assert any(tag.get_full_path() == "model.embedding" for tag in tags)
 
 
@@ -181,4 +176,5 @@ def test_tag_relationships():
 
         # Add a bidirectional relationship
         model_tag.add_relationship(memory_tag, TagRelationship.DEPENDS_ON)
-        assert model_tag.has_relationship(memory_tag, TagRelationship.DEPENDS_ON)
+        assert model_tag.has_relationship(
+            memory_tag, TagRelationship.DEPENDS_ON)

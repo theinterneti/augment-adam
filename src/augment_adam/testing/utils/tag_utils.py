@@ -5,25 +5,28 @@ This module provides utilities for working with the tagging system in tests,
 including functions to reset the tag registry and safely create tags.
 """
 
-from typing import Dict, List, Any, Optional, Union, TypeVar, Callable, ContextManager
+from typing import Any, Callable, ContextManager
 from contextlib import contextmanager
 
 from augment_adam.utils.tagging.core import (
-    Tag, TagCategory, TagRegistry, get_tag, get_or_create_tag
+    TagCategory, TagRegistry
 )
 from augment_adam.utils.tagging.registry_factory import (
-    get_registry_factory, get_registry, IsolatedTagRegistry
+    get_registry_factory, get_registry
 )
+
 
 def reset_tag_registry() -> None:
     """
     Reset the tag registry to its initial state.
 
-    This function is useful for tests that need to start with a clean tag registry.
+    This function is useful for tests that need to start with a clean tag
+    registry.
     It creates a new isolated registry for the current test.
     """
     # Enter test mode with a fresh registry
     get_registry_factory().enter_test_mode()
+
 
 @contextmanager
 def isolated_tag_registry() -> ContextManager[TagRegistry]:
@@ -63,13 +66,15 @@ def isolated_tag_registry() -> ContextManager[TagRegistry]:
         factory._test_mode = previous_test_mode
         factory._test_registry = previous_test_registry
 
+
 def safe_tag(tag_name: str, **attributes: Any) -> Callable:
     """
-    A safer version of the tag decorator that handles duplicate tags gracefully.
+    A safer version of the tag decorator that handles duplicate tags
+    gracefully.
 
     This decorator uses get_or_create_tag instead of create_tag to avoid errors
-    when the same tag is applied multiple times. It also uses the registry factory
-    to ensure thread safety and test isolation.
+    when the same tag is applied multiple times. It also uses the registry
+    factory to ensure thread safety and test isolation.
 
     Args:
         tag_name: The name of the tag to apply.
@@ -125,12 +130,14 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
             tag_obj = registry.get_tag(tag_name)
             if tag_obj is None:
                 try:
-                    tag_obj = registry.create_tag(tag_name, category, attributes=attributes)
+                    tag_obj = registry.create_tag(
+                        tag_name, category, attributes=attributes)
                 except ValueError:
                     # Tag already exists, get it
                     tag_obj = registry.get_tag(tag_name)
 
-            # Update attributes regardless of whether the tag was created or retrieved
+            # Update attributes regardless of whether the tag was created or
+            # retrieved
             if tag_obj and attributes:
                 for key, value in attributes.items():
                     tag_obj.set_attribute(key, value)
@@ -194,10 +201,12 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
                 if not child_found:
                     # Create the child tag
                     try:
-                        child_tag = registry.create_tag(part, current_tag.category, current_tag)
+                        child_tag = registry.create_tag(
+                            part, current_tag.category, current_tag)
                         current_tag = child_tag
                     except ValueError:
-                        # Tag might have been created by another thread, try to find it again
+                        # Tag might have been created by another thread,
+                        # try to find it again
                         for child in current_tag.children:
                             if child.name == part:
                                 current_tag = child
