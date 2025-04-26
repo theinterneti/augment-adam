@@ -9,3 +9,4 @@ This section provides information for developers of Augment Adam.
 
    contributing
    testing_framework
+   documentation_guide

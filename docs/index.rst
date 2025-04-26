@@ -1,6 +1,6 @@
 
 Augment Adam Documentation
-==========================
+=======================
 
 Welcome to the Augment Adam documentation!
 
@@ -40,6 +40,26 @@ Welcome to the Augment Adam documentation!
    api/agent
    api/plugin
    api/template
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Tutorials
+
+   tutorials/quickstart
+   tutorials/memory_tutorial
+   tutorials/context_engine_tutorial
+   tutorials/agent_tutorial
+   tutorials/plugin_tutorial
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Examples
+
+   examples/basic_example
+   examples/memory_example
+   examples/context_engine_example
+   examples/agent_example
+   examples/plugin_example
 
 Indices and tables
 ==================
