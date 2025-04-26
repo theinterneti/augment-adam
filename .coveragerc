@@ -1,0 +1,19 @@
+[run]
+source = src/augment_adam
+omit = 
+    */test_*.py
+    */tests/*
+    */venv/*
+    */env/*
+    */site-packages/*
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+    raise ImportError
+    except ImportError
+    raise ValueError

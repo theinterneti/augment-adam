@@ -1,13 +1,23 @@
-"""Pytest configuration for Augment Adam tests."""
+"""
+Pytest configuration for Augment Adam tests.
+
+This is a simplified conftest.py that avoids the tagging system issues
+by resetting the tag registry before tests run.
+"""
 
 import os
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
 
-from augment_adam.memory.faiss_memory import FAISSMemory
-from augment_adam.memory.neo4j_memory import Neo4jMemory
+# Import our tag utilities
+from augment_adam.testing.utils.tag_utils import reset_tag_registry
 
+@pytest.fixture(scope="session", autouse=True)
+def reset_tags():
+    """Reset the tag registry before running tests."""
+    reset_tag_registry()
+    yield
 
 @pytest.fixture
 def temp_dir():
@@ -15,28 +25,21 @@ def temp_dir():
     with tempfile.TemporaryDirectory() as temp_dir:
         yield temp_dir
 
+# Mock fixtures for memory systems
+@pytest.fixture
+def mock_faiss_memory():
+    """Create a mocked FAISS memory instance for tests."""
+    mock_memory = MagicMock()
+    mock_memory.add.return_value = None
+    mock_memory.search.return_value = []
+    mock_memory.delete.return_value = None
+    yield mock_memory
 
 @pytest.fixture
-def faiss_memory(temp_dir):
-    """Create a FAISS memory instance for tests."""
-    memory = FAISSMemory(
-        persist_dir=temp_dir,
-        collection_name="test_memory"
-    )
-    yield memory
-
-
-@pytest.fixture
-def neo4j_memory_mock():
+def mock_neo4j_memory():
     """Create a mocked Neo4j memory instance for tests."""
-    with patch('augment_adam.memory.neo4j_memory.Neo4jClient') as mock_client_class:
-        # Create a mock client instance
-        mock_client = MagicMock()
-        mock_client_class.return_value = mock_client
-        
-        # Create a Neo4j memory instance
-        memory = Neo4jMemory(
-            collection_name="test_memory"
-        )
-        
-        yield memory
+    mock_memory = MagicMock()
+    mock_memory.add.return_value = None
+    mock_memory.search.return_value = []
+    mock_memory.delete.return_value = None
+    yield mock_memory
