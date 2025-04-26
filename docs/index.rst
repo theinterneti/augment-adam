@@ -1,6 +1,6 @@
 
 Augment Adam Documentation
-=======================
+==========================
 
 Welcome to the Augment Adam documentation!
 

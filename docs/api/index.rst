@@ -1,6 +1,6 @@
 
 API Reference
-===========
+=============
 
 This section provides reference documentation for the Augment Adam API.
 

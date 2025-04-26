@@ -1,6 +1,6 @@
 
 Architecture
-==========
+============
 
 This section provides an overview of the Augment Adam architecture.
 

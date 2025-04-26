@@ -1,6 +1,6 @@
 
 Developer Guide
-=============
+===============
 
 This section provides information for developers of Augment Adam.
 

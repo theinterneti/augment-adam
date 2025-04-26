@@ -1,6 +1,6 @@
 
 Plugin API
-========
+=========
 
 This document provides reference documentation for the Plugin API.
 
@@ -8,3 +8,9 @@ This document provides reference documentation for the Plugin API.
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
+
+See Also
+--------
+
+* :doc:`../architecture/plugin_system` - Plugin System documentation

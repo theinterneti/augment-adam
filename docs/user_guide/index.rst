@@ -1,6 +1,6 @@
 
 User Guide
-=========
+==========
 
 This section provides information for users of Augment Adam.
 

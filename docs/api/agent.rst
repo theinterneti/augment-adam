@@ -1,6 +1,6 @@
 
 Agent API
-=======
+========
 
 This document provides reference documentation for the Agent API.
 
@@ -8,3 +8,9 @@ This document provides reference documentation for the Agent API.
    :members:
    :undoc-members:
    :show-inheritance:
+   :noindex:
+
+See Also
+--------
+
+* :doc:`../architecture/agent_coordination` - Agent Coordination documentation
