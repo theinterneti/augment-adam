@@ -135,6 +135,16 @@ class Tag:
         """Return the string representation of the tag."""
         return f"Tag({self.name}, {self.category})"
 
+    def __hash__(self) -> int:
+        """Return the hash of the tag."""
+        return hash(self.name)
+
+    def __eq__(self, other: object) -> bool:
+        """Check if two tags are equal."""
+        if not isinstance(other, Tag):
+            return False
+        return self.name == other.name
+
     def get_full_path(self) -> str:
         """
         Get the full hierarchical path of the tag.
@@ -450,7 +460,10 @@ class TagRegistry:
 
     def create_tag(self, name: str, category: TagCategory,
                   parent: Optional[Union[str, Tag]] = None,
-                  attributes: Optional[Dict[str, Any]] = None) -> Tag:
+                  attributes: Optional[Dict[str, Any]] = None,
+                  description: Optional[str] = None,
+                  synonyms: Optional[List[str]] = None,
+                  examples: Optional[List[str]] = None) -> Tag:
         """
         Create a new tag.
 
@@ -459,6 +472,9 @@ class TagRegistry:
             category: The category of the tag.
             parent: Optional parent tag or parent tag name.
             attributes: Optional attributes for the tag.
+            description: Optional description of the tag.
+            synonyms: Optional list of synonyms for the tag.
+            examples: Optional list of examples for the tag.
 
         Returns:
             The created tag.
@@ -478,7 +494,15 @@ class TagRegistry:
             else:
                 parent_tag = parent
 
-        tag = Tag(name, category, parent_tag, attributes or {})
+        tag = Tag(
+            name=name,
+            category=category,
+            parent=parent_tag,
+            attributes=attributes or {},
+            description=description or "",
+            synonyms=synonyms or [],
+            examples=examples or []
+        )
         self.tags[name] = tag
         return tag
 
@@ -496,7 +520,10 @@ class TagRegistry:
 
     def get_or_create_tag(self, name: str, category: TagCategory,
                          parent: Optional[Union[str, Tag]] = None,
-                         attributes: Optional[Dict[str, Any]] = None) -> Tag:
+                         attributes: Optional[Dict[str, Any]] = None,
+                         description: Optional[str] = None,
+                         synonyms: Optional[List[str]] = None,
+                         examples: Optional[List[str]] = None) -> Tag:
         """
         Get a tag by name or create it if it doesn't exist.
 
@@ -505,6 +532,9 @@ class TagRegistry:
             category: The category of the tag.
             parent: Optional parent tag or parent tag name.
             attributes: Optional attributes for the tag.
+            description: Optional description of the tag.
+            synonyms: Optional list of synonyms for the tag.
+            examples: Optional list of examples for the tag.
 
         Returns:
             The existing or created tag.
@@ -512,7 +542,15 @@ class TagRegistry:
         tag = self.get_tag(name)
         if tag:
             return tag
-        return self.create_tag(name, category, parent, attributes)
+        return self.create_tag(
+            name=name,
+            category=category,
+            parent=parent,
+            attributes=attributes,
+            description=description,
+            synonyms=synonyms,
+            examples=examples
+        )
 
     def delete_tag(self, name: str) -> None:
         """
@@ -789,7 +827,10 @@ def get_tag(name: str) -> Optional[Tag]:
 
 def create_tag(name: str, category: TagCategory,
               parent: Optional[Union[str, Tag]] = None,
-              attributes: Optional[Dict[str, Any]] = None) -> Tag:
+              attributes: Optional[Dict[str, Any]] = None,
+              description: Optional[str] = None,
+              synonyms: Optional[List[str]] = None,
+              examples: Optional[List[str]] = None) -> Tag:
     """
     Create a new tag.
 
@@ -798,17 +839,31 @@ def create_tag(name: str, category: TagCategory,
         category: The category of the tag.
         parent: Optional parent tag or parent tag name.
         attributes: Optional attributes for the tag.
+        description: Optional description of the tag.
+        synonyms: Optional list of synonyms for the tag.
+        examples: Optional list of examples for the tag.
 
     Returns:
         The created tag.
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
-    return get_registry().create_tag(name, category, parent, attributes)
+    return get_registry().create_tag(
+        name=name,
+        category=category,
+        parent=parent,
+        attributes=attributes,
+        description=description,
+        synonyms=synonyms,
+        examples=examples
+    )
 
 def get_or_create_tag(name: str, category: TagCategory,
                      parent: Optional[Union[str, Tag]] = None,
-                     attributes: Optional[Dict[str, Any]] = None) -> Tag:
+                     attributes: Optional[Dict[str, Any]] = None,
+                     description: Optional[str] = None,
+                     synonyms: Optional[List[str]] = None,
+                     examples: Optional[List[str]] = None) -> Tag:
     """
     Get a tag by name or create it if it doesn't exist.
 
@@ -817,6 +872,9 @@ def get_or_create_tag(name: str, category: TagCategory,
         category: The category of the tag.
         parent: Optional parent tag or parent tag name.
         attributes: Optional attributes for the tag.
+        description: Optional description of the tag.
+        synonyms: Optional list of synonyms for the tag.
+        examples: Optional list of examples for the tag.
 
     Returns:
         The existing or created tag.
@@ -828,7 +886,15 @@ def get_or_create_tag(name: str, category: TagCategory,
     if tag:
         return tag
     try:
-        return registry.create_tag(name, category, parent, attributes)
+        return registry.create_tag(
+            name=name,
+            category=category,
+            parent=parent,
+            attributes=attributes,
+            description=description,
+            synonyms=synonyms,
+            examples=examples
+        )
     except ValueError:
         # Tag might have been created by another thread
         return registry.get_tag(name)

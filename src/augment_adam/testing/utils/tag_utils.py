@@ -110,6 +110,10 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
                 except ValueError:
                     # Tag already exists, get it
                     tag_obj = registry.get_tag(tag_name)
+                    # Update attributes
+                    if tag_obj and attributes:
+                        for key, value in attributes.items():
+                            tag_obj.set_attribute(key, value)
         else:
             # Hierarchical tag
             parent_name = tag_parts[0]
@@ -175,6 +179,10 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
                 except ValueError:
                     # Tag already exists, get it
                     tag_obj = registry.get_tag(final_part)
+                    # Update attributes
+                    if tag_obj and attributes:
+                        for key, value in attributes.items():
+                            tag_obj.set_attribute(key, value)
 
         # Add the tag to the object
         if not hasattr(obj, "__tags__"):
