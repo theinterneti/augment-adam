@@ -1,6 +1,6 @@
 
 User Guide
-==========
+=========
 
 This section provides information for users of Augment Adam.
 
@@ -10,5 +10,4 @@ This section provides information for users of Augment Adam.
    installation
    getting_started
    configuration
-   usage
-   advanced_usage
+   quickstart
