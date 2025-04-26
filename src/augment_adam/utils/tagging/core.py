@@ -750,20 +750,28 @@ class TagRegistry:
         return result
 
 
-# Singleton instance
-_tag_registry: Optional[TagRegistry] = None
+# Import the registry factory
+# Note: This is imported here to avoid circular imports
+# The actual implementation is in registry_factory.py
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from augment_adam.utils.tagging.registry_factory import get_registry
+
+# These functions will be replaced at runtime by the registry factory
+# They are defined here for type checking and documentation purposes
 
 def get_tag_registry() -> TagRegistry:
     """
-    Get the singleton instance of the tag registry.
+    Get the current tag registry.
+
+    This function is replaced at runtime by the registry factory.
 
     Returns:
-        The tag registry instance.
+        The current tag registry.
     """
-    global _tag_registry
-    if _tag_registry is None:
-        _tag_registry = TagRegistry()
-    return _tag_registry
+    # This will be replaced at runtime
+    pass
 
 def get_tag(name: str) -> Optional[Tag]:
     """
@@ -775,7 +783,9 @@ def get_tag(name: str) -> Optional[Tag]:
     Returns:
         The tag or None if it doesn't exist.
     """
-    return get_tag_registry().get_tag(name)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    return get_registry().get_tag(name)
 
 def create_tag(name: str, category: TagCategory,
               parent: Optional[Union[str, Tag]] = None,
@@ -792,7 +802,9 @@ def create_tag(name: str, category: TagCategory,
     Returns:
         The created tag.
     """
-    return get_tag_registry().create_tag(name, category, parent, attributes)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    return get_registry().create_tag(name, category, parent, attributes)
 
 def get_or_create_tag(name: str, category: TagCategory,
                      parent: Optional[Union[str, Tag]] = None,
@@ -809,7 +821,17 @@ def get_or_create_tag(name: str, category: TagCategory,
     Returns:
         The existing or created tag.
     """
-    return get_tag_registry().get_or_create_tag(name, category, parent, attributes)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    registry = get_registry()
+    tag = registry.get_tag(name)
+    if tag:
+        return tag
+    try:
+        return registry.create_tag(name, category, parent, attributes)
+    except ValueError:
+        # Tag might have been created by another thread
+        return registry.get_tag(name)
 
 def get_tags_by_category(category: TagCategory) -> List[Tag]:
     """
@@ -821,7 +843,9 @@ def get_tags_by_category(category: TagCategory) -> List[Tag]:
     Returns:
         List of tags in the specified category.
     """
-    return get_tag_registry().get_tags_by_category(category)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    return get_registry().get_tags_by_category(category)
 
 
 def relate_tags(source_name: str, target_name: str, relationship: TagRelationship) -> None:
@@ -836,7 +860,9 @@ def relate_tags(source_name: str, target_name: str, relationship: TagRelationshi
     Raises:
         ValueError: If either tag doesn't exist.
     """
-    get_tag_registry().relate_tags(source_name, target_name, relationship)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    get_registry().relate_tags(source_name, target_name, relationship)
 
 
 def get_related_tags(name: str, relationship: Optional[TagRelationship] = None) -> Dict[str, List[TagRelationship]]:
@@ -853,7 +879,9 @@ def get_related_tags(name: str, relationship: Optional[TagRelationship] = None) 
     Raises:
         ValueError: If the tag doesn't exist.
     """
-    return get_tag_registry().get_related_tags(name, relationship)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    return get_registry().get_related_tags(name, relationship)
 
 
 def find_tags(query: str, search_descriptions: bool = True,
@@ -873,7 +901,9 @@ def find_tags(query: str, search_descriptions: bool = True,
     Returns:
         List of matching tags.
     """
-    return get_tag_registry().find_tags(query, search_descriptions, search_attributes, search_synonyms)
+    # This will use the registry factory at runtime
+    from augment_adam.utils.tagging.registry_factory import get_registry
+    return get_registry().find_tags(query, search_descriptions, search_attributes, search_synonyms)
 
 
 def describe_tag(name: str) -> str:
@@ -916,113 +946,10 @@ def tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
         class FAISSMemory:
             pass
     """
-    def decorator(obj: T) -> T:
-        # Get the tag
-        tag_parts = tag_name.split(".")
-        if len(tag_parts) == 1:
-            # Single tag
-            tag_obj = get_tag(tag_name)
-            if tag_obj is None:
-                # Try to infer the category
-                if hasattr(obj, "__module__"):
-                    module = obj.__module__
-                    if "memory" in module:
-                        category = TagCategory.MEMORY
-                    elif "model" in module:
-                        category = TagCategory.MODEL
-                    elif "agent" in module:
-                        category = TagCategory.AGENT
-                    elif "context" in module:
-                        category = TagCategory.CONTEXT
-                    elif "template" in module:
-                        category = TagCategory.TEMPLATE
-                    elif "test" in module:
-                        category = TagCategory.TEST
-                    elif "doc" in module or "documentation" in module:
-                        category = TagCategory.DOCUMENTATION
-                    elif "web" in module:
-                        category = TagCategory.WEB
-                    elif "api" in module:
-                        category = TagCategory.API
-                    elif "plugin" in module:
-                        category = TagCategory.PLUGIN
-                    elif "core" in module:
-                        category = TagCategory.CORE
-                    else:
-                        category = TagCategory.UTILITY
-                else:
-                    category = TagCategory.UTILITY
-
-                tag_obj = create_tag(tag_name, category, attributes=attributes)
-            else:
-                # Update attributes
-                for key, value in attributes.items():
-                    tag_obj.set_attribute(key, value)
-        else:
-            # Hierarchical tag
-            parent_name = tag_parts[0]
-            parent_tag = get_tag(parent_name)
-
-            if parent_tag is None:
-                # Try to infer the category
-                if hasattr(obj, "__module__"):
-                    module = obj.__module__
-                    if "memory" in module:
-                        category = TagCategory.MEMORY
-                    elif "model" in module:
-                        category = TagCategory.MODEL
-                    elif "agent" in module:
-                        category = TagCategory.AGENT
-                    elif "context" in module:
-                        category = TagCategory.CONTEXT
-                    elif "template" in module:
-                        category = TagCategory.TEMPLATE
-                    elif "test" in module:
-                        category = TagCategory.TEST
-                    elif "doc" in module or "documentation" in module:
-                        category = TagCategory.DOCUMENTATION
-                    elif "web" in module:
-                        category = TagCategory.WEB
-                    elif "api" in module:
-                        category = TagCategory.API
-                    elif "plugin" in module:
-                        category = TagCategory.PLUGIN
-                    elif "core" in module:
-                        category = TagCategory.CORE
-                    else:
-                        category = TagCategory.UTILITY
-                else:
-                    category = TagCategory.UTILITY
-
-                parent_tag = create_tag(parent_name, category)
-
-            # Create the rest of the hierarchy
-            current_tag = parent_tag
-            for i in range(1, len(tag_parts) - 1):
-                part = tag_parts[i]
-                child_tag = get_tag(part)
-                if child_tag is None or child_tag.parent != current_tag:
-                    child_tag = create_tag(part, current_tag.category, current_tag)
-                current_tag = child_tag
-
-            # Create the final tag
-            final_part = tag_parts[-1]
-            tag_obj = get_tag(final_part)
-            if tag_obj is None or tag_obj.parent != current_tag:
-                tag_obj = create_tag(final_part, current_tag.category, current_tag, attributes=attributes)
-            else:
-                # Update attributes
-                for key, value in attributes.items():
-                    tag_obj.set_attribute(key, value)
-
-        # Add the tag to the object
-        if not hasattr(obj, "__tags__"):
-            obj.__tags__ = []
-        obj.__tags__.append(tag_obj)
-
-        return obj
-
-    return decorator
+    # Use the safe_tag implementation from tag_utils
+    # This avoids code duplication and ensures consistent behavior
+    from augment_adam.testing.utils.tag_utils import safe_tag
+    return safe_tag(tag_name, **attributes)
 
 
 def get_tags(obj: Any) -> List[Tag]:

@@ -1,91 +1,36 @@
 # Augment Adam Documentation
 
-This directory contains documentation for the Augment Adam project.
+Welcome to the Augment Adam documentation. This documentation provides information about the architecture, usage, and development of the Augment Adam system.
 
-## Directory Structure
+## Architecture
 
-- **api/**: API documentation
-  - **ai_agent/**: Documentation for the AI agent API
-  - **core/**: Documentation for the core API
-  - **memory/**: Documentation for the memory API
+- [Agent Coordination](docs/architecture/AGENT_COORDINATION.md)
+- [Agent Core](docs/architecture/AGENT_CORE.md)
+- [Architecture Overview: augment-adam](docs/architecture/ARCHITECTURE.md)
+- [Context Engine](docs/architecture/CONTEXT_ENGINE.md)
+- [Documentation System](docs/architecture/DOCUMENTATION_SYSTEM.md)
+- [MCP-Enabled Context Engine](docs/architecture/MCP_CONTEXT_ENGINE.md)
+- [Memory System](docs/architecture/MEMORY_SYSTEM.md)
+- [Plugin System](docs/architecture/PLUGIN_SYSTEM.md)
+- [AI-Optimized Tagging System](docs/architecture/TAGGING_SYSTEM.md)
+- [Template Engine](docs/architecture/TEMPLATE_ENGINE.md)
+- [Testing Framework Architecture](docs/architecture/TESTING_FRAMEWORK.md)
+- [Memory System](docs/architecture/memory_system.md)
+- [Plugin System in Dukat](docs/architecture/plugin_system.md)
 
-- **architecture/**: Architecture documentation
-  - `ARCHITECTURE.md`: Overview of the system architecture
-  - `AGENT_CORE.md`: Documentation for the agent core
-  - `CONTEXT_ENGINE.md`: Documentation for the context engine
-  - `MCP_CONTEXT_ENGINE.md`: Documentation for the MCP context engine
-  - `memory_system.md`: Documentation for the memory system
-  - `plugin_system.md`: Documentation for the plugin system
+## Developer Guide
 
-- **development/**: Development documentation
-  - `CONTRIBUTING.md`: Guidelines for contributing to the project
-  - `GUIDELINES.md`: Development guidelines
-  - `ONBOARDING.md`: Onboarding guide for new developers
-  - `PLANNING.md`: Planning process
-  - `PROGRESS.md`: Progress tracking
-  - `TASKS.md`: Task management
-  - `TESTING.md`: Testing guidelines
-  - `DIRECTORY_STRUCTURE.md`: Directory structure documentation
-  - `RELEASE.md`: Release process
-  - `SECURITY.md`: Security guidelines
-  - `SUPPORT.md`: Support information
-  - `CODE_OF_CONDUCT.md`: Code of conduct
-  - `CODEOWNERS.md`: Code ownership information
-  - `MAINTAINERS.md`: Maintainer information
+- [Testing Framework](docs/developer_guide/TESTING_FRAMEWORK.md)
 
-- **guides/**: User guides
-  - `agent_coordination.md`: Guide for agent coordination
-  - `building_agents.md`: Guide for building agents
-  - `hardware_optimization.md`: Guide for hardware optimization
-  - `parallel_monte_carlo.md`: Guide for parallel Monte Carlo techniques
-  - `small_models_large_context.md`: Guide for using small models with large context
+## User Guide
 
-- **migration/**: Migration documentation
-  - `MIGRATION_GUIDE.md`: Guide for migrating from dukat to augment_adam
-  - `MIGRATION_COMPLETED.md`: Documentation of the completed migration
+- [Configuration Guide](docs/user_guide/configuration.md)
+- [Getting Started](docs/user_guide/getting_started.md)
+- [Installation Guide](docs/user_guide/installation.md)
+- [Quickstart Guide for Augment Adam](docs/user_guide/quickstart.md)
 
-- **research/**: Research papers and notes
-  - **ai-digest/**: AI research digest
-  - `agentic-memory.md`: Research on agentic memory
-  - `ai-agent-dev.md`: Research on AI agent development
-  - `dspy.md`: Research on DSPy
-  - `Sequential-monte-carlo`: Research on Sequential Monte Carlo methods
+## API Reference
 
-- **user_guide/**: User documentation
-  - `getting_started.md`: Getting started guide
-  - `quickstart.md`: Quickstart guide
-
-## Other Documentation Files
-
-- `container_optimization.md`: Guide for container optimization
-- `docker-mcp-tools.md`: Documentation for Docker MCP tools
-- `error_handling.md`: Guide for error handling
-- `gpu_test_generation.md`: Guide for GPU test generation
-- `index.md`: Main documentation index
-- `local_model_setup.md`: Guide for local model setup
-- `mcp-ecosystem-tracker.md`: MCP ecosystem tracker
-- `mcp-integration.md`: Guide for MCP integration
-- `mcp-server-template.md`: MCP server template
-- `model-context-protocol.md`: Documentation for the Model Context Protocol
-- `settings_management.md`: Guide for settings management
-- `test_generation.md`: Guide for test generation
-- `web_interface.md`: Documentation for the web interface
-
-## Building the Documentation
-
-We use MkDocs to build the documentation. To build the documentation locally:
-
-```bash
-# Install MkDocs and required plugins
-pip install mkdocs mkdocs-material mkdocstrings mkdocs-jupyter
-
-# Build the documentation
-mkdocs build
-
-# Serve the documentation locally
-mkdocs serve
-```
-
-## Contributing to the Documentation
-
-If you find any issues or have suggestions for improving the documentation, please open an issue or submit a pull request.
+- [Documentation System API](docs/api/documentation.md)
+- [Tagging System API](docs/api/tagging.md)
+- [Template Engine API](docs/api/templates.md)

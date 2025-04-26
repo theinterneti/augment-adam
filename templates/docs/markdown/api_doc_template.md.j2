@@ -1,0 +1,121 @@
+{# Template for generating API documentation #}
+{# @tags: documentation, api, markdown #}
+{# @description: This template is used to generate API documentation in Markdown format #}
+{# @variables: module_name:str, module_description:str, classes:list, functions:list, examples:list #}
+{# @examples: [{"module_name": "augment_adam.utils.templates", "module_description": "Enhanced template engine with tagging support"}] #}
+
+# {{ module_name }} API
+
+This document provides a reference for the {{ module_name }} API in Augment Adam.
+
+## Overview
+
+{{ module_description }}
+
+{% if classes %}
+## Core Classes
+
+{% for class in classes %}
+### {{ class.name }}
+
+{{ class.description }}
+
+```python
+{% if class.import_example %}{{ class.import_example }}{% else %}from {{ module_name }} import {{ class.name }}{% endif %}
+
+{% if class.usage_example %}{{ class.usage_example }}{% endif %}
+```
+
+{% if class.properties %}
+#### Properties
+
+| Property | Description |
+| -------- | ----------- |
+{% for property in class.properties %}
+| `{{ property.name }}` | {{ property.description }} |
+{% endfor %}
+{% endif %}
+
+{% if class.methods %}
+#### Methods
+
+| Method | Description |
+| ------ | ----------- |
+{% for method in class.methods %}
+| `{{ method.signature }}` | {{ method.description }} |
+{% endfor %}
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if functions %}
+## Functions
+
+{% for function in functions %}
+### {{ function.name }}
+
+{{ function.description }}
+
+```python
+{{ function.signature }}
+```
+
+{% if function.parameters %}
+#### Parameters
+
+| Parameter | Type | Description |
+| --------- | ---- | ----------- |
+{% for param in function.parameters %}
+| `{{ param.name }}` | `{{ param.type }}` | {{ param.description }} |
+{% endfor %}
+{% endif %}
+
+{% if function.returns %}
+#### Returns
+
+{{ function.returns.description }}
+
+Type: `{{ function.returns.type }}`
+{% endif %}
+
+{% if function.raises %}
+#### Raises
+
+{% for exception in function.raises %}
+- `{{ exception.type }}`: {{ exception.description }}
+{% endfor %}
+{% endif %}
+
+{% if function.example %}
+#### Example
+
+```python
+{{ function.example }}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+### {{ example.title }}
+
+{{ example.description }}
+
+```python
+{{ example.code }}
+```
+
+{% if example.output %}
+Output:
+```
+{{ example.output }}
+```
+{% endif %}
+
+{% endfor %}
+{% endif %}

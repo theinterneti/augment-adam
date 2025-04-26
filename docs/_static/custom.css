@@ -1,0 +1,68 @@
+
+/* Custom CSS for Augment Adam documentation */
+
+/* Primary color */
+:root {
+    --primary-color: #007bff;
+    --primary-color-light: #4da3ff;
+    --primary-color-dark: #0056b3;
+}
+
+/* Links */
+a {
+    color: var(--primary-color);
+}
+
+a:hover {
+    color: var(--primary-color-dark);
+}
+
+/* Navigation */
+.wy-side-nav-search {
+    background-color: var(--primary-color);
+}
+
+.wy-nav-top {
+    background-color: var(--primary-color);
+}
+
+/* Code blocks */
+.highlight {
+    background: #f8f8f8;
+}
+
+/* Admonitions */
+.admonition.note {
+    background-color: #e7f2fa;
+}
+
+.admonition.warning {
+    background-color: #ffedcc;
+}
+
+.admonition.danger {
+    background-color: #fadddd;
+}
+
+/* Tables */
+table.docutils {
+    border: 1px solid #e1e4e5;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+
+table.docutils td, table.docutils th {
+    border: 1px solid #e1e4e5;
+    padding: 8px 16px;
+}
+
+table.docutils th {
+    background-color: #f0f0f0;
+}
+
+/* Responsive design */
+@media screen and (max-width: 768px) {
+    .wy-nav-content-wrap {
+        margin-left: 0;
+    }
+}

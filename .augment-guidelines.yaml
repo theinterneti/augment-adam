@@ -1,146 +1,65 @@
-version: 1.0.0
+version: 2.0.0
 project: augment-adam
 description: Guidelines for the Augment Adam project
 
-# Rebase Checklist
-rebase:
-  status: in-progress
-  features:
-    - name: AI-Optimized Tagging System
-      status: completed
-      description: Enhanced tagging system with relationships and semantic information
-      priority: high
-      issue: 4
-      completed_date: "2025-04-25"
-      todo: |
-        - Add support for tag versioning
-        - Implement tag validation against a schema
-        - Add tag analytics to track usage and coverage
-        - Add persistence support (save/load from database)
-        - Add tag recommendation based on code content
+# Project Status
+project_status:
+  status: active
+  phase: development
+  next_milestone: "v1.0.0 Release"
 
-    - name: Enhanced Template Engine
-      status: completed
-      description: Powerful template engine with tagging support
-      priority: high
-      issue: 5
-      completed_date: "2025-04-25"
-      todo: |
-        - Add template versioning support
-        - Implement template validation against a schema
-        - Add template analytics to track usage and coverage
-        - Add support for template inheritance
-        - Add support for template includes
-        - Add support for template macros
+# Development Priorities
+priorities:
+  current:
+    - Testing improvements
+    - CI/CD pipeline enhancements
+    - Documentation refinement
+  upcoming:
+    - Performance optimization
+    - Additional memory backends
+    - Enhanced agent coordination patterns
 
-    - name: Memory System
-      status: completed
-      description: Advanced memory systems (vector, graph, episodic, semantic)
-      priority: high
-      issue: 6
-      completed_date: "2025-04-25"
-      todo: |
-        - Add memory persistence support
-        - Implement memory validation against a schema
-        - Add memory analytics to track usage and performance
-        - Add support for memory item versioning
-        - Implement memory item validation
-        - Add memory integration with agents
+# Core Components
+components:
+  - name: Tagging System
+    description: Hierarchical tagging system with registry isolation
+    status: stable
+    tag: core.tagging
 
-    - name: Agent Coordination
-      status: completed
-      description: Coordinate multiple agents to work together
-      priority: medium
-      issue: 8
-      completed_date: "2025-04-25"
-      todo: |
-        - Add support for agent coordination analytics
-        - Implement more coordination patterns
-        - Add support for dynamic agent discovery
-        - Add support for agent versioning
-        - Implement agent validation
-        - Add support for message encryption
-        - Implement message validation
+  - name: Memory System
+    description: Vector and graph-based memory with multiple backends
+    status: stable
+    tag: core.memory
 
-    - name: Context Engine
-      status: completed
-      description: Intelligent context management and retrieval
-      priority: high
-      issue: 7
-      completed_date: "2025-04-25"
-      todo: |
-        - Add context versioning support
-        - Implement context validation against a schema
-        - Add context analytics to track usage and performance
-        - Add support for more embedding models
-        - Implement more sophisticated chunking strategies
-        - Add support for more storage backends
-        - Implement more advanced retrieval methods
+  - name: Context Engine
+    description: Intelligent context management and retrieval
+    status: stable
+    tag: core.context
 
-    - name: Monte Carlo Techniques
-      status: completed
-      description: Probabilistic modeling and sampling
-      priority: medium
-      issue: 9
-      completed_date: "2025-04-25"
-      todo: |
-        - Add support for parallel Monte Carlo simulations
-        - Implement adaptive sampling techniques
-        - Add visualization tools for Monte Carlo results
-        - Implement more advanced MCMC methods
-        - Add support for custom proposal distributions
+  - name: Template Engine
+    description: Powerful template engine with tagging support
+    status: stable
+    tag: core.template
 
-    - name: Parallel Processing
-      status: completed
-      description: Parallel and async processing
-      priority: medium
-      issue: 10
-      completed_date: "2025-04-25"
-      todo: |
-        - Add support for distributed processing
-        - Implement adaptive resource allocation
-        - Add monitoring and visualization
-        - Implement more sophisticated scheduling algorithms
-        - Add support for GPU acceleration
+  - name: Agent Coordination
+    description: Coordinate multiple agents to work together
+    status: stable
+    tag: core.agent.coordination
 
-    - name: Plugin System
-      status: completed
-      description: Extend and customize the assistant with plugins
-      priority: low
-      issue: 11
-      completed_date: "2025-04-25"
-      todo: |
-        - Add plugin marketplace
-        - Implement plugin versioning
-        - Add plugin analytics
-        - Implement plugin dependencies management
-        - Add support for remote plugins
+  - name: Monte Carlo Techniques
+    description: Probabilistic modeling and sampling
+    status: stable
+    tag: core.monte_carlo
 
-    - name: Documentation
-      status: completed
-      description: Comprehensive documentation
-      priority: medium
-      issue: 12
-      completed_date: "2025-04-25"
-      todo: |
-        - Add interactive examples
-        - Implement documentation versioning
-        - Add documentation search
-        - Implement documentation analytics
-        - Add support for multiple languages
+  - name: Testing Framework
+    description: Comprehensive test suite and testing utilities
+    status: improving
+    tag: core.testing
 
-    - name: Testing
-      status: completed
-      description: Comprehensive test suite
-      priority: high
-      issue: 13
-      completed_date: "2025-04-25"
-      todo: |
-        - Add property-based testing
-        - Implement mutation testing
-        - Add performance testing
-        - Implement security testing
-        - Add load testing
+  - name: Documentation System
+    description: Comprehensive documentation with tagging
+    status: stable
+    tag: core.documentation
 
 # Code Style Guidelines
 code_style:
@@ -150,36 +69,18 @@ code_style:
   formatting: black
   linting: ruff
   imports: isort
-
-# Documentation Guidelines
-documentation:
-  architecture:
-    - MCP_CONTEXT_ENGINE.md
-    - TAGGING_SYSTEM.md
-    - TEMPLATE_ENGINE.md
-    - MEMORY_SYSTEM.md
-    - AGENT_COORDINATION.md
-  user_guides:
-    - getting_started.md
-    - installation.md
-    - configuration.md
-  developer_guides:
-    - contributing.md
-    - extending.md
-    - plugins.md
-  api:
-    - memory.md
-    - models.md
-    - agents.md
-    - context.md
-    - utils.md
+  tagging: required
 
 # Testing Guidelines
 testing:
   unit_tests: required
   integration_tests: required
   e2e_tests: recommended
-  coverage: 80%
+  coverage_target: 80%
+  pre_commit: required
+  ci_integration: required
+  test_isolation: required
+  tag_registry_isolation: required
 
 # Git Guidelines
 git:
@@ -187,3 +88,78 @@ git:
   commit_message: conventional
   pr_template: required
   code_review: required
+  branch_protection: enabled
+  ci_checks: required
+
+# CI/CD Guidelines
+ci_cd:
+  pre_commit_hooks:
+    - linting
+    - formatting
+    - type_checking
+    - unit_tests
+  github_actions:
+    - test
+    - pre-commit
+    - coverage
+  branch_protection:
+    - require_ci_pass
+    - require_review
+    - no_force_push
+
+# Documentation Structure
+documentation:
+  system:
+    tag: documentation.system
+    description: Documentation about the documentation system itself
+  architecture:
+    tag: documentation.architecture
+    description: High-level architecture documentation
+  user_guides:
+    tag: documentation.user
+    description: End-user documentation
+  developer_guides:
+    tag: documentation.developer
+    description: Documentation for developers
+  api:
+    tag: documentation.api
+    description: API reference documentation
+
+# Tagging Guidelines
+tagging:
+  format: hierarchical.dot.notation
+  required_categories:
+    - core
+    - memory
+    - agent
+    - context
+    - template
+    - testing
+    - documentation
+  registry_isolation:
+    testing: required
+    development: recommended
+
+# Memory System Guidelines
+memory:
+  backends:
+    - faiss
+    - neo4j
+    - redis
+    - chroma
+  vector_dimensions: 1536
+  default_backend: faiss
+  persistence: required
+  thread_safety: required
+
+# Agent Guidelines
+agents:
+  coordination_patterns:
+    - orchestrator
+    - peer_to_peer
+    - hierarchical
+  communication:
+    encryption: recommended
+    validation: required
+  versioning: required
+  discovery: dynamic

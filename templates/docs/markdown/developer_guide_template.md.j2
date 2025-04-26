@@ -1,0 +1,98 @@
+{# Template for generating developer guides #}
+{# @tags: documentation, developer_guide, markdown #}
+{# @description: This template is used to generate developer guides in Markdown format #}
+{# @variables: title:str, description:str, sections:list, examples:list, best_practices:list, next_steps:list #}
+{# @examples: [{"title": "Contributing", "description": "This guide explains how to contribute to Augment Adam"}] #}
+
+# {{ title }}
+
+{{ description }}
+
+{% if sections %}
+{% for section in sections %}
+## {{ section.title }}
+
+{{ section.content }}
+
+{% if section.code %}
+```python
+{{ section.code }}
+```
+{% endif %}
+
+{% if section.subsections %}
+{% for subsection in section.subsections %}
+### {{ subsection.title }}
+
+{{ subsection.content }}
+
+{% if subsection.code %}
+```python
+{{ subsection.code }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if examples %}
+## Examples
+
+{% for example in examples %}
+### {{ example.title }}
+
+{{ example.description }}
+
+```python
+{{ example.code }}
+```
+
+{% if example.output %}
+Output:
+```
+{{ example.output }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if best_practices %}
+## Best Practices
+
+{% for practice in best_practices %}
+### {{ practice.title }}
+
+{{ practice.description }}
+
+{% if practice.code %}
+```python
+{{ practice.code }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if common_issues %}
+## Common Issues
+
+{% for issue in common_issues %}
+### {{ issue.problem }}
+
+{{ issue.solution }}
+
+{% if issue.code %}
+```python
+{{ issue.code }}
+```
+{% endif %}
+{% endfor %}
+{% endif %}
+
+{% if next_steps %}
+## Next Steps
+
+{% for step in next_steps %}
+- [{{ step.title }}]({{ step.link }}){% if step.description %}: {{ step.description }}{% endif %}
+{% endfor %}
+{% endif %}

@@ -1,0 +1,17 @@
+# Default owners for everything in the repo
+* @theinterneti
+
+# Specific owners for certain directories
+/src/augment_adam/memory/ @theinterneti
+/src/augment_adam/ai_agent/ @theinterneti
+/src/augment_adam/utils/ @theinterneti
+/src/augment_adam/context/ @theinterneti
+
+# Test files
+/tests/ @theinterneti
+
+# Documentation
+/docs/ @theinterneti
+
+# CI/CD and GitHub Actions
+/.github/ @theinterneti

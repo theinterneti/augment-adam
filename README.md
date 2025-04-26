@@ -110,8 +110,37 @@ cd augment-adam
 # Install development dependencies
 pip install -e ".[dev]"
 
+# Set up pre-commit hooks
+python scripts/setup_pre_commit.py
+
 # Run tests
 pytest
+```
+
+### Pre-Commit Hooks
+
+This project uses pre-commit hooks to ensure code quality and run tests before each commit. The hooks will:
+
+1. Check for common issues (trailing whitespace, merge conflicts, etc.)
+2. Run linters (flake8, isort, black)
+3. Run tests on modified files
+
+To set up the pre-commit hooks, run:
+
+```bash
+python scripts/setup_pre_commit.py
+```
+
+You can also run the pre-commit checks manually:
+
+```bash
+pre-commit run --all-files
+```
+
+Or run tests on modified files:
+
+```bash
+python scripts/run_pre_commit_tests.py
 ```
 
 ### Project Structure
