@@ -12,3 +12,4 @@ This section provides information for users of Augment Adam.
    configuration
    quickstart
    search
+   faq

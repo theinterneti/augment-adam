@@ -13,6 +13,7 @@ Welcome to the Augment Adam documentation!
    user_guide/configuration
    user_guide/quickstart
    user_guide/search
+   user_guide/faq
 
 .. toctree::
    :maxdepth: 2
