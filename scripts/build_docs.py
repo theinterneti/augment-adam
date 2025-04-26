@@ -79,11 +79,23 @@ def build_docs():
     # Create the build directory if it doesn't exist
     os.makedirs(build_dir, exist_ok=True)
 
-    # Build the documentation
-    returncode = run_command(f"sphinx-build -b html {source_dir} {build_dir}")
+    # Build the documentation with verbose output
+    returncode = run_command(f"sphinx-build -b html -v {source_dir} {build_dir}")
     if returncode != 0:
         print("Failed to build documentation")
-        return False
+
+        # Check if conf.py exists
+        if not os.path.exists(os.path.join(source_dir, "conf.py")):
+            print(f"Error: conf.py not found in {source_dir}")
+            print("Copying conf.py from /workspace/dev/sphinx/conf.py")
+            run_command(f"cp /workspace/dev/sphinx/conf.py {source_dir}/")
+
+        # Try building again
+        print("Trying to build again...")
+        returncode = run_command(f"sphinx-build -b html -v {source_dir} {build_dir}")
+        if returncode != 0:
+            print("Failed to build documentation again")
+            return False
 
     print(f"\nDocumentation built successfully in {build_dir}")
     return True
@@ -114,15 +126,18 @@ def main():
     """Main function."""
     # Install dependencies
     if not install_dependencies():
-        sys.exit(1)
+        print("Warning: Some dependencies could not be installed.")
+        print("Continuing with documentation build...")
 
     # Build the documentation
     if not build_docs():
+        print("Error: Documentation build failed.")
         sys.exit(1)
 
-    # Serve the documentation
-    if not serve_docs():
-        sys.exit(1)
+    # Print success message
+    print("\nDocumentation build completed successfully!")
+    print("To view the documentation, run:")
+    print("python -m http.server 8033 --directory /workspace/docs/_build/html")
 
 if __name__ == "__main__":
     main()
