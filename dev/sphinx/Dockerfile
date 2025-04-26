@@ -15,13 +15,10 @@ RUN pip install --no-cache-dir \
     myst-parser \
     sphinx-autodoc-typehints \
     sphinxcontrib-mermaid \
-    sphinx-viewcode \
     sphinx-copybutton \
     sphinx-design \
     sphinx-togglebutton \
     sphinx-tabs \
-    sphinx-autodoc \
-    sphinx-napoleon \
     furo \
     sphinx-rtd-theme
 

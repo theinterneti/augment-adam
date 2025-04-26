@@ -20,15 +20,15 @@ def run_command(command):
         shell=True,
         universal_newlines=True
     )
-    
+
     stdout, stderr = process.communicate()
-    
+
     if stdout:
         print(stdout)
-    
+
     if stderr:
         print(stderr)
-    
+
     return process.returncode
 
 def install_dependencies():
@@ -38,7 +38,6 @@ def install_dependencies():
         "myst-parser",
         "sphinx-autodoc-typehints",
         "sphinxcontrib-mermaid",
-        "sphinx-viewcode",
         "sphinx-copybutton",
         "sphinx-design",
         "sphinx-togglebutton",
@@ -46,56 +45,69 @@ def install_dependencies():
         "furo",
         "sphinx-rtd-theme"
     ]
-    
+
+    # Special handling for sphinx-viewcode
+    special_dependencies = {
+        "sphinx-viewcode": "sphinx.ext.viewcode"  # This is actually a built-in Sphinx extension
+    }
+
     print("Installing dependencies...")
     for dependency in dependencies:
         returncode = run_command(f"pip install {dependency}")
         if returncode != 0:
             print(f"Failed to install {dependency}")
             return False
-    
+
+    # Check if special dependencies are available
+    for package, module in special_dependencies.items():
+        try:
+            __import__(module)
+            print(f"{package} is available (as {module})")
+        except ImportError:
+            print(f"Warning: {package} ({module}) is not available. Some features may not work.")
+
     return True
 
 def build_docs():
     """Build the Sphinx documentation."""
     print("Building documentation...")
-    
+
     # Set the source and build directories
     source_dir = "/workspace/docs"
     build_dir = "/workspace/docs/_build/html"
-    
+
     # Create the build directory if it doesn't exist
     os.makedirs(build_dir, exist_ok=True)
-    
+
     # Build the documentation
     returncode = run_command(f"sphinx-build -b html {source_dir} {build_dir}")
     if returncode != 0:
         print("Failed to build documentation")
         return False
-    
+
     print(f"\nDocumentation built successfully in {build_dir}")
     return True
 
 def serve_docs():
     """Serve the documentation using Python's built-in HTTP server."""
     print("Serving documentation...")
-    
+
     # Set the build directory
     build_dir = "/workspace/docs/_build/html"
-    
+
     # Serve the documentation
     print(f"Serving documentation at http://localhost:8033")
     print("Press Ctrl+C to stop the server")
-    
+
     # Change to the build directory
     os.chdir(build_dir)
-    
+
     # Start the server
     returncode = run_command("python -m http.server 8033")
     if returncode != 0:
         print("Failed to serve documentation")
         return False
-    
+
     return True
 
 def main():
@@ -103,11 +115,11 @@ def main():
     # Install dependencies
     if not install_dependencies():
         sys.exit(1)
-    
+
     # Build the documentation
     if not build_docs():
         sys.exit(1)
-    
+
     # Serve the documentation
     if not serve_docs():
         sys.exit(1)

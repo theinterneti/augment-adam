@@ -14,10 +14,14 @@ extensions = [
     'myst_parser',
     'sphinx.ext.autodoc',
     'sphinx.ext.napoleon',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.viewcode',  # Built-in Sphinx extension for viewing source code
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
-    'sphinxcontrib.mermaid'
+    'sphinxcontrib.mermaid',
+    'sphinx_copybutton',    # Add copy button to code blocks
+    'sphinx_design',        # Enhanced design components
+    'sphinx_togglebutton',  # Add toggle buttons
+    'sphinx_tabs.tabs'      # Add tabbed content
 ]
 
 templates_path = ['_templates']
