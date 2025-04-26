@@ -41,8 +41,27 @@ def isolated_tag_registry() -> ContextManager[TagRegistry]:
     Returns:
         A context manager that yields an isolated tag registry.
     """
-    with IsolatedTagRegistry() as registry:
+    # Create a custom registry class that doesn't initialize predefined tags
+    class EmptyTagRegistry(TagRegistry):
+        def _initialize_tags(self) -> None:
+            """Override to do nothing."""
+            pass
+
+    # Create a custom registry that doesn't initialize predefined tags
+    factory = get_registry_factory()
+    previous_test_mode = factory._test_mode
+    previous_test_registry = factory._test_registry
+
+    factory._test_mode = True
+    # Create a registry without initializing predefined tags
+    registry = EmptyTagRegistry()
+    factory._test_registry = registry
+
+    try:
         yield registry
+    finally:
+        factory._test_mode = previous_test_mode
+        factory._test_registry = previous_test_registry
 
 def safe_tag(tag_name: str, **attributes: Any) -> Callable:
     """
@@ -110,10 +129,11 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
                 except ValueError:
                     # Tag already exists, get it
                     tag_obj = registry.get_tag(tag_name)
-                    # Update attributes
-                    if tag_obj and attributes:
-                        for key, value in attributes.items():
-                            tag_obj.set_attribute(key, value)
+
+            # Update attributes regardless of whether the tag was created or retrieved
+            if tag_obj and attributes:
+                for key, value in attributes.items():
+                    tag_obj.set_attribute(key, value)
         else:
             # Hierarchical tag
             parent_name = tag_parts[0]
@@ -159,30 +179,37 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable:
 
             # Create the rest of the hierarchy
             current_tag = parent_tag
-            for i in range(1, len(tag_parts) - 1):
+
+            for i in range(1, len(tag_parts)):
                 part = tag_parts[i]
-                child_tag = registry.get_tag(part)
-                if child_tag is None:
+
+                # Check if the child tag already exists
+                child_found = False
+                for child in current_tag.children:
+                    if child.name == part:
+                        current_tag = child
+                        child_found = True
+                        break
+
+                if not child_found:
+                    # Create the child tag
                     try:
                         child_tag = registry.create_tag(part, current_tag.category, current_tag)
+                        current_tag = child_tag
                     except ValueError:
-                        # Tag already exists, get it
-                        child_tag = registry.get_tag(part)
-                current_tag = child_tag
+                        # Tag might have been created by another thread, try to find it again
+                        for child in current_tag.children:
+                            if child.name == part:
+                                current_tag = child
+                                break
 
-            # Create the final tag
-            final_part = tag_parts[-1]
-            tag_obj = registry.get_tag(final_part)
-            if tag_obj is None:
-                try:
-                    tag_obj = registry.create_tag(final_part, current_tag.category, current_tag, attributes=attributes)
-                except ValueError:
-                    # Tag already exists, get it
-                    tag_obj = registry.get_tag(final_part)
-                    # Update attributes
-                    if tag_obj and attributes:
-                        for key, value in attributes.items():
-                            tag_obj.set_attribute(key, value)
+            # The final tag is now in current_tag
+            tag_obj = current_tag
+
+            # Update attributes
+            if tag_obj and attributes:
+                for key, value in attributes.items():
+                    tag_obj.set_attribute(key, value)
 
         # Add the tag to the object
         if not hasattr(obj, "__tags__"):
