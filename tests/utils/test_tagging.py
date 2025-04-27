@@ -48,18 +48,32 @@ def test_hierarchical_tag_creation() -> None:
         faiss_tag = create_tag("faiss", TagCategory.MEMORY, vector_tag)
 
         # Check that the parent references are correct
-        assert faiss_tag.parent == vector_tag, "faiss_tag should have vector_tag as parent"
-        assert vector_tag.parent == memory_tag, "vector_tag should have memory_tag as parent"
+        assert (
+            faiss_tag.parent == vector_tag
+        ), "faiss_tag should have vector_tag as parent"
+        assert (
+            vector_tag.parent == memory_tag
+        ), "vector_tag should have memory_tag as parent"
         assert memory_tag.parent is None, "memory_tag should have no parent"
 
         # Check that the children references are correct
-        assert faiss_tag in vector_tag.children, "faiss_tag should be in vector_tag's children"
-        assert vector_tag in memory_tag.children, "vector_tag should be in memory_tag's children"
+        assert (
+            faiss_tag in vector_tag.children
+        ), "faiss_tag should be in vector_tag's children"
+        assert (
+            vector_tag in memory_tag.children
+        ), "vector_tag should be in memory_tag's children"
 
         # Check that the full paths are correctly generated
-        assert memory_tag.get_full_path() == "memory", "memory_tag's full path should be 'memory'"
-        assert vector_tag.get_full_path() == "memory.vector", "vector_tag's full path should be 'memory.vector'"
-        assert faiss_tag.get_full_path() == "memory.vector.faiss", "faiss_tag's full path should be 'memory.vector.faiss'"
+        assert (
+            memory_tag.get_full_path() == "memory"
+        ), "memory_tag's full path should be 'memory'"
+        assert (
+            vector_tag.get_full_path() == "memory.vector"
+        ), "vector_tag's full path should be 'memory.vector'"
+        assert (
+            faiss_tag.get_full_path() == "memory.vector.faiss"
+        ), "faiss_tag's full path should be 'memory.vector.faiss'"
 
 
 def test_tag_decorator() -> None:
@@ -77,26 +91,34 @@ def test_tag_decorator() -> None:
         @tag("memory.vector.faiss")
         class FAISSMemory:
             """A class for FAISS vector memory."""
+
             pass
 
         # Check that the tag was applied correctly
         tags: List[Tag] = get_tags(FAISSMemory)
         assert len(tags) == 1, "FAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
 
         # Define another class with the same tag
         @tag("memory.vector.faiss")
         class AnotherFAISSMemory:
             """Another class for FAISS vector memory."""
+
             pass
 
         # Check that the tag was applied correctly to the second class
         tags = get_tags(AnotherFAISSMemory)
         assert len(tags) == 1, "AnotherFAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
 
         # Verify that both classes have the same tag object (reference equality)
-        assert get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0], "Both classes should reference the same tag object"
+        assert (
+            get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0]
+        ), "Both classes should reference the same tag object"
 
 
 def test_safe_tag_decorator() -> None:
@@ -117,26 +139,34 @@ def test_safe_tag_decorator() -> None:
         @safe_tag("memory.vector.faiss")
         class FAISSMemory:
             """A class for FAISS vector memory."""
+
             pass
 
         # Check that the tag was applied correctly
         tags: List[Tag] = get_tags(FAISSMemory)
         assert len(tags) == 1, "FAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
 
         # Define another class with the same tag
         @safe_tag("memory.vector.faiss")
         class AnotherFAISSMemory:
             """Another class for FAISS vector memory."""
+
             pass
 
         # Check that the tag was applied correctly to the second class
         tags = get_tags(AnotherFAISSMemory)
         assert len(tags) == 1, "AnotherFAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
 
         # Verify that both classes have the same tag object (reference equality)
-        assert get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0], "Both classes should reference the same tag object"
+        assert (
+            get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0]
+        ), "Both classes should reference the same tag object"
 
 
 def test_tag_attributes() -> None:
@@ -156,30 +186,46 @@ def test_tag_attributes() -> None:
         @tag("memory.vector.faiss", dimension=128, metric="cosine")
         class FAISSMemory:
             """A class for FAISS vector memory with specific dimensions and metric."""
+
             pass
 
         # Check that the tag was applied with the correct attributes
         tags: List[Tag] = get_tags(FAISSMemory)
         assert len(tags) == 1, "FAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
-        assert tags[0].get_attribute("dimension") == 128, "dimension attribute should be 128"
-        assert tags[0].get_attribute("metric") == "cosine", "metric attribute should be 'cosine'"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
+        assert (
+            tags[0].get_attribute("dimension") == 128
+        ), "dimension attribute should be 128"
+        assert (
+            tags[0].get_attribute("metric") == "cosine"
+        ), "metric attribute should be 'cosine'"
 
         # Define another class with the same tag but different attributes
         @tag("memory.vector.faiss", dimension=256, metric="euclidean")
         class AnotherFAISSMemory:
             """Another FAISS memory class with different dimensions and metric."""
+
             pass
 
         # Check that the tag was applied with the updated attributes
         tags = get_tags(AnotherFAISSMemory)
         assert len(tags) == 1, "AnotherFAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
-        assert tags[0].get_attribute("dimension") == 256, "dimension attribute should be updated to 256"
-        assert tags[0].get_attribute("metric") == "euclidean", "metric attribute should be updated to 'euclidean'"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
+        assert (
+            tags[0].get_attribute("dimension") == 256
+        ), "dimension attribute should be updated to 256"
+        assert (
+            tags[0].get_attribute("metric") == "euclidean"
+        ), "metric attribute should be updated to 'euclidean'"
 
         # Verify that both classes have the same tag object (reference equality)
-        assert get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0], "Both classes should reference the same tag object"
+        assert (
+            get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0]
+        ), "Both classes should reference the same tag object"
 
 
 def test_safe_tag_attributes() -> None:
@@ -199,30 +245,46 @@ def test_safe_tag_attributes() -> None:
         @safe_tag("memory.vector.faiss", dimension=128, metric="cosine")
         class FAISSMemory:
             """A class for FAISS vector memory with specific dimensions and metric."""
+
             pass
 
         # Check that the tag was applied with the correct attributes
         tags: List[Tag] = get_tags(FAISSMemory)
         assert len(tags) == 1, "FAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
-        assert tags[0].get_attribute("dimension") == 128, "dimension attribute should be 128"
-        assert tags[0].get_attribute("metric") == "cosine", "metric attribute should be 'cosine'"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
+        assert (
+            tags[0].get_attribute("dimension") == 128
+        ), "dimension attribute should be 128"
+        assert (
+            tags[0].get_attribute("metric") == "cosine"
+        ), "metric attribute should be 'cosine'"
 
         # Define another class with the same tag but different attributes
         @safe_tag("memory.vector.faiss", dimension=256, metric="euclidean")
         class AnotherFAISSMemory:
             """Another FAISS memory class with different dimensions and metric."""
+
             pass
 
         # Check that the tag was applied with the updated attributes
         tags = get_tags(AnotherFAISSMemory)
         assert len(tags) == 1, "AnotherFAISSMemory should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss", "Tag should have the correct full path"
-        assert tags[0].get_attribute("dimension") == 256, "dimension attribute should be updated to 256"
-        assert tags[0].get_attribute("metric") == "euclidean", "metric attribute should be updated to 'euclidean'"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss"
+        ), "Tag should have the correct full path"
+        assert (
+            tags[0].get_attribute("dimension") == 256
+        ), "dimension attribute should be updated to 256"
+        assert (
+            tags[0].get_attribute("metric") == "euclidean"
+        ), "metric attribute should be updated to 'euclidean'"
 
         # Verify that both classes have the same tag object (reference equality)
-        assert get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0], "Both classes should reference the same tag object"
+        assert (
+            get_tags(FAISSMemory)[0] is get_tags(AnotherFAISSMemory)[0]
+        ), "Both classes should reference the same tag object"
 
 
 def test_multiple_tags() -> None:
@@ -243,6 +305,7 @@ def test_multiple_tags() -> None:
         @tag("model.embedding")
         class FAISSMemory:
             """A class that represents both a memory system and an embedding model."""
+
             pass
 
         # Check that both tags were applied correctly
@@ -258,15 +321,23 @@ def test_multiple_tags() -> None:
         ), "Should have a 'model.embedding' tag"
 
         # Get the tags by their full paths
-        memory_tag = next(tag for tag in tags if tag.get_full_path() == "memory.vector.faiss")
-        model_tag = next(tag for tag in tags if tag.get_full_path() == "model.embedding")
+        memory_tag = next(
+            tag for tag in tags if tag.get_full_path() == "memory.vector.faiss"
+        )
+        model_tag = next(
+            tag for tag in tags if tag.get_full_path() == "model.embedding"
+        )
 
         # In our isolated registry, the category might be TEST instead of the expected category
         # since we're using the tag decorator in a test context
         assert memory_tag is not None, "memory.vector.faiss tag should exist"
         assert model_tag is not None, "model.embedding tag should exist"
-        assert memory_tag.get_full_path() == "memory.vector.faiss", "memory tag should have correct full path"
-        assert model_tag.get_full_path() == "model.embedding", "model tag should have correct full path"
+        assert (
+            memory_tag.get_full_path() == "memory.vector.faiss"
+        ), "memory tag should have correct full path"
+        assert (
+            model_tag.get_full_path() == "model.embedding"
+        ), "model tag should have correct full path"
 
 
 def test_tag_relationships() -> None:
@@ -291,25 +362,40 @@ def test_tag_relationships() -> None:
         memory_tag.add_relationship(model_tag, TagRelationship.USES)
 
         # Check that the relationship was created correctly
-        assert memory_tag.has_relationship(model_tag, TagRelationship.USES), "memory should USES model"
-        assert not model_tag.has_relationship(memory_tag, TagRelationship.USES), "model should not USES memory"
+        assert memory_tag.has_relationship(
+            model_tag, TagRelationship.USES
+        ), "memory should USES model"
+        assert not model_tag.has_relationship(
+            memory_tag, TagRelationship.USES
+        ), "model should not USES memory"
 
         # Check that other relationships don't exist
-        assert not memory_tag.has_relationship(model_tag, TagRelationship.DEPENDS_ON), "memory should not DEPENDS_ON model"
-        assert not model_tag.has_relationship(memory_tag, TagRelationship.DEPENDS_ON), "model should not DEPENDS_ON memory"
+        assert not memory_tag.has_relationship(
+            model_tag, TagRelationship.DEPENDS_ON
+        ), "memory should not DEPENDS_ON model"
+        assert not model_tag.has_relationship(
+            memory_tag, TagRelationship.DEPENDS_ON
+        ), "model should not DEPENDS_ON memory"
 
         # Add a relationship in the opposite direction: model DEPENDS_ON memory
         model_tag.add_relationship(memory_tag, TagRelationship.DEPENDS_ON)
 
         # Check that both relationships now exist
-        assert memory_tag.has_relationship(model_tag, TagRelationship.USES), "memory should still USES model"
+        assert memory_tag.has_relationship(
+            model_tag, TagRelationship.USES
+        ), "memory should still USES model"
         assert model_tag.has_relationship(
-            memory_tag, TagRelationship.DEPENDS_ON), "model should now DEPENDS_ON memory"
+            memory_tag, TagRelationship.DEPENDS_ON
+        ), "model should now DEPENDS_ON memory"
 
         # Add another relationship type between the same tags
         memory_tag.add_relationship(model_tag, TagRelationship.COMPOSES)
-        assert memory_tag.has_relationship(model_tag, TagRelationship.COMPOSES), "memory should now COMPOSES model"
-        assert memory_tag.has_relationship(model_tag, TagRelationship.USES), "memory should still USES model"
+        assert memory_tag.has_relationship(
+            model_tag, TagRelationship.COMPOSES
+        ), "memory should now COMPOSES model"
+        assert memory_tag.has_relationship(
+            model_tag, TagRelationship.USES
+        ), "memory should still USES model"
 
 
 def test_hierarchical_safe_tag() -> None:
@@ -329,12 +415,15 @@ def test_hierarchical_safe_tag() -> None:
         @safe_tag("memory.vector.faiss.index.flat")
         class FlatFAISSIndex:
             """A class for flat FAISS index."""
+
             pass
 
         # Check that the tag was applied correctly
         tags: List[Tag] = get_tags(FlatFAISSIndex)
         assert len(tags) == 1, "FlatFAISSIndex should have exactly one tag"
-        assert tags[0].get_full_path() == "memory.vector.faiss.index.flat", "Tag should have the correct full path"
+        assert (
+            tags[0].get_full_path() == "memory.vector.faiss.index.flat"
+        ), "Tag should have the correct full path"
 
         # Get the tag and verify its hierarchy
         tag = tags[0]
@@ -342,26 +431,45 @@ def test_hierarchical_safe_tag() -> None:
         assert tag.parent is not None, "The leaf tag should have a parent"
         assert tag.parent.name == "index", "The parent of 'flat' should be 'index'"
         assert tag.parent.parent is not None, "The 'index' tag should have a parent"
-        assert tag.parent.parent.name == "faiss", "The parent of 'index' should be 'faiss'"
-        assert tag.parent.parent.parent is not None, "The 'faiss' tag should have a parent"
-        assert tag.parent.parent.parent.name == "vector", "The parent of 'faiss' should be 'vector'"
-        assert tag.parent.parent.parent.parent is not None, "The 'vector' tag should have a parent"
-        assert tag.parent.parent.parent.parent.name == "memory", "The parent of 'vector' should be 'memory'"
-        assert tag.parent.parent.parent.parent.parent is None, "The 'memory' tag should have no parent"
+        assert (
+            tag.parent.parent.name == "faiss"
+        ), "The parent of 'index' should be 'faiss'"
+        assert (
+            tag.parent.parent.parent is not None
+        ), "The 'faiss' tag should have a parent"
+        assert (
+            tag.parent.parent.parent.name == "vector"
+        ), "The parent of 'faiss' should be 'vector'"
+        assert (
+            tag.parent.parent.parent.parent is not None
+        ), "The 'vector' tag should have a parent"
+        assert (
+            tag.parent.parent.parent.parent.name == "memory"
+        ), "The parent of 'vector' should be 'memory'"
+        assert (
+            tag.parent.parent.parent.parent.parent is None
+        ), "The 'memory' tag should have no parent"
 
         # Define another class with a tag that shares part of the hierarchy
         @safe_tag("memory.vector.faiss.index.ivf")
         class IVFFAISSIndex:
             """A class for IVF FAISS index."""
+
             pass
 
         # Check that the tag was applied correctly
         tags_ivf: List[Tag] = get_tags(IVFFAISSIndex)
         assert len(tags_ivf) == 1, "IVFFAISSIndex should have exactly one tag"
-        assert tags_ivf[0].get_full_path() == "memory.vector.faiss.index.ivf", "Tag should have the correct full path"
+        assert (
+            tags_ivf[0].get_full_path() == "memory.vector.faiss.index.ivf"
+        ), "Tag should have the correct full path"
 
         # Verify that the two tags share the same ancestors
         flat_tag = tags[0]
         ivf_tag = tags_ivf[0]
-        assert flat_tag.parent is ivf_tag.parent, "Both tags should share the same 'index' parent"
-        assert flat_tag.parent.parent is ivf_tag.parent.parent, "Both tags should share the same 'faiss' grandparent"
+        assert (
+            flat_tag.parent is ivf_tag.parent
+        ), "Both tags should share the same 'index' parent"
+        assert (
+            flat_tag.parent.parent is ivf_tag.parent.parent
+        ), "Both tags should share the same 'faiss' grandparent"

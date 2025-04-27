@@ -17,15 +17,14 @@ from typing import Any, Callable, ContextManager, TypeVar, cast, Optional, Union
 from contextlib import contextmanager
 from datetime import datetime
 
-from augment_adam.utils.tagging.core import (
-    Tag, TagCategory, TagRegistry, create_tag
-)
+from augment_adam.utils.tagging.core import Tag, TagCategory, TagRegistry, create_tag
 from augment_adam.utils.tagging.registry_factory import (
-    get_registry_factory, get_registry
+    get_registry_factory,
+    get_registry,
 )
 
 # Type variable for generic decorator
-T = TypeVar('T', bound=Callable[..., Any])
+T = TypeVar("T", bound=Callable[..., Any])
 
 
 def reset_tag_registry() -> None:
@@ -78,6 +77,7 @@ def isolated_tag_registry() -> ContextManager[TagRegistry]:
     Returns:
         ContextManager[TagRegistry]: A context manager that yields an isolated tag registry.
     """
+
     # Create a custom registry class that doesn't initialize predefined tags
     class EmptyTagRegistry(TagRegistry):
         def _initialize_tags(self) -> None:
@@ -137,6 +137,7 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
         ... class EmbeddingModel:
         ...     pass
     """
+
     def decorator(obj: T) -> T:
         """
         Decorator function that applies the tag to the decorated object.
@@ -163,7 +164,8 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
                 try:
                     # Create the tag if it doesn't exist
                     tag_obj = registry.create_tag(
-                        tag_name, category, attributes=attributes)
+                        tag_name, category, attributes=attributes
+                    )
                 except ValueError:
                     # Tag might have been created by another thread, get it
                     tag_obj = registry.get_tag(tag_name)
@@ -190,7 +192,9 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
                     parent_tag = registry.get_tag(parent_name)
                     if parent_tag is None:
                         # If still not found, something is wrong
-                        raise ValueError(f"Failed to create or retrieve parent tag '{parent_name}'")
+                        raise ValueError(
+                            f"Failed to create or retrieve parent tag '{parent_name}'"
+                        )
 
             # Create the rest of the hierarchy
             current_tag = parent_tag
@@ -210,7 +214,8 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
                     # Create the child tag if it doesn't exist
                     try:
                         child_tag = registry.create_tag(
-                            part, current_tag.category, current_tag)
+                            part, current_tag.category, current_tag
+                        )
                         current_tag = child_tag
                     except ValueError:
                         # Child tag might have been created by another thread,
@@ -226,7 +231,8 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
                             # If still not found, something is wrong
                             raise ValueError(
                                 f"Failed to create or retrieve child tag '{part}' "
-                                f"under parent '{current_tag.name}'")
+                                f"under parent '{current_tag.name}'"
+                            )
 
             # The final tag is now in current_tag
             tag_obj = current_tag
