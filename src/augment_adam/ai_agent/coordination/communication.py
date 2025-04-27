@@ -9,11 +9,13 @@ import time
 import queue
 import threading
 from enum import Enum, auto
-from typing import Dict, List, Any, Optional, Set, Union, Callable, TypeVar
+from typing import Dict, Any, Optional, Set
 from dataclasses import dataclass, field
 
-from augment_adam.utils.tagging import tag, TagCategory
-from augment_adam.ai_agent.coordination.registry import Agent, AgentRegistry, get_agent_registry
+from augment_adam.utils.tagging import tag
+from augment_adam.ai_agent.coordination.registry import (
+    AgentRegistry, get_agent_registry
+)
 
 
 class MessageType(Enum):
@@ -202,13 +204,16 @@ class AgentCommunicationChannel:
         """
         raise NotImplementedError("Subclasses must implement send_message")
 
-    def receive_message(self, agent_id: str, timeout: Optional[float] = None) -> Optional[AgentMessage]:
+    def receive_message(
+        self, agent_id: str, timeout: Optional[float] = None
+    ) -> Optional[AgentMessage]:
         """
         Receive a message from the channel.
 
         Args:
             agent_id: The ID of the agent receiving the message.
-            timeout: The maximum time to wait for a message, or None to wait indefinitely.
+            timeout: The maximum time to wait for a message, or None to wait
+                indefinitely.
 
         Returns:
             The received message, or None if no message was received.
@@ -317,18 +322,22 @@ class DirectCommunicationChannel(AgentCommunicationChannel):
         recipient_queue = self._get_queue(message.recipient_id)
 
         # Add the message to the queue with priority
-        priority = 4 - message.priority.value  # Invert priority for queue (lower value = higher priority)
+        # Invert priority for queue (lower value = higher priority)
+        priority = 4 - message.priority.value
         recipient_queue.put((priority, message.id, message))
 
         return True
 
-    def receive_message(self, agent_id: str, timeout: Optional[float] = None) -> Optional[AgentMessage]:
+    def receive_message(
+        self, agent_id: str, timeout: Optional[float] = None
+    ) -> Optional[AgentMessage]:
         """
         Receive a message from the channel.
 
         Args:
             agent_id: The ID of the agent receiving the message.
-            timeout: The maximum time to wait for a message, or None to wait indefinitely.
+            timeout: The maximum time to wait for a message, or None to wait
+                indefinitely.
 
         Returns:
             The received message, or None if no message was received.
@@ -338,7 +347,9 @@ class DirectCommunicationChannel(AgentCommunicationChannel):
 
         try:
             # Get a message from the queue
-            priority, message_id, message = agent_queue.get(block=timeout is not None, timeout=timeout)
+            priority, message_id, message = agent_queue.get(
+                block=timeout is not None, timeout=timeout
+            )
             agent_queue.task_done()
 
             # Check if the message is expired
@@ -383,7 +394,9 @@ class BroadcastCommunicationChannel(AgentCommunicationChannel):
     TODO(Issue #8): Implement message validation
     """
 
-    def __init__(self, name: str = "broadcast_channel", registry: Optional[AgentRegistry] = None) -> None:
+    def __init__(
+        self, name: str = "broadcast_channel", registry: Optional[AgentRegistry] = None
+    ) -> None:
         """
         Initialize the broadcast communication channel.
 
@@ -450,13 +463,16 @@ class BroadcastCommunicationChannel(AgentCommunicationChannel):
 
         return success
 
-    def receive_message(self, agent_id: str, timeout: Optional[float] = None) -> Optional[AgentMessage]:
+    def receive_message(
+        self, agent_id: str, timeout: Optional[float] = None
+    ) -> Optional[AgentMessage]:
         """
         Receive a message from the channel.
 
         Args:
             agent_id: The ID of the agent receiving the message.
-            timeout: The maximum time to wait for a message, or None to wait indefinitely.
+            timeout: The maximum time to wait for a message, or None to wait
+                indefinitely.
 
         Returns:
             The received message, or None if no message was received.
@@ -466,7 +482,9 @@ class BroadcastCommunicationChannel(AgentCommunicationChannel):
 
         try:
             # Get a message from the queue
-            priority, message_id, message = agent_queue.get(block=timeout is not None, timeout=timeout)
+            priority, message_id, message = agent_queue.get(
+                block=timeout is not None, timeout=timeout
+            )
             agent_queue.task_done()
 
             # Check if the message is expired
@@ -709,13 +727,16 @@ class TopicCommunicationChannel(AgentCommunicationChannel):
         # Publish the message to the topic
         return self.publish(topic, message)
 
-    def receive_message(self, agent_id: str, timeout: Optional[float] = None) -> Optional[AgentMessage]:
+    def receive_message(
+        self, agent_id: str, timeout: Optional[float] = None
+    ) -> Optional[AgentMessage]:
         """
         Receive a message from the channel.
 
         Args:
             agent_id: The ID of the agent receiving the message.
-            timeout: The maximum time to wait for a message, or None to wait indefinitely.
+            timeout: The maximum time to wait for a message, or None to wait
+                indefinitely.
 
         Returns:
             The received message, or None if no message was received.
@@ -725,7 +746,9 @@ class TopicCommunicationChannel(AgentCommunicationChannel):
 
         try:
             # Get a message from the queue
-            priority, message_id, message = agent_queue.get(block=timeout is not None, timeout=timeout)
+            priority, message_id, message = agent_queue.get(
+                block=timeout is not None, timeout=timeout
+            )
             agent_queue.task_done()
 
             # Check if the message is expired
