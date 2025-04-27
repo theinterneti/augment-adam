@@ -1,9 +1,11 @@
 """
 Core tagging system for categorizing and organizing code for AI agent comprehension.
 
-This module provides a tagging system optimized for AI agent understanding and reasoning.
-It defines tag categories, hierarchies, relationships, and utilities for working with tags
-in a way that facilitates AI comprehension of code structure, purpose, and relationships.
+This module provides a tagging system optimized for AI agent understanding
+and reasoning.
+It defines tag categories, hierarchies, relationships, and utilities for working with
+tags in a way that facilitates AI comprehension of code structure, purpose, and
+relationships.
 
 TODO(Issue #4): Add support for tag versioning
 TODO(Issue #4): Implement tag validation against a schema
@@ -11,12 +13,8 @@ TODO(Issue #4): Add tag analytics to track usage and coverage
 """
 
 from enum import Enum, auto
-from typing import Dict, List, Optional, Set, Union, Any, Callable, TypeVar, cast, Tuple
+from typing import Dict, List, Optional, Union, Any, Callable, TypeVar
 from dataclasses import dataclass, field
-import functools
-import inspect
-import re
-from collections import defaultdict
 
 
 class TagCategory(Enum):
@@ -246,7 +244,8 @@ class Tag:
 
         Args:
             target: The target tag.
-            relationship: The specific relationship to remove. If None, removes all relationships to the target.
+            relationship: The specific relationship to remove. If None, removes all
+                relationships to the target.
         """
         if target not in self.relationships:
             return
@@ -271,7 +270,8 @@ class Tag:
 
         Args:
             target: The target tag.
-            relationship: The specific relationship to check. If None, checks if any relationship exists.
+            relationship: The specific relationship to check. If None, checks if any
+                relationship exists.
 
         Returns:
             True if the relationship exists, False otherwise.
@@ -311,7 +311,7 @@ class Tag:
         Get a rich semantic description of this tag for AI comprehension.
 
         Returns:
-            A detailed description of the tag including its relationships and attributes.
+            A detailed description of the tag including relationships and attributes.
         """
         lines = [
             f"Tag: {self.name}",
@@ -840,14 +840,6 @@ class TagRegistry:
         return result
 
 
-# Import the registry factory
-# Note: This is imported here to avoid circular imports
-# The actual implementation is in registry_factory.py
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from augment_adam.utils.tagging.registry_factory import get_registry
-
 # These functions will be replaced at runtime by the registry factory
 # They are defined here for type checking and documentation purposes
 
@@ -876,9 +868,11 @@ def get_tag(name: str) -> Optional[Tag]:
         The tag or None if it doesn't exist.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    return get_registry().get_tag(name)
+    return _get_registry().get_tag(name)
 
 
 def create_tag(
@@ -908,9 +902,11 @@ def create_tag(
         The created tag.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    return get_registry().create_tag(
+    return _get_registry().create_tag(
         name=name,
         category=category,
         parent=parent,
@@ -947,9 +943,11 @@ def get_or_create_tag(
         The existing or created tag.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    registry = get_registry()
+    registry = _get_registry()
     tag = registry.get_tag(name)
     if tag:
         return tag
@@ -993,9 +991,11 @@ def get_tags_by_category(category: TagCategory) -> List[Tag]:
         List of tags in the specified category.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    return get_registry().get_tags_by_category(category)
+    return _get_registry().get_tags_by_category(category)
 
 
 def relate_tags(
@@ -1013,9 +1013,11 @@ def relate_tags(
         ValueError: If either tag doesn't exist.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    get_registry().relate_tags(source_name, target_name, relationship)
+    _get_registry().relate_tags(source_name, target_name, relationship)
 
 
 def get_related_tags(
@@ -1035,9 +1037,11 @@ def get_related_tags(
         ValueError: If the tag doesn't exist.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    return get_registry().get_related_tags(name, relationship)
+    return _get_registry().get_related_tags(name, relationship)
 
 
 def find_tags(
@@ -1062,9 +1066,11 @@ def find_tags(
         List of matching tags.
     """
     # This will use the registry factory at runtime
-    from augment_adam.utils.tagging.registry_factory import get_registry
+    from augment_adam.utils.tagging.registry_factory import (
+        get_registry as _get_registry
+    )
 
-    return get_registry().find_tags(
+    return _get_registry().find_tags(
         query, search_descriptions, search_attributes, search_synonyms
     )
 
