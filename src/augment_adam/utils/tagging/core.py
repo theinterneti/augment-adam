@@ -26,6 +26,7 @@ class TagCategory(Enum):
     These categories represent the primary classification of tags and help
     organize them into logical groups for AI comprehension.
     """
+
     MEMORY = auto()  # Memory-related tags (storage, retrieval, management)
     MODEL = auto()  # Model-related tags (AI models, embeddings, inference)
     AGENT = auto()  # Agent-related tags (autonomous entities, behaviors)
@@ -52,6 +53,7 @@ class TagRelationship(Enum):
     simple parent-child hierarchies, enabling richer AI reasoning about
     code components and their interactions.
     """
+
     USES = auto()  # Tag A uses functionality from Tag B
     IMPLEMENTS = auto()  # Tag A implements interface/contract defined by Tag B
     EXTENDS = auto()  # Tag A extends or enhances Tag B
@@ -101,12 +103,12 @@ class Tag:
 
     name: str
     category: TagCategory
-    parent: Optional['Tag'] = None
+    parent: Optional["Tag"] = None
     attributes: Dict[str, Any] = field(default_factory=dict)
-    children: List['Tag'] = field(default_factory=list)
+    children: List["Tag"] = field(default_factory=list)
     description: str = ""
     examples: List[str] = field(default_factory=list)
-    relationships: Dict['Tag', List[TagRelationship]] = field(default_factory=dict)
+    relationships: Dict["Tag", List[TagRelationship]] = field(default_factory=dict)
     synonyms: List[str] = field(default_factory=list)
     importance: int = 5  # Default medium importance
     created_at: Optional[str] = None
@@ -191,7 +193,7 @@ class Tag:
         """
         self.attributes[key] = value
 
-    def is_child_of(self, tag: Union[str, 'Tag']) -> bool:
+    def is_child_of(self, tag: Union[str, "Tag"]) -> bool:
         """
         Check if this tag is a child of another tag.
 
@@ -214,7 +216,7 @@ class Tag:
 
         return self.parent.is_child_of(tag_name)
 
-    def add_relationship(self, target: 'Tag', relationship: TagRelationship) -> None:
+    def add_relationship(self, target: "Tag", relationship: TagRelationship) -> None:
         """
         Add a relationship from this tag to another tag.
 
@@ -228,7 +230,9 @@ class Tag:
         if relationship not in self.relationships[target]:
             self.relationships[target].append(relationship)
 
-    def remove_relationship(self, target: 'Tag', relationship: Optional[TagRelationship] = None) -> None:
+    def remove_relationship(
+        self, target: "Tag", relationship: Optional[TagRelationship] = None
+    ) -> None:
         """
         Remove a relationship from this tag to another tag.
 
@@ -251,7 +255,9 @@ class Tag:
             if not self.relationships[target]:
                 del self.relationships[target]
 
-    def has_relationship(self, target: 'Tag', relationship: Optional[TagRelationship] = None) -> bool:
+    def has_relationship(
+        self, target: "Tag", relationship: Optional[TagRelationship] = None
+    ) -> bool:
         """
         Check if this tag has a relationship with another tag.
 
@@ -270,7 +276,9 @@ class Tag:
 
         return relationship in self.relationships[target]
 
-    def get_relationships(self, relationship_type: Optional[TagRelationship] = None) -> Dict['Tag', List[TagRelationship]]:
+    def get_relationships(
+        self, relationship_type: Optional[TagRelationship] = None
+    ) -> Dict["Tag", List[TagRelationship]]:
         """
         Get all relationships of this tag, optionally filtered by type.
 
@@ -314,7 +322,9 @@ class Tag:
             lines.append(f"Synonyms: {', '.join(self.synonyms)}")
 
         if self.attributes:
-            attr_lines = [f"  - {key}: {value}" for key, value in self.attributes.items()]
+            attr_lines = [
+                f"  - {key}: {value}" for key, value in self.attributes.items()
+            ]
             lines.append("Attributes:")
             lines.extend(attr_lines)
 
@@ -458,12 +468,17 @@ class TagRegistry:
         self.create_tag("parallel", TagCategory.CORE, "core")
         self.create_tag("task", TagCategory.CORE, "core")
 
-    def create_tag(self, name: str, category: TagCategory,
-                  parent: Optional[Union[str, Tag]] = None,
-                  attributes: Optional[Dict[str, Any]] = None,
-                  description: Optional[str] = None,
-                  synonyms: Optional[List[str]] = None,
-                  examples: Optional[List[str]] = None) -> Tag:
+    def create_tag(
+        self,
+        name: str,
+        category: TagCategory,
+        parent: Optional[Union[str, Tag]] = None,
+        attributes: Optional[Dict[str, Any]] = None,
+        description: Optional[str] = None,
+        synonyms: Optional[List[str]] = None,
+        examples: Optional[List[str]] = None,
+        force: bool = False,
+    ) -> Tag:
         """
         Create a new tag.
 
@@ -475,14 +490,17 @@ class TagRegistry:
             description: Optional description of the tag.
             synonyms: Optional list of synonyms for the tag.
             examples: Optional list of examples for the tag.
+            force: If True, will return the existing tag if it already exists.
 
         Returns:
             The created tag.
 
         Raises:
-            ValueError: If a tag with the same name already exists.
+            ValueError: If a tag with the same name already exists and force is False.
         """
         if name in self.tags:
+            if force:
+                return self.tags[name]
             raise ValueError(f"Tag '{name}' already exists")
 
         parent_tag = None
@@ -501,7 +519,7 @@ class TagRegistry:
             attributes=attributes or {},
             description=description or "",
             synonyms=synonyms or [],
-            examples=examples or []
+            examples=examples or [],
         )
         self.tags[name] = tag
         return tag
@@ -518,12 +536,16 @@ class TagRegistry:
         """
         return self.tags.get(name)
 
-    def get_or_create_tag(self, name: str, category: TagCategory,
-                         parent: Optional[Union[str, Tag]] = None,
-                         attributes: Optional[Dict[str, Any]] = None,
-                         description: Optional[str] = None,
-                         synonyms: Optional[List[str]] = None,
-                         examples: Optional[List[str]] = None) -> Tag:
+    def get_or_create_tag(
+        self,
+        name: str,
+        category: TagCategory,
+        parent: Optional[Union[str, Tag]] = None,
+        attributes: Optional[Dict[str, Any]] = None,
+        description: Optional[str] = None,
+        synonyms: Optional[List[str]] = None,
+        examples: Optional[List[str]] = None,
+    ) -> Tag:
         """
         Get a tag by name or create it if it doesn't exist.
 
@@ -549,7 +571,7 @@ class TagRegistry:
             attributes=attributes,
             description=description,
             synonyms=synonyms,
-            examples=examples
+            examples=examples,
         )
 
     def delete_tag(self, name: str) -> None:
@@ -572,7 +594,9 @@ class TagRegistry:
             tag.parent.children.remove(tag)
 
         # Recursively delete children
-        for child in tag.children[:]:  # Create a copy to avoid modification during iteration
+        for child in tag.children[
+            :
+        ]:  # Create a copy to avoid modification during iteration
             self.delete_tag(child.name)
 
         # Remove the tag
@@ -644,7 +668,9 @@ class TagRegistry:
         """
         return [tag for tag in self.tags.values() if tag.parent is None]
 
-    def relate_tags(self, source_name: str, target_name: str, relationship: TagRelationship) -> None:
+    def relate_tags(
+        self, source_name: str, target_name: str, relationship: TagRelationship
+    ) -> None:
         """
         Create a relationship between two tags.
 
@@ -667,7 +693,9 @@ class TagRegistry:
 
         source.add_relationship(target, relationship)
 
-    def get_related_tags(self, name: str, relationship: Optional[TagRelationship] = None) -> Dict[str, List[TagRelationship]]:
+    def get_related_tags(
+        self, name: str, relationship: Optional[TagRelationship] = None
+    ) -> Dict[str, List[TagRelationship]]:
         """
         Get tags related to the specified tag.
 
@@ -689,10 +717,18 @@ class TagRegistry:
         relationships = tag.get_relationships(relationship)
 
         # Convert to dictionary with tag names as keys
-        return {target.name: relationships for target, relationships in relationships.items()}
+        return {
+            target.name: relationships
+            for target, relationships in relationships.items()
+        }
 
-    def find_tags(self, query: str, search_descriptions: bool = True,
-                 search_attributes: bool = True, search_synonyms: bool = True) -> List[Tag]:
+    def find_tags(
+        self,
+        query: str,
+        search_descriptions: bool = True,
+        search_attributes: bool = True,
+        search_synonyms: bool = True,
+    ) -> List[Tag]:
         """
         Find tags matching a search query.
 
@@ -718,12 +754,18 @@ class TagRegistry:
                 continue
 
             # Check tag description
-            if search_descriptions and tag.description and query in tag.description.lower():
+            if (
+                search_descriptions
+                and tag.description
+                and query in tag.description.lower()
+            ):
                 results.append(tag)
                 continue
 
             # Check tag synonyms
-            if search_synonyms and any(query in synonym.lower() for synonym in tag.synonyms):
+            if search_synonyms and any(
+                query in synonym.lower() for synonym in tag.synonyms
+            ):
                 results.append(tag)
                 continue
 
@@ -783,7 +825,9 @@ class TagRegistry:
         }
 
         if tag.children:
-            result["children"] = [self._build_hierarchy_dict(child) for child in tag.children]
+            result["children"] = [
+                self._build_hierarchy_dict(child) for child in tag.children
+            ]
 
         return result
 
@@ -799,6 +843,7 @@ if TYPE_CHECKING:
 # These functions will be replaced at runtime by the registry factory
 # They are defined here for type checking and documentation purposes
 
+
 def get_tag_registry() -> TagRegistry:
     """
     Get the current tag registry.
@@ -810,6 +855,7 @@ def get_tag_registry() -> TagRegistry:
     """
     # This will be replaced at runtime
     pass
+
 
 def get_tag(name: str) -> Optional[Tag]:
     """
@@ -823,14 +869,20 @@ def get_tag(name: str) -> Optional[Tag]:
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     return get_registry().get_tag(name)
 
-def create_tag(name: str, category: TagCategory,
-              parent: Optional[Union[str, Tag]] = None,
-              attributes: Optional[Dict[str, Any]] = None,
-              description: Optional[str] = None,
-              synonyms: Optional[List[str]] = None,
-              examples: Optional[List[str]] = None) -> Tag:
+
+def create_tag(
+    name: str,
+    category: TagCategory,
+    parent: Optional[Union[str, Tag]] = None,
+    attributes: Optional[Dict[str, Any]] = None,
+    description: Optional[str] = None,
+    synonyms: Optional[List[str]] = None,
+    examples: Optional[List[str]] = None,
+    force: bool = False,
+) -> Tag:
     """
     Create a new tag.
 
@@ -842,12 +894,14 @@ def create_tag(name: str, category: TagCategory,
         description: Optional description of the tag.
         synonyms: Optional list of synonyms for the tag.
         examples: Optional list of examples for the tag.
+        force: If True, will return the existing tag if it already exists.
 
     Returns:
         The created tag.
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     return get_registry().create_tag(
         name=name,
         category=category,
@@ -855,15 +909,20 @@ def create_tag(name: str, category: TagCategory,
         attributes=attributes,
         description=description,
         synonyms=synonyms,
-        examples=examples
+        examples=examples,
+        force=force,
     )
 
-def get_or_create_tag(name: str, category: TagCategory,
-                     parent: Optional[Union[str, Tag]] = None,
-                     attributes: Optional[Dict[str, Any]] = None,
-                     description: Optional[str] = None,
-                     synonyms: Optional[List[str]] = None,
-                     examples: Optional[List[str]] = None) -> Tag:
+
+def get_or_create_tag(
+    name: str,
+    category: TagCategory,
+    parent: Optional[Union[str, Tag]] = None,
+    attributes: Optional[Dict[str, Any]] = None,
+    description: Optional[str] = None,
+    synonyms: Optional[List[str]] = None,
+    examples: Optional[List[str]] = None,
+) -> Tag:
     """
     Get a tag by name or create it if it doesn't exist.
 
@@ -881,6 +940,7 @@ def get_or_create_tag(name: str, category: TagCategory,
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     registry = get_registry()
     tag = registry.get_tag(name)
     if tag:
@@ -893,11 +953,26 @@ def get_or_create_tag(name: str, category: TagCategory,
             attributes=attributes,
             description=description,
             synonyms=synonyms,
-            examples=examples
+            examples=examples,
+            force=True,  # Always use force=True for get_or_create_tag
         )
     except ValueError:
         # Tag might have been created by another thread
-        return registry.get_tag(name)
+        tag = registry.get_tag(name)
+        if tag is None:
+            # Last resort: create with force=True
+            return registry.create_tag(
+                name=name,
+                category=category,
+                parent=parent,
+                attributes=attributes,
+                description=description,
+                synonyms=synonyms,
+                examples=examples,
+                force=True,
+            )
+        return tag
+
 
 def get_tags_by_category(category: TagCategory) -> List[Tag]:
     """
@@ -911,10 +986,13 @@ def get_tags_by_category(category: TagCategory) -> List[Tag]:
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     return get_registry().get_tags_by_category(category)
 
 
-def relate_tags(source_name: str, target_name: str, relationship: TagRelationship) -> None:
+def relate_tags(
+    source_name: str, target_name: str, relationship: TagRelationship
+) -> None:
     """
     Create a relationship between two tags.
 
@@ -928,10 +1006,13 @@ def relate_tags(source_name: str, target_name: str, relationship: TagRelationshi
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     get_registry().relate_tags(source_name, target_name, relationship)
 
 
-def get_related_tags(name: str, relationship: Optional[TagRelationship] = None) -> Dict[str, List[TagRelationship]]:
+def get_related_tags(
+    name: str, relationship: Optional[TagRelationship] = None
+) -> Dict[str, List[TagRelationship]]:
     """
     Get tags related to the specified tag.
 
@@ -947,11 +1028,16 @@ def get_related_tags(name: str, relationship: Optional[TagRelationship] = None) 
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
+
     return get_registry().get_related_tags(name, relationship)
 
 
-def find_tags(query: str, search_descriptions: bool = True,
-             search_attributes: bool = True, search_synonyms: bool = True) -> List[Tag]:
+def find_tags(
+    query: str,
+    search_descriptions: bool = True,
+    search_attributes: bool = True,
+    search_synonyms: bool = True,
+) -> List[Tag]:
     """
     Find tags matching a search query.
 
@@ -969,7 +1055,10 @@ def find_tags(query: str, search_descriptions: bool = True,
     """
     # This will use the registry factory at runtime
     from augment_adam.utils.tagging.registry_factory import get_registry
-    return get_registry().find_tags(query, search_descriptions, search_attributes, search_synonyms)
+
+    return get_registry().find_tags(
+        query, search_descriptions, search_attributes, search_synonyms
+    )
 
 
 def describe_tag(name: str) -> str:
@@ -994,7 +1083,8 @@ def describe_tag(name: str) -> str:
 
 
 # Type variable for generic decorator
-T = TypeVar('T', bound=Callable[..., Any])
+T = TypeVar("T", bound=Callable[..., Any])
+
 
 def tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
     """
@@ -1015,6 +1105,7 @@ def tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
     # Use the safe_tag implementation from tag_utils
     # This avoids code duplication and ensures consistent behavior
     from augment_adam.testing.utils.tag_utils import safe_tag
+
     return safe_tag(tag_name, **attributes)
 
 

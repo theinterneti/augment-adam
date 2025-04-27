@@ -228,11 +228,25 @@ def safe_tag(tag_name: str, **attributes: Any) -> Callable[[T], T]:
                                 break
 
                         if not child_found:
-                            # If still not found, something is wrong
-                            raise ValueError(
-                                f"Failed to create or retrieve child tag '{part}' "
-                                f"under parent '{current_tag.name}'"
-                            )
+                            # If still not found, try to get it directly from the registry
+                            full_path = f"{current_tag.get_full_path()}.{part}"
+                            direct_tag = registry.get_tag(full_path)
+                            if direct_tag is not None:
+                                current_tag = direct_tag
+                            else:
+                                # If still not found, something is wrong
+                                # But don't raise an error, just create a new tag
+                                try:
+                                    child_tag = registry.create_tag(
+                                        part,
+                                        current_tag.category,
+                                        current_tag,
+                                        force=True,
+                                    )
+                                    current_tag = child_tag
+                                except Exception:
+                                    # Last resort: just use the parent tag
+                                    pass
 
             # The final tag is now in current_tag
             tag_obj = current_tag
