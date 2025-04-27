@@ -68,12 +68,14 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # Install Ollama
 RUN curl -fsSL https://ollama.com/install.sh | sh
 
-# Install Python packages for ML and development
-# Use a requirements file to leverage build cache better
-# Note: requirements.txt will be mounted from the workspace
+# Install Poetry for dependency management
 RUN --mount=type=cache,target=/root/.cache/pip,sharing=locked \
     pip install --upgrade pip \
+    && pip install poetry \
     && pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+
+# Configure Poetry to not create virtual environments inside the container
+RUN poetry config virtualenvs.create false
 
 # Create a non-root user with sudo access
 ARG USERNAME=vscode
@@ -84,16 +86,16 @@ ARG USER_GID=$USER_UID
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     if getent group $USER_GID > /dev/null 2>&1; then \
-        echo "Group with GID $USER_GID already exists"; \
+    echo "Group with GID $USER_GID already exists"; \
     elif getent group $USERNAME > /dev/null 2>&1; then \
-        echo "Group $USERNAME already exists"; \
+    echo "Group $USERNAME already exists"; \
     else \
-        groupadd --gid $USER_GID $USERNAME; \
+    groupadd --gid $USER_GID $USERNAME; \
     fi \
     && if id -u $USERNAME > /dev/null 2>&1; then \
-        echo "User $USERNAME already exists"; \
+    echo "User $USERNAME already exists"; \
     else \
-        useradd --uid $USER_UID --gid $(getent group $USER_GID | cut -d: -f1 || echo $USER_GID) -m $USERNAME; \
+    useradd --uid $USER_UID --gid $(getent group $USER_GID | cut -d: -f1 || echo $USER_GID) -m $USERNAME; \
     fi \
     && apt-get update \
     && apt-get install -y sudo \

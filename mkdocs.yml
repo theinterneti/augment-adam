@@ -1,0 +1,68 @@
+site_name: Augment Adam
+site_description: An intelligent assistant with advanced memory capabilities
+site_author: Augment Adam Team
+repo_url: https://github.com/theinterneti/augment-adam
+repo_name: theinterneti/augment-adam
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.highlight
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - pymdownx.highlight
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - toc:
+      permalink: true
+
+nav:
+  - Home: index.md
+  - User Guide:
+      - Getting Started: docs/user_guide/getting_started.md
+      - Installation: docs/user_guide/installation.md
+      - Configuration: docs/user_guide/configuration.md
+      - Quickstart: docs/user_guide/quickstart.md
+  - Architecture:
+      - Overview: docs/architecture/ARCHITECTURE.md
+      - Agent Core: docs/architecture/AGENT_CORE.md
+      - Agent Coordination: docs/architecture/AGENT_COORDINATION.md
+      - Context Engine: docs/architecture/CONTEXT_ENGINE.md
+      - Memory System: docs/architecture/MEMORY_SYSTEM.md
+      - Plugin System: docs/architecture/PLUGIN_SYSTEM.md
+      - Template Engine: docs/architecture/TEMPLATE_ENGINE.md
+      - Tagging System: docs/architecture/TAGGING_SYSTEM.md
+      - Documentation System: docs/architecture/DOCUMENTATION_SYSTEM.md
+      - Testing Framework: docs/architecture/TESTING_FRAMEWORK.md
+  - Developer Guide:
+      - Testing Framework: docs/developer_guide/TESTING_FRAMEWORK.md
+  - API Reference:
+      - Documentation System: docs/api/documentation.md
+      - Tagging System: docs/api/tagging.md
+      - Template Engine: docs/api/templates.md
+  - Component Documentation:
+      - Tagging System: tagging_system.md
+  - About:
+      - License: LICENSE.md
+      - Contributing: CONTRIBUTING.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: google
+          rendering:
+            show_source: true
+  - mkdocs-jupyter

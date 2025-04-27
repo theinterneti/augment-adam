@@ -34,3 +34,7 @@ Welcome to the Augment Adam documentation. This documentation provides informati
 - [Documentation System API](docs/api/documentation.md)
 - [Tagging System API](docs/api/tagging.md)
 - [Template Engine API](docs/api/templates.md)
+
+## Component Documentation
+
+- [Tagging System](tagging_system.md): Detailed documentation for the tagging system, including core concepts, usage, and best practices.

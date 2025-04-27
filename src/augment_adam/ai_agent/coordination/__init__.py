@@ -56,6 +56,15 @@ from augment_adam.ai_agent.coordination.coordinator import (
     get_agent_coordinator,
 )
 
+from augment_adam.ai_agent.coordination.team import (
+    AgentTeam,
+)
+
+from augment_adam.ai_agent.coordination.workflow import (
+    Workflow,
+    WorkflowStep,
+)
+
 __all__ = [
     # Registry
     "AgentRegistry",
@@ -96,4 +105,11 @@ __all__ = [
     # Coordinator
     "AgentCoordinator",
     "get_agent_coordinator",
+
+    # Team
+    "AgentTeam",
+
+    # Workflow
+    "Workflow",
+    "WorkflowStep",
 ]

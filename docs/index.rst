@@ -32,6 +32,7 @@ Welcome to the Augment Adam documentation!
    architecture/agent_coordination
    architecture/plugin_system
    architecture/template_engine
+   architecture/tagging_system
 
 .. toctree::
    :maxdepth: 2
@@ -42,6 +43,7 @@ Welcome to the Augment Adam documentation!
    api/agent
    api/plugin
    api/template
+   api/tagging
 
 .. toctree::
    :maxdepth: 2

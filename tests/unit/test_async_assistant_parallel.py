@@ -184,7 +184,7 @@ class TestAsyncAssistantParallel(unittest.IsolatedAsyncioTestCase):
     async def test_get_queue_stats_with_parallel_executor(self):
         """Test getting queue stats with parallel executor metrics."""
         # Mock the get_queue_stats function
-        with patch('augment_adam.core.async_assistant.get_queue_stats") as mock_get_queue_stats:
+        with patch('augment_adam.core.async_assistant.get_queue_stats') as mock_get_queue_stats:
             mock_get_queue_stats.return_value = {
                 "active_tasks": 2,
                 "completed_tasks": 5,
@@ -239,7 +239,7 @@ class TestAsyncAssistantScheduling(unittest.IsolatedAsyncioTestCase):
         )
 
         # Mock the schedule_task function
-        self.schedule_task_patch = patch('augment_adam.core.async_assistant.schedule_task")
+        self.schedule_task_patch = patch('augment_adam.core.async_assistant.schedule_task')
         self.mock_schedule_task = self.schedule_task_patch.start()
         self.mock_schedule_task.return_value = "scheduled_task_id"
 

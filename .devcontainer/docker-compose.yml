@@ -31,7 +31,7 @@ services:
 
     # Forward ports for services
     ports:
-      - "8889:8888"  # Jupyter (changed from 8888 to avoid port conflict)
+      - "8891:8888" # Jupyter (changed from 8888 to avoid port conflict)
 
     # Set environment variables
     environment:
@@ -105,8 +105,8 @@ services:
       - neo4j-data:/data
     # Only expose to internal network, not to host
     expose:
-      - "7474"  # HTTP
-      - "7687"  # Bolt
+      - "7474" # HTTP
+      - "7687" # Bolt
 
   # Redis for caching
   redis:
@@ -123,8 +123,8 @@ services:
     image: redis/redis-stack:latest
     # Only expose to internal network, not to host
     expose:
-      - "6379"  # Redis port
-      - "8001"  # RedisInsight
+      - "6379" # Redis port
+      - "8001" # RedisInsight
     volumes:
       - redis-vector-data:/data
     command: >
@@ -133,14 +133,13 @@ services:
       --loadmodule /opt/redis-stack/lib/rejson.so
       --save 60 1
       --appendonly yes
-      --threads 6
       --io-threads 2
     environment:
       - REDIS_ARGS=--requirepass redispassword
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 8G
 
   # Context Engine API - Commented out until API directory is created
@@ -165,36 +164,36 @@ services:
 volumes:
   # Define named volumes
   ollama-models:
-    name: augment-adam-ollama-models  # Ollama models
-    external: false  # Create if it doesn't exist
+    name: augment-adam-ollama-models # Ollama models
+    external: false # Create if it doesn't exist
   model-cache:
-    name: augment-adam-model-cache  # General model cache
-    external: false  # Will be created if it doesn't exist
+    name: augment-adam-model-cache # General model cache
+    external: false # Will be created if it doesn't exist
   huggingface-cache:
-    name: augment-adam-huggingface-cache  # HuggingFace models
-    external: false  # Will be created if it doesn't exist
+    name: augment-adam-huggingface-cache # HuggingFace models
+    external: false # Will be created if it doesn't exist
 
   # Cache volumes for faster builds
   pip-cache:
-    name: augment-adam-pip-cache  # Cache pip packages
+    name: augment-adam-pip-cache # Cache pip packages
     external: false
   apt-cache:
-    name: augment-adam-apt-cache  # Cache apt packages
+    name: augment-adam-apt-cache # Cache apt packages
     external: false
   torch-cache:
-    name: augment-adam-torch-cache  # Cache PyTorch models and weights
+    name: augment-adam-torch-cache # Cache PyTorch models and weights
     external: false
 
   # Service data volumes
   chroma-data:
-    name: augment-adam-chroma-data  # ChromaDB data
+    name: augment-adam-chroma-data # ChromaDB data
     external: false
   neo4j-data:
-    name: augment-adam-neo4j-data  # Neo4j data
+    name: augment-adam-neo4j-data # Neo4j data
     external: false
   redis-data:
-    name: augment-adam-redis-data  # Redis data
+    name: augment-adam-redis-data # Redis data
     external: false
   redis-vector-data:
-    name: augment-adam-redis-vector-data  # Redis Vector data
+    name: augment-adam-redis-vector-data # Redis Vector data
     external: false

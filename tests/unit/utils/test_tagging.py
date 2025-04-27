@@ -758,15 +758,20 @@ def test_tag_decorator():
 
 def test_tag_decorator_with_attributes():
     """Test tag decorator with attributes."""
-    # Arrange & Act
-    @tag("test_tag", key="value")
+    # Arrange
+    # Reset the tag registry to avoid conflicts
+    from augment_adam.testing.utils.tag_utils import reset_tag_registry
+    reset_tag_registry()
+
+    # Act
+    @tag("test_tag_with_attr", key="value")
     class TestClass:
         pass
 
     # Assert
     tags = get_tags(TestClass)
     assert len(tags) == 1
-    assert tags[0].name == "test_tag"
+    assert tags[0].name == "test_tag_with_attr"
     assert tags[0].get_attribute("key") == "value"
 
 
@@ -816,16 +821,21 @@ def test_get_tags_no_tags():
 def test_relate_tags_function():
     """Test relate_tags function."""
     # Arrange
-    tag1 = create_tag("test_tag1", TagCategory.MEMORY)
-    tag2 = create_tag("test_tag2", TagCategory.MEMORY)
+    # Reset the tag registry to avoid conflicts
+    from augment_adam.testing.utils.tag_utils import reset_tag_registry
+    reset_tag_registry()
+
+    # Use unique tag names for this test
+    tag1 = create_tag("relate_test_tag1", TagCategory.MEMORY)
+    tag2 = create_tag("relate_test_tag2", TagCategory.MEMORY)
 
     # Act
-    relate_tags("test_tag1", "test_tag2", TagRelationship.USES)
+    relate_tags("relate_test_tag1", "relate_test_tag2", TagRelationship.USES)
 
     # Assert
-    related = get_related_tags("test_tag1")
-    assert "test_tag2" in related
-    assert TagRelationship.USES in related["test_tag2"]
+    related = get_related_tags("relate_test_tag1")
+    assert "relate_test_tag2" in related
+    assert TagRelationship.USES in related["relate_test_tag2"]
 
 
 def test_get_related_tags_function():

@@ -5,6 +5,16 @@ set -e
 echo "Docker version information:"
 docker version --format '{{.Server.Version}}' 2>/dev/null || echo "Docker not available"
 
+# Install dependencies using Poetry if pyproject.toml exists
+if [ -f /workspace/pyproject.toml ]; then
+    echo "Found pyproject.toml, installing dependencies with Poetry..."
+    cd /workspace
+    poetry install --no-interaction --no-ansi || echo "Poetry install completed with warnings/errors"
+    echo "Poetry dependencies installed successfully"
+else
+    echo "No pyproject.toml found, skipping Poetry install"
+fi
+
 # Check for Ollama service
 echo "Checking for Ollama service..."
 # We'll check the Ollama service in the docker-compose network
@@ -19,13 +29,13 @@ else
 fi
 
 # Check for NVIDIA GPU availability
-echo "\nChecking for NVIDIA GPU:"
+echo -e "\nChecking for NVIDIA GPU:"
 if command -v nvidia-smi &> /dev/null; then
     echo "NVIDIA GPU detected:"
     nvidia-smi
 
     # Check PyTorch CUDA availability
-    echo "\nChecking PyTorch CUDA availability:"
+    echo -e "\nChecking PyTorch CUDA availability:"
     if [ -f /workspace/scripts/verify_pytorch_gpu.py ]; then
         python /workspace/scripts/verify_pytorch_gpu.py || echo "GPU verification script completed with errors"
     else
@@ -36,7 +46,7 @@ else
 fi
 
 # Print volume information
-echo "\nVolume information:"
+echo -e "\nVolume information:"
 docker volume ls | grep -E 'ollama-models|model-cache|huggingface-cache|augment-adam' || echo "No relevant volumes found"
 
 # Execute the command passed to docker run

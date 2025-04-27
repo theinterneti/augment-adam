@@ -138,11 +138,19 @@ class Tag:
         return f"Tag({self.name}, {self.category})"
 
     def __hash__(self) -> int:
-        """Return the hash of the tag."""
+        """Return the hash of the tag.
+
+        This makes Tag objects usable as dictionary keys.
+        We hash based on the name only, as that's the unique identifier.
+        """
         return hash(self.name)
 
     def __eq__(self, other: object) -> bool:
-        """Check if two tags are equal."""
+        """Check if two tags are equal.
+
+        Two tags are considered equal if they have the same name.
+        This is consistent with the __hash__ implementation.
+        """
         if not isinstance(other, Tag):
             return False
         return self.name == other.name

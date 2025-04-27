@@ -1,0 +1,83 @@
+{
+  "name": "Protect main branch",
+  "target": "branch",
+  "enforcement": "active",
+  "bypass_actors": [],
+  "conditions": {
+    "ref_name": {
+      "include": ["refs/heads/main"],
+      "exclude": []
+    }
+  },
+  "rules": [
+    {
+      "type": "required_signatures"
+    },
+    {
+      "type": "pull_request",
+      "parameters": {
+        "required_approving_review_count": 1,
+        "dismiss_stale_reviews_on_push": true,
+        "require_code_owner_review": true,
+        "require_last_push_approval": true,
+        "required_review_thread_resolution": true
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict": true,
+        "contexts": [
+          "test (3.8)",
+          "test (3.9)",
+          "test (3.10)",
+          "pre-commit",
+          "coverage"
+        ],
+        "checks": [
+          {
+            "context": "test (3.8)",
+            "integration_id": null
+          },
+          {
+            "context": "test (3.9)",
+            "integration_id": null
+          },
+          {
+            "context": "test (3.10)",
+            "integration_id": null
+          },
+          {
+            "context": "pre-commit",
+            "integration_id": null
+          },
+          {
+            "context": "coverage",
+            "integration_id": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "non_fast_forward"
+    },
+    {
+      "type": "required_linear_history"
+    },
+    {
+      "type": "required_deployments",
+      "parameters": {
+        "required_deployment_environments": []
+      }
+    },
+    {
+      "type": "branch_name_pattern",
+      "parameters": {
+        "name": "conventional-branch-names",
+        "negate": false,
+        "operator": "regex",
+        "pattern": "^(main|develop|feature\\/[a-z0-9-]+|bugfix\\/[a-z0-9-]+|hotfix\\/[a-z0-9-]+|release\\/[0-9]+(\\.[0-9]+)*)$"
+      }
+    }
+  ]
+}

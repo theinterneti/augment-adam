@@ -1,0 +1,22 @@
+Fix tagging system for hierarchical tags
+
+This commit fixes issues with the tagging system, particularly around hierarchical tags:
+
+1. Fixed the `safe_tag` function in `tag_utils.py` to properly handle hierarchical tags:
+   - Correctly tracks the full path of each tag in the hierarchy
+   - Uses the correct tag name when looking up existing tags
+   - Ensures that parent-child relationships are properly established
+
+2. Improved the `isolated_tag_registry` function for testing:
+   - Creates a custom registry class that doesn't initialize predefined tags
+   - Properly manages the test mode and test registry in the factory
+
+3. Added comprehensive tests to verify the tagging system works correctly:
+   - Tests for hierarchical tag creation
+   - Tests for tag decorators
+   - Tests for tag attributes
+   - Tests for multiple tags
+   - Tests for tag relationships
+
+These changes ensure that the tagging system works correctly in all scenarios,
+particularly when dealing with hierarchical tags and concurrent tag creation.
