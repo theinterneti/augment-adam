@@ -1,8 +1,8 @@
 """Tagging system for categorizing and organizing code for AI agent comprehension.
 
-This module provides a tagging system optimized for AI agent understanding and reasoning.
-It defines tag categories, hierarchies, relationships, and utilities for working with tags
-in a way that facilitates AI comprehension of code structure, purpose, and relationships.
+This module provides a tagging system optimized for AI agent understanding.
+It defines tag categories, hierarchies, relationships, and utilities for working with
+tags in a way that facilitates AI comprehension of code structure and relationships.
 """
 
 from augment_adam.utils.tagging.core import (
