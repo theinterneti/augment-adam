@@ -1,6 +1,7 @@
 """
 Tests for the force parameter in the create_tag method.
 """
+
 import pytest
 
 from augment_adam.utils.tagging.core import (
