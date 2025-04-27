@@ -5,12 +5,12 @@ This module provides the team class for organizing agents with specific roles.
 """
 
 import logging
-import uuid
-import asyncio
-from typing import Dict, List, Any, Optional, Union, Callable
+from typing import Dict, List, Any, Optional
 
-from augment_adam.utils.tagging import tag, TagCategory
-from augment_adam.ai_agent.coordination.coordinator import AgentCoordinator, get_agent_coordinator
+from augment_adam.utils.tagging import tag
+from augment_adam.ai_agent.coordination.coordinator import (
+    AgentCoordinator, get_agent_coordinator
+)
 
 logger = logging.getLogger(__name__)
 
@@ -178,26 +178,32 @@ class AgentTeam:
             metadata=message_metadata
         )
 
-    def process_message(self, message: Dict[str, Any], agent_id: Optional[str] = None) -> Dict[str, Any]:
+    def process_message(
+        self, message: Dict[str, Any], agent_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Process a message.
 
         Args:
             message: Message to process
-            agent_id: ID of the agent to process the message, or None to use the coordinator
+            agent_id: ID of the agent to process the message, or None to use the
+                coordinator
 
         Returns:
             Response message
         """
         return self.coordinator.process_message(message, agent_id)
 
-    async def process_message_async(self, message: Dict[str, Any], agent_id: Optional[str] = None) -> Dict[str, Any]:
+    async def process_message_async(
+        self, message: Dict[str, Any], agent_id: Optional[str] = None
+    ) -> Dict[str, Any]:
         """
         Process a message asynchronously.
 
         Args:
             message: Message to process
-            agent_id: ID of the agent to process the message, or None to use the coordinator
+            agent_id: ID of the agent to process the message, or None to use the
+                coordinator
 
         Returns:
             Response message
@@ -235,7 +241,9 @@ class AgentTeam:
         # Get the conversation
         return self.coordinator.get_conversation(agent1_id, agent2_id, limit)
 
-    def get_role_messages(self, role_name: str, limit: int = 100) -> List[Dict[str, Any]]:
+    def get_role_messages(
+        self, role_name: str, limit: int = 100
+    ) -> List[Dict[str, Any]]:
         """
         Get messages involving a role.
 
@@ -256,7 +264,9 @@ class AgentTeam:
         # Get the messages
         return self.coordinator.get_agent_messages(agent_id, limit)
 
-    def execute_workflow(self, task: Any, workflow_steps: List[Dict[str, Any]]) -> Dict[str, Any]:
+    def execute_workflow(
+        self, task: Any, workflow_steps: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Execute a workflow with the team.
 
@@ -292,17 +302,25 @@ class AgentTeam:
             if action == "process":
                 # Process the input with the agent
                 output = agent.process(step.get("input", ""))
-                result["output"] = output.get("response") if isinstance(output, dict) else output
+                result["output"] = (
+                    output.get("response") if isinstance(output, dict) else output
+                )
 
             elif action == "send_message":
                 # Check that the recipient is specified
                 recipient = step.get("recipient")
                 if not recipient:
-                    raise ValueError(f"No recipient specified for send_message action in step for role '{role}'")
+                    raise ValueError(
+                        f"No recipient specified for send_message action in step for "
+                        f"'{role}'"
+                    )
 
                 # Check that the recipient exists
                 if recipient not in self.roles:
-                    raise ValueError(f"Recipient role '{recipient}' does not exist in team '{self.name}'")
+                    raise ValueError(
+                        f"Recipient role '{recipient}' does not exist in team "
+                        f"'{self.name}'"
+                    )
 
                 # Add recipient to the result
                 result["recipient"] = recipient
@@ -316,7 +334,9 @@ class AgentTeam:
 
                 # Process the message
                 response = self.process_message(message)
-                result["output"] = response.get("message") if isinstance(response, dict) else response
+                result["output"] = (
+                    response.get("message") if isinstance(response, dict) else response
+                )
 
             else:
                 raise ValueError(f"Unknown action '{action}' in step for role '{role}'")
@@ -329,7 +349,9 @@ class AgentTeam:
             "status": "completed"
         }
 
-    async def execute_workflow_async(self, task: Any, workflow_steps: List[Dict[str, Any]]) -> Dict[str, Any]:
+    async def execute_workflow_async(
+        self, task: Any, workflow_steps: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
         """
         Execute a workflow with the team asynchronously.
 
@@ -365,17 +387,25 @@ class AgentTeam:
             if action == "process":
                 # Process the input with the agent asynchronously
                 output = await agent.process_async(step.get("input", ""))
-                result["output"] = output.get("response") if isinstance(output, dict) else output
+                result["output"] = (
+                    output.get("response") if isinstance(output, dict) else output
+                )
 
             elif action == "send_message":
                 # Check that the recipient is specified
                 recipient = step.get("recipient")
                 if not recipient:
-                    raise ValueError(f"No recipient specified for send_message action in step for role '{role}'")
+                    raise ValueError(
+                        f"No recipient specified for send_message action in step for "
+                        f"'{role}'"
+                    )
 
                 # Check that the recipient exists
                 if recipient not in self.roles:
-                    raise ValueError(f"Recipient role '{recipient}' does not exist in team '{self.name}'")
+                    raise ValueError(
+                        f"Recipient role '{recipient}' does not exist in team "
+                        f"'{self.name}'"
+                    )
 
                 # Add recipient to the result
                 result["recipient"] = recipient
@@ -389,7 +419,9 @@ class AgentTeam:
 
                 # Process the message asynchronously
                 response = await self.process_message_async(message)
-                result["output"] = response.get("message") if isinstance(response, dict) else response
+                result["output"] = (
+                    response.get("message") if isinstance(response, dict) else response
+                )
 
             else:
                 raise ValueError(f"Unknown action '{action}' in step for role '{role}'")
