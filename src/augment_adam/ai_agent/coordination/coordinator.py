@@ -7,12 +7,9 @@ task distribution, communication, and result aggregation.
 
 import uuid
 import time
-import threading
-import queue
-from typing import Dict, List, Any, Optional, Set, Union, Callable, TypeVar, Tuple
-from dataclasses import dataclass, field
+from typing import Dict, List, Any, Optional, Tuple
 
-from augment_adam.utils.tagging import tag, TagCategory
+from augment_adam.utils.tagging import tag
 from augment_adam.ai_agent.coordination.registry import (
     Agent, AgentCapability, AgentRegistry, get_agent_registry
 )
@@ -55,7 +52,9 @@ class AgentCoordinator:
     TODO(Issue #8): Implement coordinator validation
     """
 
-    def __init__(self, name: str = "agent_coordinator", registry: Optional[AgentRegistry] = None) -> None:
+    def __init__(
+        self, name: str = "agent_coordinator", registry: Optional[AgentRegistry] = None
+    ) -> None:
         """
         Initialize the agent coordinator.
 
@@ -329,7 +328,9 @@ class AgentCoordinator:
         Returns:
             List of tasks assigned to the agent.
         """
-        return [task for task in self.tasks.values() if task.assigned_agent_id == agent_id]
+        return [
+            task for task in self.tasks.values() if task.assigned_agent_id == agent_id
+        ]
 
     def get_tasks_by_tag(self, tag: str) -> List[Task]:
         """
@@ -357,7 +358,11 @@ class AgentCoordinator:
         if task is None:
             return []
 
-        return [self.get_task(subtask_id) for subtask_id in task.subtask_ids if self.get_task(subtask_id) is not None]
+        return [
+            self.get_task(subtask_id)
+            for subtask_id in task.subtask_ids
+            if self.get_task(subtask_id) is not None
+        ]
 
     def get_task_result(self, task_id: str) -> Optional[TaskResult]:
         """
@@ -367,7 +372,8 @@ class AgentCoordinator:
             task_id: The ID of the task.
 
         Returns:
-            The task result, or None if the task doesn't exist or hasn't been completed.
+            The task result, or None if the task doesn't exist or hasn't been
+            completed.
         """
         # Check if the result is in the results dictionary
         if task_id in self.results:
@@ -380,16 +386,20 @@ class AgentCoordinator:
 
         return None
 
-    def distribute_task(self, task_id: str, distributor_name: str = "capability_based_distributor") -> Optional[str]:
+    def distribute_task(
+        self, task_id: str, distributor_name: str = "capability_based_distributor"
+    ) -> Optional[str]:
         """
         Distribute a task to an agent.
 
         Args:
             task_id: The ID of the task to distribute.
             distributor_name: The name of the task distributor to use.
+                Default is "capability_based_distributor".
 
         Returns:
-            The ID of the agent assigned to the task, or None if the task couldn't be distributed.
+            The ID of the agent assigned to the task, or None if the task couldn't be
+            distributed.
         """
         # Get the task
         task = self.get_task(task_id)
@@ -462,10 +472,12 @@ class AgentCoordinator:
 
         Args:
             channel_name: The name of the communication channel to use.
-            timeout: The maximum time to wait for a result, or None to wait indefinitely.
+            timeout: The maximum time to wait for a result, or None to wait
+                indefinitely.
 
         Returns:
-            Tuple of (task_id, result), or None if no result was received.
+            Tuple of (task_id, result), or None if no result was
+            received.
         """
         # Get the channel
         channel = self.get_channel(channel_name)
@@ -531,10 +543,12 @@ class AgentCoordinator:
             task_id: The ID of the task to coordinate.
             pattern_name: The name of the coordination pattern to use.
             channel_name: The name of the communication channel to use.
-            agent_ids: List of agent IDs to coordinate, or None to use all active agents.
+            agent_ids: List of agent IDs to coordinate, or None to use all active
+                agents.
 
         Returns:
-            The result of the task, or None if the task couldn't be coordinated.
+            The result of the task, or None if the task couldn't be
+            coordinated.
         """
         # Get the task
         task = self.get_task(task_id)
@@ -553,8 +567,12 @@ class AgentCoordinator:
 
         # Get the agents
         if agent_ids is not None:
-            agents = [self.registry.get_agent(agent_id) for agent_id in agent_ids]
-            agents = [agent for agent in agents if agent is not None and agent.is_active]
+            agents = [
+                self.registry.get_agent(agent_id) for agent_id in agent_ids
+            ]
+            agents = [
+                agent for agent in agents if agent is not None and agent.is_active
+            ]
         else:
             agents = self.registry.get_active_agents()
 
@@ -662,7 +680,8 @@ class AgentCoordinator:
 
         Args:
             message: Message to process.
-            agent_id: ID of the agent to process the message, or None to use the coordinator.
+            agent_id: ID of the agent to process the message, or None to use the
+                coordinator.
 
         Returns:
             Response message.
@@ -685,7 +704,8 @@ class AgentCoordinator:
 
         Args:
             message: Message to process.
-            agent_id: ID of the agent to process the message, or None to use the coordinator.
+            agent_id: ID of the agent to process the message, or None to use the
+                coordinator.
 
         Returns:
             Response message.
@@ -769,6 +789,7 @@ class AgentCoordinator:
 
 # Singleton instance
 _agent_coordinator: Optional[AgentCoordinator] = None
+
 
 def get_agent_coordinator() -> AgentCoordinator:
     """
