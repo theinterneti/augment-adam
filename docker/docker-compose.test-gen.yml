@@ -1,0 +1,65 @@
+version: '3'
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-test-gen
+    ports:
+      - "11435:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 16G
+        reservations:
+          memory: 8G
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  test-generator:
+    build:
+      context: .
+      dockerfile: Dockerfile.test-gen
+    container_name: test-generator
+    volumes:
+      - ./:/app
+      - ./models:/models  # Mount a volume for storing models
+      # Cache volumes for faster builds and package installations
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+    depends_on:
+      - ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434  # This is the internal container port, no need to change
+      - PYTHONUNBUFFERED=1
+      - CUDA_VISIBLE_DEVICES=0
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: >
+      bash -c "cd /app &&
+      pip install pynguin hypothesis &&
+      python -m scripts.auto_test_generator --help"
+
+volumes:
+  ollama-data:
+  models:
+  # Cache volumes for faster builds
+  pip-cache:
+    name: dukat-pip-cache  # Cache pip packages
+    external: true  # Reuse the same cache from devcontainer
+  apt-cache:
+    name: dukat-apt-cache  # Cache apt packages
+    external: true  # Reuse the same cache from devcontainer
+  torch-cache:
+    name: dukat-torch-cache  # Cache PyTorch models and weights
+    external: true  # Reuse the same cache from devcontainer
