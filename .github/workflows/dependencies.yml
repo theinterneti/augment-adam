@@ -1,17 +1,17 @@
-name: Update Dependencies
+# name: Update Dependencies
 
-on:
-  schedule:
-    # Run every Monday at 3 AM UTC
-    - cron: '0 3 * * 1'
-  workflow_dispatch:
+# on:
+#   schedule:
+#     # Run every Monday at 3 AM UTC
+#     - cron: '0 3 * * 1'
+#   workflow_dispatch:
 
-jobs:
-  # All jobs are temporarily disabled for branch cleanup
-  dummy-job:
-    name: Placeholder Job (Dependencies Disabled)
-    runs-on: ubuntu-latest
+# jobs:
+#   # All jobs are temporarily disabled for branch cleanup
+#   dummy-job:
+#     name: Placeholder Job (Dependencies Disabled)
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Placeholder step
-      run: echo "Dependency updates are temporarily disabled for branch cleanup"
+#     steps:
+#     - name: Placeholder step
+#       run: echo "Dependency updates are temporarily disabled for branch cleanup"
