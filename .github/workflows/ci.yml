@@ -1,17 +1,17 @@
-name: CI
+# name: CI
 
-on:
-  push:
-    branches: [ main, feature/*, release/* ]
-  pull_request:
-    branches: [ main ]
+# on:
+#   push:
+#     branches: [ main, feature/*, release/* ]
+#   pull_request:
+#     branches: [ main ]
 
-jobs:
-  # All jobs are temporarily disabled for branch cleanup
-  dummy-job:
-    name: Placeholder Job (CI Disabled)
-    runs-on: ubuntu-latest
+# jobs:
+#   # All jobs are temporarily disabled for branch cleanup
+#   dummy-job:
+#     name: Placeholder Job (CI Disabled)
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Placeholder step
-      run: echo "CI checks are temporarily disabled for branch cleanup"
+#     steps:
+#     - name: Placeholder step
+#       run: echo "CI checks are temporarily disabled for branch cleanup"
