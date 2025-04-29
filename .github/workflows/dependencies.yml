@@ -7,36 +7,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  update-dependencies:
-    name: Update Dependencies
+  # All jobs are temporarily disabled for branch cleanup
+  dummy-job:
+    name: Placeholder Job (Dependencies Disabled)
     runs-on: ubuntu-latest
-    
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-    
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install poetry
-    
-    - name: Update dependencies
-      run: |
-        poetry update
-    
-    - name: Create Pull Request
-      uses: peter-evans/create-pull-request@v5
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: Update dependencies
-        title: 'chore: Update dependencies'
-        body: |
-          This PR updates the project dependencies to their latest versions.
-          
-          This is an automated PR created by the dependency update workflow.
-        branch: update-dependencies
-        base: main
+    - name: Placeholder step
+      run: echo "Dependency updates are temporarily disabled for branch cleanup"
