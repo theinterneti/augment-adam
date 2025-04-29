@@ -816,8 +816,9 @@ def test_get_tags_no_tags():
 def test_relate_tags_function():
     """Test relate_tags function."""
     # Arrange
-    tag1 = create_tag("test_tag1", TagCategory.MEMORY)
-    tag2 = create_tag("test_tag2", TagCategory.MEMORY)
+    # Use force=True to handle the case where the tags might already exist
+    tag1 = create_tag("test_tag1", TagCategory.MEMORY, force=True)
+    tag2 = create_tag("test_tag2", TagCategory.MEMORY, force=True)
 
     # Act
     relate_tags("test_tag1", "test_tag2", TagRelationship.USES)
@@ -831,8 +832,9 @@ def test_relate_tags_function():
 def test_get_related_tags_function():
     """Test get_related_tags function."""
     # Arrange
-    tag1 = create_tag("test_tag3", TagCategory.MEMORY)
-    tag2 = create_tag("test_tag4", TagCategory.MEMORY)
+    # Use force=True to handle the case where the tags might already exist
+    tag1 = create_tag("test_tag3", TagCategory.MEMORY, force=True)
+    tag2 = create_tag("test_tag4", TagCategory.MEMORY, force=True)
     relate_tags("test_tag3", "test_tag4", TagRelationship.USES)
 
     # Act
@@ -846,7 +848,8 @@ def test_get_related_tags_function():
 def test_find_tags_function():
     """Test find_tags function."""
     # Arrange
-    tag = create_tag("findable_tag", TagCategory.MEMORY, description="This tag is findable")
+    # Use force=True to handle the case where the tag might already exist
+    tag = create_tag("findable_tag", TagCategory.MEMORY, description="This tag is findable", force=True)
 
     # Act
     results = find_tags("findable")
@@ -859,7 +862,8 @@ def test_find_tags_function():
 def test_describe_tag_function():
     """Test describe_tag function."""
     # Arrange
-    tag = create_tag("describable", TagCategory.MEMORY, description="This tag is describable")
+    # Use force=True to handle the case where the tag might already exist
+    tag = create_tag("describable", TagCategory.MEMORY, description="This tag is describable", force=True)
 
     # Act
     description = describe_tag("describable")

@@ -1,0 +1,10 @@
+Fix code quality issues in agent coordination team module
+
+This commit addresses several code quality issues in the agent coordination team module:
+
+1. Fixed line length issues in the team.py file
+2. Fixed import issues to avoid unused imports
+3. Improved formatting of error messages
+4. Fixed docstring formatting
+
+These changes are necessary to pass the flake8 checks in the CI pipeline.
