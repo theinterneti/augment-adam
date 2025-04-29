@@ -1,27 +1,27 @@
-name: Documentation
+# name: Documentation
 
-on:
-  push:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - 'augment_adam/**'
-      - '**.md'
-      - '.github/workflows/docs.yml'
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'docs/**'
-      - 'augment_adam/**'
-      - '**.md'
-      - '.github/workflows/docs.yml'
+# on:
+#   push:
+#     branches: [ main ]
+#     paths:
+#       - 'docs/**'
+#       - 'augment_adam/**'
+#       - '**.md'
+#       - '.github/workflows/docs.yml'
+#   pull_request:
+#     branches: [ main ]
+#     paths:
+#       - 'docs/**'
+#       - 'augment_adam/**'
+#       - '**.md'
+#       - '.github/workflows/docs.yml'
 
-jobs:
-  # All jobs are temporarily disabled for branch cleanup
-  dummy-job:
-    name: Placeholder Job (Docs Disabled)
-    runs-on: ubuntu-latest
+# jobs:
+#   # All jobs are temporarily disabled for branch cleanup
+#   dummy-job:
+#     name: Placeholder Job (Docs Disabled)
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Placeholder step
-      run: echo "Documentation checks are temporarily disabled for branch cleanup"
+#     steps:
+#     - name: Placeholder step
+#       run: echo "Documentation checks are temporarily disabled for branch cleanup"
