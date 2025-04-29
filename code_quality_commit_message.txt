@@ -1,0 +1,10 @@
+Fix code quality issues in tagging system
+
+This commit addresses several code quality issues in the tagging system:
+
+1. Fixed line length issues in the core.py file
+2. Fixed import issues to avoid duplicate imports
+3. Removed unused imports
+4. Fixed docstring formatting
+
+These changes are necessary to pass the flake8 checks in the CI pipeline.

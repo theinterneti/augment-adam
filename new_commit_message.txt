@@ -1,0 +1,12 @@
+Fix code quality issues and update documentation
+
+This commit addresses several issues:
+
+1. Fixed code quality issues flagged by CI checks
+2. Updated documentation to match the current codebase structure
+3. Added missing team.py and workflow.py files for agent coordination
+4. Fixed Docker configuration files
+5. Updated GitHub workflow configuration files
+
+These changes are necessary to pass the CI checks and ensure the project
+meets the required standards before merging into main.
