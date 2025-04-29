@@ -1,20 +1,20 @@
-name: Security Checks
+# name: Security Checks
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-  schedule:
-    # Run every Monday at 1 AM UTC
-    - cron: '0 1 * * 1'
+# on:
+#   push:
+#     branches: [ main ]
+#   pull_request:
+#     branches: [ main ]
+#   schedule:
+#     # Run every Monday at 1 AM UTC
+#     - cron: '0 1 * * 1'
 
-jobs:
-  # All jobs are temporarily disabled for branch cleanup
-  dummy-job:
-    name: Placeholder Job (Security Disabled)
-    runs-on: ubuntu-latest
+# jobs:
+#   # All jobs are temporarily disabled for branch cleanup
+#   dummy-job:
+#     name: Placeholder Job (Security Disabled)
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Placeholder step
-      run: echo "Security checks are temporarily disabled for branch cleanup"
+#     steps:
+#     - name: Placeholder step
+#       run: echo "Security checks are temporarily disabled for branch cleanup"
