@@ -1,16 +1,16 @@
-name: Scheduled Tests
+# name: Scheduled Tests
 
-on:
-  schedule:
-    # Run every day at 2 AM UTC
-    - cron: "0 2 * * *"
+# on:
+#   schedule:
+#     # Run every day at 2 AM UTC
+#     - cron: "0 2 * * *"
 
-jobs:
-  # All jobs are temporarily disabled for branch cleanup
-  dummy-job:
-    name: Placeholder Job (Scheduled Tests Disabled)
-    runs-on: ubuntu-latest
+# jobs:
+#   # All jobs are temporarily disabled for branch cleanup
+#   dummy-job:
+#     name: Placeholder Job (Scheduled Tests Disabled)
+#     runs-on: ubuntu-latest
 
-    steps:
-    - name: Placeholder step
-      run: echo "Scheduled tests are temporarily disabled for branch cleanup"
+#     steps:
+#     - name: Placeholder step
+#       run: echo "Scheduled tests are temporarily disabled for branch cleanup"
