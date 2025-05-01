@@ -1,0 +1,4 @@
+Fix missing newline at end of file in coordination module
+
+This commit adds a missing newline at the end of the __init__.py file in the coordination module.
+This is necessary to pass the flake8 checks in the CI pipeline.

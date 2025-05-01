@@ -1,0 +1,11 @@
+Fix code quality issues in tagging system
+
+This commit addresses several code quality issues in the tagging system:
+
+1. Fixed line length issues in the __init__.py file
+2. Fixed import issues to avoid unused imports in registry_factory.py
+3. Added proper blank lines between methods and classes
+4. Fixed docstring formatting
+5. Added newline at end of file
+
+These changes are necessary to pass the flake8 checks in the CI pipeline.

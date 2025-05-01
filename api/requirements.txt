@@ -1,0 +1,1 @@
+fastapi==0.104.1\nuvicorn==0.23.2\npydantic==2.4.2\nredis==5.0.1\nneo4j==5.14.0\npython-dotenv==1.0.0

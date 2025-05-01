@@ -136,11 +136,19 @@ class Tag:
         return f"Tag({self.name}, {self.category})"
 
     def __hash__(self) -> int:
-        """Return the hash of the tag."""
+        """Return the hash of the tag.
+
+        This makes Tag objects usable as dictionary keys.
+        We hash based on the name only, as that's the unique identifier.
+        """
         return hash(self.name)
 
     def __eq__(self, other: object) -> bool:
-        """Check if two tags are equal."""
+        """Check if two tags are equal.
+
+        Two tags are considered equal if they have the same name.
+        This is consistent with the __hash__ implementation.
+        """
         if not isinstance(other, Tag):
             return False
         return self.name == other.name
@@ -463,7 +471,8 @@ class TagRegistry:
                   attributes: Optional[Dict[str, Any]] = None,
                   description: Optional[str] = None,
                   synonyms: Optional[List[str]] = None,
-                  examples: Optional[List[str]] = None) -> Tag:
+                  examples: Optional[List[str]] = None,
+                  force: bool = False) -> Tag:
         """
         Create a new tag.
 
@@ -475,14 +484,20 @@ class TagRegistry:
             description: Optional description of the tag.
             synonyms: Optional list of synonyms for the tag.
             examples: Optional list of examples for the tag.
+<<<<<<< HEAD
+=======
+            force: If True, will return the existing tag if it already exists.
+>>>>>>> main
 
         Returns:
             The created tag.
 
         Raises:
-            ValueError: If a tag with the same name already exists.
+            ValueError: If a tag with the same name already exists and force is False.
         """
         if name in self.tags:
+            if force:
+                return self.tags[name]
             raise ValueError(f"Tag '{name}' already exists")
 
         parent_tag = None
@@ -501,7 +516,7 @@ class TagRegistry:
             attributes=attributes or {},
             description=description or "",
             synonyms=synonyms or [],
-            examples=examples or []
+            examples=examples or [],
         )
         self.tags[name] = tag
         return tag
@@ -542,6 +557,7 @@ class TagRegistry:
         tag = self.get_tag(name)
         if tag:
             return tag
+<<<<<<< HEAD
         return self.create_tag(
             name=name,
             category=category,
@@ -551,6 +567,35 @@ class TagRegistry:
             synonyms=synonyms,
             examples=examples
         )
+=======
+        try:
+            return self.create_tag(
+                name=name,
+                category=category,
+                parent=parent,
+                attributes=attributes,
+                description=description,
+                synonyms=synonyms,
+                examples=examples,
+                force=True,  # Always use force=True for get_or_create_tag
+            )
+        except ValueError:
+            # Tag might have been created by another thread
+            tag = self.get_tag(name)
+            if tag is None:
+                # Last resort: create with force=True
+                return self.create_tag(
+                    name=name,
+                    category=category,
+                    parent=parent,
+                    attributes=attributes,
+                    description=description,
+                    synonyms=synonyms,
+                    examples=examples,
+                    force=True,
+                )
+            return tag
+>>>>>>> main
 
     def delete_tag(self, name: str) -> None:
         """
@@ -830,7 +875,8 @@ def create_tag(name: str, category: TagCategory,
               attributes: Optional[Dict[str, Any]] = None,
               description: Optional[str] = None,
               synonyms: Optional[List[str]] = None,
-              examples: Optional[List[str]] = None) -> Tag:
+              examples: Optional[List[str]] = None,
+              force: bool = False) -> Tag:
     """
     Create a new tag.
 
@@ -842,6 +888,7 @@ def create_tag(name: str, category: TagCategory,
         description: Optional description of the tag.
         synonyms: Optional list of synonyms for the tag.
         examples: Optional list of examples for the tag.
+        force: If True, will return the existing tag if it already exists.
 
     Returns:
         The created tag.
@@ -855,7 +902,12 @@ def create_tag(name: str, category: TagCategory,
         attributes=attributes,
         description=description,
         synonyms=synonyms,
+<<<<<<< HEAD
         examples=examples
+=======
+        examples=examples,
+        force=force,
+>>>>>>> main
     )
 
 def get_or_create_tag(name: str, category: TagCategory,
@@ -893,11 +945,25 @@ def get_or_create_tag(name: str, category: TagCategory,
             attributes=attributes,
             description=description,
             synonyms=synonyms,
-            examples=examples
+            examples=examples,
+            force=True,  # Always use force=True for get_or_create_tag
         )
     except ValueError:
         # Tag might have been created by another thread
-        return registry.get_tag(name)
+        tag = registry.get_tag(name)
+        if tag is None:
+            # Last resort: create with force=True
+            return registry.create_tag(
+                name=name,
+                category=category,
+                parent=parent,
+                attributes=attributes,
+                description=description,
+                synonyms=synonyms,
+                examples=examples,
+                force=True,
+            )
+        return tag
 
 def get_tags_by_category(category: TagCategory) -> List[Tag]:
     """
