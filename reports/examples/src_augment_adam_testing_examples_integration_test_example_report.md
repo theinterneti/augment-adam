@@ -1,0 +1,189 @@
+# Code Quality Report for src/augment_adam/testing/examples/integration_test_example.py
+
+## Summary
+- Passes: 138
+- Issues: 34
+
+## Passes
+
+- ✅ Module has a docstring
+- ✅ Class 'Database' has a docstring
+- ✅ Class 'UserService' has a docstring
+- ✅ Class 'UserServiceTest' has a docstring
+- ✅ Function 'set' has a docstring
+- ✅ Function 'get' has a docstring
+- ✅ Function 'delete' has a docstring
+- ✅ Function 'clear' has a docstring
+- ✅ Function 'create_user' has a docstring
+- ✅ Function 'get_user' has a docstring
+- ✅ Function 'update_user' has a docstring
+- ✅ Function 'delete_user' has a docstring
+- ✅ Function 'setUp' has a docstring
+- ✅ Function 'tearDown' has a docstring
+- ✅ Function 'test_create_user' has a docstring
+- ✅ Function 'test_get_user' has a docstring
+- ✅ Function 'test_update_user' has a docstring
+- ✅ Function 'test_delete_user' has a docstring
+- ✅ Function set docstring follows Google style
+- ✅ Function get docstring follows Google style
+- ✅ Function delete docstring follows Google style
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function create_user docstring follows Google style
+- ✅ Function get_user docstring follows Google style
+- ✅ Function update_user docstring follows Google style
+- ✅ Function delete_user docstring follows Google style
+- ✅ Function 'set' has type hints for all parameters
+- ✅ Function 'get' has type hints for all parameters
+- ✅ Function 'delete' has type hints for all parameters
+- ✅ Function 'clear' has type hints for all parameters
+- ✅ Function 'create_user' has type hints for all parameters
+- ✅ Function 'get_user' has type hints for all parameters
+- ✅ Function 'update_user' has type hints for all parameters
+- ✅ Function 'delete_user' has type hints for all parameters
+- ✅ Function 'setUp' has type hints for all parameters
+- ✅ Function 'tearDown' has type hints for all parameters
+- ✅ Function 'test_create_user' has type hints for all parameters
+- ✅ Function 'test_get_user' has type hints for all parameters
+- ✅ Function 'test_update_user' has type hints for all parameters
+- ✅ Function 'test_delete_user' has type hints for all parameters
+- ✅ Function 'set' has a return type hint
+- ✅ Function 'get' has a return type hint
+- ✅ Function 'delete' has a return type hint
+- ✅ Function 'clear' has a return type hint
+- ✅ Function 'create_user' has a return type hint
+- ✅ Function 'get_user' has a return type hint
+- ✅ Function 'update_user' has a return type hint
+- ✅ Function 'delete_user' has a return type hint
+- ✅ Function 'setUp' has a return type hint
+- ✅ Function 'tearDown' has a return type hint
+- ✅ Function 'test_create_user' has a return type hint
+- ✅ Function 'test_get_user' has a return type hint
+- ✅ Function 'test_update_user' has a return type hint
+- ✅ Function 'test_delete_user' has a return type hint
+- ✅ Class name 'Database' follows CamelCase convention
+- ✅ Class name 'UserService' follows CamelCase convention
+- ✅ Class name 'UserServiceTest' follows CamelCase convention
+- ✅ Function name 'set' follows snake_case convention
+- ✅ Function name 'get' follows snake_case convention
+- ✅ Function name 'delete' follows snake_case convention
+- ✅ Function name 'clear' follows snake_case convention
+- ✅ Function name 'create_user' follows snake_case convention
+- ✅ Function name 'get_user' follows snake_case convention
+- ✅ Function name 'update_user' follows snake_case convention
+- ✅ Function name 'delete_user' follows snake_case convention
+- ✅ Function name 'test_create_user' follows snake_case convention
+- ✅ Function name 'test_get_user' follows snake_case convention
+- ✅ Function name 'test_update_user' follows snake_case convention
+- ✅ Function name 'test_delete_user' follows snake_case convention
+- ✅ Module has a docstring
+- ✅ Class 'Database' has a docstring
+- ✅ Class 'UserService' has a docstring
+- ✅ Class 'UserServiceTest' has a docstring
+- ✅ Function 'set' has a docstring
+- ✅ Function 'get' has a docstring
+- ✅ Function 'delete' has a docstring
+- ✅ Function 'clear' has a docstring
+- ✅ Function 'create_user' has a docstring
+- ✅ Function 'get_user' has a docstring
+- ✅ Function 'update_user' has a docstring
+- ✅ Function 'delete_user' has a docstring
+- ✅ Function 'setUp' has a docstring
+- ✅ Function 'tearDown' has a docstring
+- ✅ Function 'test_create_user' has a docstring
+- ✅ Function 'test_get_user' has a docstring
+- ✅ Function 'test_update_user' has a docstring
+- ✅ Function 'test_delete_user' has a docstring
+- ✅ Function set docstring follows Google style
+- ✅ Function get docstring follows Google style
+- ✅ Function delete docstring follows Google style
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function create_user docstring follows Google style
+- ✅ Function get_user docstring follows Google style
+- ✅ Function update_user docstring follows Google style
+- ✅ Function delete_user docstring follows Google style
+- ✅ Function 'set' has type hints for all parameters
+- ✅ Function 'get' has type hints for all parameters
+- ✅ Function 'delete' has type hints for all parameters
+- ✅ Function 'clear' has type hints for all parameters
+- ✅ Function 'create_user' has type hints for all parameters
+- ✅ Function 'get_user' has type hints for all parameters
+- ✅ Function 'update_user' has type hints for all parameters
+- ✅ Function 'delete_user' has type hints for all parameters
+- ✅ Function 'setUp' has type hints for all parameters
+- ✅ Function 'tearDown' has type hints for all parameters
+- ✅ Function 'test_create_user' has type hints for all parameters
+- ✅ Function 'test_get_user' has type hints for all parameters
+- ✅ Function 'test_update_user' has type hints for all parameters
+- ✅ Function 'test_delete_user' has type hints for all parameters
+- ✅ Function 'set' has a return type hint
+- ✅ Function 'get' has a return type hint
+- ✅ Function 'delete' has a return type hint
+- ✅ Function 'clear' has a return type hint
+- ✅ Function 'create_user' has a return type hint
+- ✅ Function 'get_user' has a return type hint
+- ✅ Function 'update_user' has a return type hint
+- ✅ Function 'delete_user' has a return type hint
+- ✅ Function 'setUp' has a return type hint
+- ✅ Function 'tearDown' has a return type hint
+- ✅ Function 'test_create_user' has a return type hint
+- ✅ Function 'test_get_user' has a return type hint
+- ✅ Function 'test_update_user' has a return type hint
+- ✅ Function 'test_delete_user' has a return type hint
+- ✅ Class name 'Database' follows CamelCase convention
+- ✅ Class name 'UserService' follows CamelCase convention
+- ✅ Class name 'UserServiceTest' follows CamelCase convention
+- ✅ Function name 'set' follows snake_case convention
+- ✅ Function name 'get' follows snake_case convention
+- ✅ Function name 'delete' follows snake_case convention
+- ✅ Function name 'clear' follows snake_case convention
+- ✅ Function name 'create_user' follows snake_case convention
+- ✅ Function name 'get_user' follows snake_case convention
+- ✅ Function name 'update_user' follows snake_case convention
+- ✅ Function name 'delete_user' follows snake_case convention
+- ✅ Function name 'test_create_user' follows snake_case convention
+- ✅ Function name 'test_get_user' follows snake_case convention
+- ✅ Function name 'test_update_user' follows snake_case convention
+- ✅ Function name 'test_delete_user' follows snake_case convention
+
+## Issues
+
+- ❌ Module  docstring may not follow Google style
+- ❌ Class Database docstring may not follow Google style
+- ❌ Class UserService docstring may not follow Google style
+- ❌ Class UserServiceTest docstring may not follow Google style
+- ❌ Function __init__ docstring may not follow Google style
+- ❌ Function clear docstring may not follow Google style
+- ❌ Function setUp docstring may not follow Google style
+- ❌ Function tearDown docstring may not follow Google style
+- ❌ Function test_create_user docstring may not follow Google style
+- ❌ Function test_get_user docstring may not follow Google style
+- ❌ Function test_update_user docstring may not follow Google style
+- ❌ Function test_delete_user docstring may not follow Google style
+- ❌ No test file found for module 'integration_test_example'
+- ❌ Lines exceeding 88 characters: 109
+- ❌ Function name 'setUp' does not follow snake_case convention
+- ❌ Function name 'tearDown' does not follow snake_case convention
+- ❌ No GitHub issue references found
+- ❌ Module  docstring may not follow Google style
+- ❌ Class Database docstring may not follow Google style
+- ❌ Class UserService docstring may not follow Google style
+- ❌ Class UserServiceTest docstring may not follow Google style
+- ❌ Function __init__ docstring may not follow Google style
+- ❌ Function clear docstring may not follow Google style
+- ❌ Function setUp docstring may not follow Google style
+- ❌ Function tearDown docstring may not follow Google style
+- ❌ Function test_create_user docstring may not follow Google style
+- ❌ Function test_get_user docstring may not follow Google style
+- ❌ Function test_update_user docstring may not follow Google style
+- ❌ Function test_delete_user docstring may not follow Google style
+- ❌ No test file found for module 'integration_test_example'
+- ❌ Lines exceeding 88 characters: 109
+- ❌ Function name 'setUp' does not follow snake_case convention
+- ❌ Function name 'tearDown' does not follow snake_case convention
+- ❌ No GitHub issue references found
+
+## Next Steps
+
+1. Address the issues identified in this report
+2. Run the checker again to verify fixes
+3. Once all critical issues are resolved, generate tests using `scripts/generate_tests.py`

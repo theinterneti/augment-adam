@@ -109,6 +109,15 @@ For more detailed information, check out the documentation in the `docs/` direct
 - [Monte Carlo Techniques](docs/guides/parallel_monte_carlo.md)
 - [Template Engine](docs/architecture/TEMPLATE_ENGINE.md)
 
+### Research
+
+The project includes research on various AI technologies and frameworks:
+
+- [Open Source AI Projects](docs/research/open-source-ai-projects/index.md) - Critical assessments of leading open-source AI projects
+- [Agentic Memory](docs/research/agentic-memory.md) - Research on memory systems for AI agents
+- [AI Agent Development](docs/research/ai-agent-dev.md) - Research on AI agent development frameworks
+- [DSPy](docs/research/dspy.md) - Research on the DSPy framework for programming with foundation models
+
 ## Development
 
 ### Setup Development Environment

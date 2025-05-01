@@ -1,0 +1,199 @@
+# Code Quality Report for src/augment_adam/testing/examples/e2e_test_example.py
+
+## Summary
+- Passes: 156
+- Issues: 26
+
+## Passes
+
+- ✅ Module has a docstring
+- ✅ Class 'ApiClient' has a docstring
+- ✅ Class 'UserApiClient' has a docstring
+- ✅ Class 'UserApiClientTest' has a docstring
+- ✅ Function 'get' has a docstring
+- ✅ Function 'post' has a docstring
+- ✅ Function 'put' has a docstring
+- ✅ Function 'delete' has a docstring
+- ✅ Function 'create_user' has a docstring
+- ✅ Function 'get_user' has a docstring
+- ✅ Function 'update_user' has a docstring
+- ✅ Function 'delete_user' has a docstring
+- ✅ Function 'list_users' has a docstring
+- ✅ Function 'setUp' has a docstring
+- ✅ Function 'test_create_user' has a docstring
+- ✅ Function 'test_get_user' has a docstring
+- ✅ Function 'test_update_user' has a docstring
+- ✅ Function 'test_delete_user' has a docstring
+- ✅ Function 'test_list_users' has a docstring
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function get docstring follows Google style
+- ✅ Function post docstring follows Google style
+- ✅ Function put docstring follows Google style
+- ✅ Function delete docstring follows Google style
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function create_user docstring follows Google style
+- ✅ Function get_user docstring follows Google style
+- ✅ Function update_user docstring follows Google style
+- ✅ Function delete_user docstring follows Google style
+- ✅ Function list_users docstring follows Google style
+- ✅ Function setUp docstring follows Google style
+- ✅ Function 'get' has type hints for all parameters
+- ✅ Function 'post' has type hints for all parameters
+- ✅ Function 'put' has type hints for all parameters
+- ✅ Function 'delete' has type hints for all parameters
+- ✅ Function 'create_user' has type hints for all parameters
+- ✅ Function 'get_user' has type hints for all parameters
+- ✅ Function 'update_user' has type hints for all parameters
+- ✅ Function 'delete_user' has type hints for all parameters
+- ✅ Function 'list_users' has type hints for all parameters
+- ✅ Function 'setUp' has type hints for all parameters
+- ✅ Function 'test_create_user' has type hints for all parameters
+- ✅ Function 'test_get_user' has type hints for all parameters
+- ✅ Function 'test_update_user' has type hints for all parameters
+- ✅ Function 'test_delete_user' has type hints for all parameters
+- ✅ Function 'test_list_users' has type hints for all parameters
+- ✅ Function 'get' has a return type hint
+- ✅ Function 'post' has a return type hint
+- ✅ Function 'put' has a return type hint
+- ✅ Function 'delete' has a return type hint
+- ✅ Function 'create_user' has a return type hint
+- ✅ Function 'get_user' has a return type hint
+- ✅ Function 'update_user' has a return type hint
+- ✅ Function 'delete_user' has a return type hint
+- ✅ Function 'list_users' has a return type hint
+- ✅ Function 'setUp' has a return type hint
+- ✅ Function 'test_create_user' has a return type hint
+- ✅ Function 'test_get_user' has a return type hint
+- ✅ Function 'test_update_user' has a return type hint
+- ✅ Function 'test_delete_user' has a return type hint
+- ✅ Function 'test_list_users' has a return type hint
+- ✅ Class name 'ApiClient' follows CamelCase convention
+- ✅ Class name 'UserApiClient' follows CamelCase convention
+- ✅ Class name 'UserApiClientTest' follows CamelCase convention
+- ✅ Function name 'get' follows snake_case convention
+- ✅ Function name 'post' follows snake_case convention
+- ✅ Function name 'put' follows snake_case convention
+- ✅ Function name 'delete' follows snake_case convention
+- ✅ Function name 'create_user' follows snake_case convention
+- ✅ Function name 'get_user' follows snake_case convention
+- ✅ Function name 'update_user' follows snake_case convention
+- ✅ Function name 'delete_user' follows snake_case convention
+- ✅ Function name 'list_users' follows snake_case convention
+- ✅ Function name 'test_create_user' follows snake_case convention
+- ✅ Function name 'test_get_user' follows snake_case convention
+- ✅ Function name 'test_update_user' follows snake_case convention
+- ✅ Function name 'test_delete_user' follows snake_case convention
+- ✅ Function name 'test_list_users' follows snake_case convention
+- ✅ Module has a docstring
+- ✅ Class 'ApiClient' has a docstring
+- ✅ Class 'UserApiClient' has a docstring
+- ✅ Class 'UserApiClientTest' has a docstring
+- ✅ Function 'get' has a docstring
+- ✅ Function 'post' has a docstring
+- ✅ Function 'put' has a docstring
+- ✅ Function 'delete' has a docstring
+- ✅ Function 'create_user' has a docstring
+- ✅ Function 'get_user' has a docstring
+- ✅ Function 'update_user' has a docstring
+- ✅ Function 'delete_user' has a docstring
+- ✅ Function 'list_users' has a docstring
+- ✅ Function 'setUp' has a docstring
+- ✅ Function 'test_create_user' has a docstring
+- ✅ Function 'test_get_user' has a docstring
+- ✅ Function 'test_update_user' has a docstring
+- ✅ Function 'test_delete_user' has a docstring
+- ✅ Function 'test_list_users' has a docstring
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function get docstring follows Google style
+- ✅ Function post docstring follows Google style
+- ✅ Function put docstring follows Google style
+- ✅ Function delete docstring follows Google style
+- ✅ Function __init__ docstring follows Google style
+- ✅ Function create_user docstring follows Google style
+- ✅ Function get_user docstring follows Google style
+- ✅ Function update_user docstring follows Google style
+- ✅ Function delete_user docstring follows Google style
+- ✅ Function list_users docstring follows Google style
+- ✅ Function setUp docstring follows Google style
+- ✅ Function 'get' has type hints for all parameters
+- ✅ Function 'post' has type hints for all parameters
+- ✅ Function 'put' has type hints for all parameters
+- ✅ Function 'delete' has type hints for all parameters
+- ✅ Function 'create_user' has type hints for all parameters
+- ✅ Function 'get_user' has type hints for all parameters
+- ✅ Function 'update_user' has type hints for all parameters
+- ✅ Function 'delete_user' has type hints for all parameters
+- ✅ Function 'list_users' has type hints for all parameters
+- ✅ Function 'setUp' has type hints for all parameters
+- ✅ Function 'test_create_user' has type hints for all parameters
+- ✅ Function 'test_get_user' has type hints for all parameters
+- ✅ Function 'test_update_user' has type hints for all parameters
+- ✅ Function 'test_delete_user' has type hints for all parameters
+- ✅ Function 'test_list_users' has type hints for all parameters
+- ✅ Function 'get' has a return type hint
+- ✅ Function 'post' has a return type hint
+- ✅ Function 'put' has a return type hint
+- ✅ Function 'delete' has a return type hint
+- ✅ Function 'create_user' has a return type hint
+- ✅ Function 'get_user' has a return type hint
+- ✅ Function 'update_user' has a return type hint
+- ✅ Function 'delete_user' has a return type hint
+- ✅ Function 'list_users' has a return type hint
+- ✅ Function 'setUp' has a return type hint
+- ✅ Function 'test_create_user' has a return type hint
+- ✅ Function 'test_get_user' has a return type hint
+- ✅ Function 'test_update_user' has a return type hint
+- ✅ Function 'test_delete_user' has a return type hint
+- ✅ Function 'test_list_users' has a return type hint
+- ✅ Class name 'ApiClient' follows CamelCase convention
+- ✅ Class name 'UserApiClient' follows CamelCase convention
+- ✅ Class name 'UserApiClientTest' follows CamelCase convention
+- ✅ Function name 'get' follows snake_case convention
+- ✅ Function name 'post' follows snake_case convention
+- ✅ Function name 'put' follows snake_case convention
+- ✅ Function name 'delete' follows snake_case convention
+- ✅ Function name 'create_user' follows snake_case convention
+- ✅ Function name 'get_user' follows snake_case convention
+- ✅ Function name 'update_user' follows snake_case convention
+- ✅ Function name 'delete_user' follows snake_case convention
+- ✅ Function name 'list_users' follows snake_case convention
+- ✅ Function name 'test_create_user' follows snake_case convention
+- ✅ Function name 'test_get_user' follows snake_case convention
+- ✅ Function name 'test_update_user' follows snake_case convention
+- ✅ Function name 'test_delete_user' follows snake_case convention
+- ✅ Function name 'test_list_users' follows snake_case convention
+
+## Issues
+
+- ❌ Module  docstring may not follow Google style
+- ❌ Class ApiClient docstring may not follow Google style
+- ❌ Class UserApiClient docstring may not follow Google style
+- ❌ Class UserApiClientTest docstring may not follow Google style
+- ❌ Function test_create_user docstring may not follow Google style
+- ❌ Function test_get_user docstring may not follow Google style
+- ❌ Function test_update_user docstring may not follow Google style
+- ❌ Function test_delete_user docstring may not follow Google style
+- ❌ Function test_list_users docstring may not follow Google style
+- ❌ No test file found for module 'e2e_test_example'
+- ❌ Lines exceeding 88 characters: 158, 209
+- ❌ Function name 'setUp' does not follow snake_case convention
+- ❌ No GitHub issue references found
+- ❌ Module  docstring may not follow Google style
+- ❌ Class ApiClient docstring may not follow Google style
+- ❌ Class UserApiClient docstring may not follow Google style
+- ❌ Class UserApiClientTest docstring may not follow Google style
+- ❌ Function test_create_user docstring may not follow Google style
+- ❌ Function test_get_user docstring may not follow Google style
+- ❌ Function test_update_user docstring may not follow Google style
+- ❌ Function test_delete_user docstring may not follow Google style
+- ❌ Function test_list_users docstring may not follow Google style
+- ❌ No test file found for module 'e2e_test_example'
+- ❌ Lines exceeding 88 characters: 158, 209
+- ❌ Function name 'setUp' does not follow snake_case convention
+- ❌ No GitHub issue references found
+
+## Next Steps
+
+1. Address the issues identified in this report
+2. Run the checker again to verify fixes
+3. Once all critical issues are resolved, generate tests using `scripts/generate_tests.py`
