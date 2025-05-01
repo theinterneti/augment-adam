@@ -9,7 +9,7 @@ import pytest
 from unittest.mock import AsyncMock, MagicMock, patch
 
 from augment_adam.memory.core.base import MemoryItem, MemoryType
-from augment_adam.memory.working.working_memory import WorkingMemory
+from augment_adam.memory.working.base import WorkingMemory, WorkingMemoryItem
 
 
 class TestWorkingMemory:
@@ -25,15 +25,15 @@ class TestWorkingMemory:
         assert working_memory.name == "test_working_memory"
         assert working_memory.memory_type == MemoryType.WORKING
         assert working_memory.items == {}
-        assert working_memory.metadata == {}
-        assert working_memory.capacity == 100
-        assert working_memory.decay_rate == 0.1
-        assert working_memory.activation_threshold == 0.2
+        assert "capacity" in working_memory.metadata
+        assert "cleanup_interval" in working_memory.metadata
+        assert working_memory.capacity == 0
+        assert working_memory.cleanup_interval == 60
 
     def test_add(self, working_memory):
         """Test adding an item to working memory."""
         # Create an item
-        item = MemoryItem(content="test content")
+        item = WorkingMemoryItem(content="test content")
 
         # Add the item
         item_id = working_memory.add(item)
@@ -47,7 +47,7 @@ class TestWorkingMemory:
     def test_add_with_importance(self, working_memory):
         """Test adding an item with importance to working memory."""
         # Create an item with importance
-        item = MemoryItem(content="test content", importance=0.8)
+        item = WorkingMemoryItem(content="test content", importance=0.8)
 
         # Add the item
         item_id = working_memory.add(item)
@@ -64,9 +64,9 @@ class TestWorkingMemory:
         working_memory.capacity = 2
 
         # Create items
-        item1 = MemoryItem(content="test content 1", importance=0.5)
-        item2 = MemoryItem(content="test content 2", importance=0.3)
-        item3 = MemoryItem(content="test content 3", importance=0.7)
+        item1 = WorkingMemoryItem(content="test content 1", importance=0.5)
+        item2 = WorkingMemoryItem(content="test content 2", importance=0.3)
+        item3 = WorkingMemoryItem(content="test content 3", importance=0.7)
 
         # Add the items
         working_memory.add(item1)
@@ -82,7 +82,7 @@ class TestWorkingMemory:
     def test_get(self, working_memory):
         """Test getting an item from working memory."""
         # Create and add an item
-        item = MemoryItem(content="test content")
+        item = WorkingMemoryItem(content="test content")
         working_memory.add(item)
 
         # Get the item
@@ -102,7 +102,7 @@ class TestWorkingMemory:
     def test_update(self, working_memory):
         """Test updating an item in working memory."""
         # Create and add an item
-        item = MemoryItem(content="test content")
+        item = WorkingMemoryItem(content="test content")
         working_memory.add(item)
 
         # Update the item
@@ -123,7 +123,7 @@ class TestWorkingMemory:
     def test_remove(self, working_memory):
         """Test removing an item from working memory."""
         # Create and add an item
-        item = MemoryItem(content="test content")
+        item = WorkingMemoryItem(content="test content")
         working_memory.add(item)
 
         # Remove the item
@@ -144,8 +144,8 @@ class TestWorkingMemory:
     def test_clear(self, working_memory):
         """Test clearing working memory."""
         # Create and add items
-        item1 = MemoryItem(content="test content 1")
-        item2 = MemoryItem(content="test content 2")
+        item1 = WorkingMemoryItem(content="test content 1")
+        item2 = WorkingMemoryItem(content="test content 2")
         working_memory.add(item1)
         working_memory.add(item2)
 
@@ -158,9 +158,9 @@ class TestWorkingMemory:
     def test_search(self, working_memory):
         """Test searching working memory."""
         # Create and add items
-        item1 = MemoryItem(content="apple banana")
-        item2 = MemoryItem(content="banana cherry")
-        item3 = MemoryItem(content="cherry date")
+        item1 = WorkingMemoryItem(content="apple banana")
+        item2 = WorkingMemoryItem(content="banana cherry")
+        item3 = WorkingMemoryItem(content="cherry date")
         working_memory.add(item1)
         working_memory.add(item2)
         working_memory.add(item3)
@@ -177,9 +177,9 @@ class TestWorkingMemory:
     def test_search_with_limit(self, working_memory):
         """Test searching working memory with a limit."""
         # Create and add items
-        item1 = MemoryItem(content="apple banana")
-        item2 = MemoryItem(content="banana cherry")
-        item3 = MemoryItem(content="cherry date")
+        item1 = WorkingMemoryItem(content="apple banana")
+        item2 = WorkingMemoryItem(content="banana cherry")
+        item3 = WorkingMemoryItem(content="cherry date")
         working_memory.add(item1)
         working_memory.add(item2)
         working_memory.add(item3)
@@ -191,94 +191,97 @@ class TestWorkingMemory:
         assert len(results) == 1
         assert results[0].content in ["banana cherry", "cherry date"]
 
-    def test_decay(self, working_memory):
-        """Test memory decay in working memory."""
-        # Create and add items
-        item1 = MemoryItem(content="test content 1", importance=0.5)
-        item2 = MemoryItem(content="test content 2", importance=0.3)
-        working_memory.add(item1)
-        working_memory.add(item2)
-
-        # Apply decay
-        working_memory.decay()
-
-        # Check that the importance values were reduced
-        assert working_memory.items[item1.id].importance == 0.5 - working_memory.decay_rate
-        assert working_memory.items[item2.id].importance == 0.3 - working_memory.decay_rate
-
-    def test_decay_below_threshold(self, working_memory):
-        """Test memory decay below threshold in working memory."""
-        # Set a high decay rate
-        working_memory.decay_rate = 0.3
-
-        # Create and add items
-        item1 = MemoryItem(content="test content 1", importance=0.5)
-        item2 = MemoryItem(content="test content 2", importance=0.3)
-        working_memory.add(item1)
-        working_memory.add(item2)
-
-        # Apply decay
-        working_memory.decay()
-
-        # Check that item1 was kept (importance = 0.5 - 0.3 = 0.2, which is at the threshold)
-        assert item1.id in working_memory.items
-        assert working_memory.items[item1.id].importance == 0.2
-
-        # Check that item2 was removed (importance = 0.3 - 0.3 = 0.0, which is below the threshold)
-        assert item2.id not in working_memory.items
-
-    def test_activate(self, working_memory):
-        """Test activating an item in working memory."""
+    def test_update_status(self, working_memory):
+        """Test updating the status of an item in working memory."""
         # Create and add an item
-        item = MemoryItem(content="test content", importance=0.5)
+        item = WorkingMemoryItem(content="test content", status="active")
         working_memory.add(item)
 
-        # Activate the item
-        working_memory.activate(item.id, 0.2)
+        # Update the status
+        updated_item = working_memory.update_status(item.id, "completed")
 
-        # Check that the importance was increased
-        assert working_memory.items[item.id].importance == 0.7  # 0.5 + 0.2
+        # Check that the status was updated
+        assert updated_item == item
+        assert updated_item.status == "completed"
 
-    def test_activate_nonexistent(self, working_memory):
-        """Test activating a nonexistent item in working memory."""
-        # Activate a nonexistent item
-        result = working_memory.activate("nonexistent", 0.2)
+    def test_update_priority(self, working_memory):
+        """Test updating the priority of an item in working memory."""
+        # Create and add an item
+        item = WorkingMemoryItem(content="test content", priority=5)
+        working_memory.add(item)
 
-        # Check that False was returned
-        assert result is False
+        # Update the priority
+        updated_item = working_memory.update_priority(item.id, 8)
 
-    def test_get_most_important(self, working_memory):
-        """Test getting the most important items from working memory."""
+        # Check that the priority was updated
+        assert updated_item == item
+        assert updated_item.priority == 8
+
+    def test_update_ttl(self, working_memory):
+        """Test updating the time-to-live of an item in working memory."""
+        # Create and add an item
+        item = WorkingMemoryItem(content="test content", ttl=0)
+        working_memory.add(item)
+
+        # Update the TTL
+        updated_item = working_memory.update_ttl(item.id, 3600)  # 1 hour
+
+        # Check that the TTL was updated
+        assert updated_item == item
+        assert updated_item.ttl == 3600
+        assert updated_item.expires_at is not None
+
+    def test_get_by_task(self, working_memory):
+        """Test getting items by task ID."""
         # Create and add items
-        item1 = MemoryItem(content="test content 1", importance=0.5)
-        item2 = MemoryItem(content="test content 2", importance=0.3)
-        item3 = MemoryItem(content="test content 3", importance=0.7)
+        item1 = WorkingMemoryItem(content="test content 1", task_id="task1")
+        item2 = WorkingMemoryItem(content="test content 2", task_id="task1")
+        item3 = WorkingMemoryItem(content="test content 3", task_id="task2")
         working_memory.add(item1)
         working_memory.add(item2)
         working_memory.add(item3)
 
-        # Get the most important items
-        items = working_memory.get_most_important(2)
+        # Get items by task ID
+        items = working_memory.get_by_task("task1")
 
         # Check the items
         assert len(items) == 2
-        assert items[0].importance == 0.7  # item3
-        assert items[1].importance == 0.5  # item1
+        assert any(item.id == item1.id for item in items)
+        assert any(item.id == item2.id for item in items)
+        assert not any(item.id == item3.id for item in items)
 
-    def test_get_least_important(self, working_memory):
-        """Test getting the least important items from working memory."""
+    def test_get_by_status(self, working_memory):
+        """Test getting items by status."""
         # Create and add items
-        item1 = MemoryItem(content="test content 1", importance=0.5)
-        item2 = MemoryItem(content="test content 2", importance=0.3)
-        item3 = MemoryItem(content="test content 3", importance=0.7)
+        item1 = WorkingMemoryItem(content="test content 1", status="active")
+        item2 = WorkingMemoryItem(content="test content 2", status="active")
+        item3 = WorkingMemoryItem(content="test content 3", status="completed")
         working_memory.add(item1)
         working_memory.add(item2)
         working_memory.add(item3)
 
-        # Get the least important items
-        items = working_memory.get_least_important(2)
+        # Get items by status
+        items = working_memory.get_by_status("active")
 
         # Check the items
         assert len(items) == 2
-        assert items[0].importance == 0.3  # item2
-        assert items[1].importance == 0.5  # item1
+        assert any(item.id == item1.id for item in items)
+        assert any(item.id == item2.id for item in items)
+        assert not any(item.id == item3.id for item in items)
+
+    def test_get_by_priority(self, working_memory):
+        """Test getting items by priority range."""
+        # Create and add items
+        item1 = WorkingMemoryItem(content="test content 1", priority=3)
+        item2 = WorkingMemoryItem(content="test content 2", priority=5)
+        item3 = WorkingMemoryItem(content="test content 3", priority=8)
+        working_memory.add(item1)
+        working_memory.add(item2)
+        working_memory.add(item3)
+
+        # Get items by priority range
+        items = working_memory.get_by_priority(min_priority=4, max_priority=7)
+
+        # Check the items
+        assert len(items) == 1
+        assert items[0].id == item2.id  # Only item2 has priority in range 4-7
