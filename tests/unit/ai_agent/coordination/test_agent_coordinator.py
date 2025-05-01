@@ -16,6 +16,9 @@ from tests.unit.ai_agent.coordination.mock_agent_coordinator import (
     DirectCommunicationChannel
 )
 
+# Disable the import from the actual implementation
+# from augment_adam.ai_agent.coordination.coordinator import AgentCoordinator
+
 
 # @safe_tag("testing.unit.ai_agent.coordination.coordinator")
 class TestAgentCoordinator(unittest.TestCase):

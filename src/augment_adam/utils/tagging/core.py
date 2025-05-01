@@ -484,7 +484,10 @@ class TagRegistry:
             description: Optional description of the tag.
             synonyms: Optional list of synonyms for the tag.
             examples: Optional list of examples for the tag.
+<<<<<<< HEAD
+=======
             force: If True, will return the existing tag if it already exists.
+>>>>>>> main
 
         Returns:
             The created tag.
@@ -554,6 +557,17 @@ class TagRegistry:
         tag = self.get_tag(name)
         if tag:
             return tag
+<<<<<<< HEAD
+        return self.create_tag(
+            name=name,
+            category=category,
+            parent=parent,
+            attributes=attributes,
+            description=description,
+            synonyms=synonyms,
+            examples=examples
+        )
+=======
         try:
             return self.create_tag(
                 name=name,
@@ -581,6 +595,7 @@ class TagRegistry:
                     force=True,
                 )
             return tag
+>>>>>>> main
 
     def delete_tag(self, name: str) -> None:
         """
@@ -887,8 +902,12 @@ def create_tag(name: str, category: TagCategory,
         attributes=attributes,
         description=description,
         synonyms=synonyms,
+<<<<<<< HEAD
+        examples=examples
+=======
         examples=examples,
         force=force,
+>>>>>>> main
     )
 
 def get_or_create_tag(name: str, category: TagCategory,
