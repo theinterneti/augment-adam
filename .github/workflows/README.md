@@ -1,53 +1,70 @@
-# GitHub Workflows
+# Augment Adam CI/CD Workflows
 
 This directory contains GitHub Actions workflows for the Augment Adam project.
 
-## Current Workflows
+## Workflows
 
-### Basic Tests (`test.yml`)
+### CI Workflow (`ci.yml`)
 
-The Basic Tests workflow runs on every push to main, feature/*, and release/* branches, as well as on pull requests to main. It includes:
+The CI workflow runs on every push to main, feature/_, and release/_ branches, as well as on pull requests to main. It includes:
 
-- **Simple Tests**: Runs basic tests that are known to pass
-- **Additional Tests**: Attempts to run any additional tests but doesn't fail if they don't pass
+- **Code Quality Checks**: Runs Black, isort, flake8, and mypy to ensure code quality.
+- **Unit Tests**: Runs unit tests and uploads coverage reports.
+- **Integration Tests**: Runs integration tests.
+- **Performance Tests**: Runs performance tests on pull requests.
+- **Compatibility Tests**: Runs compatibility tests on pull requests with multiple Python versions.
+- **Build**: Builds the package and uploads it as an artifact.
 
-### Basic Code Quality (`pre-commit.yml`)
+### CD Workflow (`cd.yml`)
 
-The Basic Code Quality workflow runs on pull requests to main. It includes:
+The CD workflow runs when a new release is created. It includes:
 
-- **File Formatting**: Checks code formatting with Black
-- **Import Sorting**: Checks import sorting with isort
-- **Linting**: Runs basic linting with flake8
+- **Deploy to PyPI**: Builds and publishes the package to PyPI.
+- **Docker**: Builds and pushes the Docker image to DockerHub.
 
-### Simplified CI (`ci.yml`)
+### Scheduled Tests Workflow (`scheduled-tests.yml`)
 
-The Simplified CI workflow runs on every push to main, feature/*, and release/* branches, as well as on pull requests to main. It includes:
+The scheduled tests workflow runs every day at 2 AM UTC. It includes:
 
-- **Basic Checks**: Runs code quality checks
-- **Simple Tests**: Runs basic tests
-- **Build**: Builds the package and uploads it as an artifact (only on push to main or release/* branches)
+- **Full Test Suite**: Runs all tests and uploads coverage reports.
+- **Notification**: Sends a Slack notification if tests fail.
 
-### Basic Documentation (`docs.yml`)
+### Security Checks Workflow (`security.yml`)
 
-The Basic Documentation workflow runs on pushes and pull requests that modify documentation files. It includes:
+The security checks workflow runs on pushes to main, pull requests to main, and every Monday at 1 AM UTC. It includes:
 
-- **Documentation Check**: Checks if documentation can be built
-- **Markdown Check**: Counts markdown files in the repository
+- **Dependency Scanning**: Checks dependencies for vulnerabilities.
+- **Code Scanning**: Scans code for security issues.
+- **Secret Scanning**: Checks for secrets in the codebase.
 
-### Basic Security Checks (`security.yml`)
+### Documentation Workflow (`docs.yml`)
 
-The Basic Security Checks workflow runs on pushes to main, pull requests to main, and on a monthly schedule. It includes:
+The documentation workflow runs on pushes to main and pull requests to main that affect documentation. It includes:
 
-- **Basic Security Scan**: Runs a basic security scan with bandit
-- **Secret Scanning**: Checks for secrets in the repository
+- **Build Documentation**: Builds the documentation.
+- **Deploy Documentation**: Deploys the documentation to GitHub Pages.
 
-## Future Improvements
+### Dependencies Workflow (`dependencies.yml`)
 
-As the project matures, these workflows will be expanded to include:
+The dependencies workflow runs every Monday at 3 AM UTC. It includes:
 
-1. More comprehensive testing
-2. Stricter code quality checks
-3. Automated documentation deployment
-4. More thorough security scanning
-5. Performance testing
-6. Compatibility testing with multiple Python versions
+- **Update Dependencies**: Updates dependencies and creates a pull request.
+
+## Required Secrets
+
+The following secrets need to be set in the repository settings:
+
+- `PYPI_TOKEN`: API token for PyPI publishing.
+- `DOCKER_USERNAME`: Docker Hub username.
+- `DOCKER_PASSWORD`: Docker Hub password or access token.
+- `SLACK_WEBHOOK_URL`: Webhook URL for Slack notifications.
+
+## Local Development
+
+For local development, you can use Docker Compose:
+
+```bash
+docker-compose up
+```
+
+This will start the application and run the tests.
