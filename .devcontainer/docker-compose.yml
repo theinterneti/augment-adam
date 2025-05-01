@@ -31,7 +31,7 @@ services:
 
     # Forward ports for services
     ports:
-      - "8889:8888"  # Jupyter (changed from 8888 to avoid port conflict)
+      - "8890:8888" # Jupyter (changed to avoid port conflict)
 
     # Set environment variables
     environment:
@@ -105,8 +105,8 @@ services:
       - neo4j-data:/data
     # Only expose to internal network, not to host
     expose:
-      - "7474"  # HTTP
-      - "7687"  # Bolt
+      - "7474" # HTTP
+      - "7687" # Bolt
 
   # Redis for caching
   redis:
@@ -123,8 +123,8 @@ services:
     image: redis/redis-stack:latest
     # Only expose to internal network, not to host
     expose:
-      - "6379"  # Redis port
-      - "8001"  # RedisInsight
+      - "6379" # Redis port
+      - "8001" # RedisInsight
     volumes:
       - redis-vector-data:/data
     command: >
@@ -133,14 +133,12 @@ services:
       --loadmodule /opt/redis-stack/lib/rejson.so
       --save 60 1
       --appendonly yes
-      --threads 6
-      --io-threads 2
-    environment:
-      - REDIS_ARGS=--requirepass redispassword
+      --requirepass redispassword
+      --protected-mode no
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 8G
 
   # Context Engine API - Commented out until API directory is created
@@ -165,36 +163,36 @@ services:
 volumes:
   # Define named volumes
   ollama-models:
-    name: augment-adam-ollama-models  # Ollama models
-    external: false  # Create if it doesn't exist
+    name: augment-adam-ollama-models # Ollama models
+    external: true # Use existing volume
   model-cache:
-    name: augment-adam-model-cache  # General model cache
-    external: false  # Will be created if it doesn't exist
+    name: augment-adam-model-cache # General model cache
+    external: true # Use existing volume
   huggingface-cache:
-    name: augment-adam-huggingface-cache  # HuggingFace models
-    external: false  # Will be created if it doesn't exist
+    name: augment-adam-huggingface-cache # HuggingFace models
+    external: true # Use existing volume
 
   # Cache volumes for faster builds
   pip-cache:
-    name: augment-adam-pip-cache  # Cache pip packages
-    external: false
+    name: augment-adam-pip-cache # Cache pip packages
+    external: true # Use existing volume
   apt-cache:
-    name: augment-adam-apt-cache  # Cache apt packages
-    external: false
+    name: augment-adam-apt-cache # Cache apt packages
+    external: true # Use existing volume
   torch-cache:
-    name: augment-adam-torch-cache  # Cache PyTorch models and weights
-    external: false
+    name: augment-adam-torch-cache # Cache PyTorch models and weights
+    external: true # Use existing volume
 
   # Service data volumes
   chroma-data:
-    name: augment-adam-chroma-data  # ChromaDB data
-    external: false
+    name: augment-adam-chroma-data # ChromaDB data
+    external: true # Use existing volume
   neo4j-data:
-    name: augment-adam-neo4j-data  # Neo4j data
-    external: false
+    name: augment-adam-neo4j-data # Neo4j data
+    external: true # Use existing volume
   redis-data:
-    name: augment-adam-redis-data  # Redis data
-    external: false
+    name: augment-adam-redis-data # Redis data
+    external: true # Use existing volume
   redis-vector-data:
-    name: augment-adam-redis-vector-data  # Redis Vector data
-    external: false
+    name: augment-adam-redis-vector-data # Redis Vector data
+    external: true # Use existing volume

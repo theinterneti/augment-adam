@@ -161,7 +161,7 @@
   "postCreateCommand": "pip install --upgrade pip && pip install -r /workspace/requirements.txt && pip install black flake8 isort mypy pytest pytest-cov && chmod +x /workspace/scripts/*.py || echo 'Setup completed with warnings'",
 
   // Forward ports for services - only expose main container ports to host
-  "forwardPorts": [8889],
+  "forwardPorts": [8890],
 
   // Run commands after the container is created and started
   "postStartCommand": "bash .devcontainer/post-start.sh",
