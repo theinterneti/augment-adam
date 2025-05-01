@@ -1,0 +1,98 @@
+{# Template for generating integration decision matrices #}
+{# @tags: documentation, integration, decision-matrix, markdown #}
+{# @description: This template is used to generate integration decision matrices for evaluating open-source AI projects #}
+{# @variables: project_name:str, repository_url:str, license:str, primary_language:str, project_website:str, options:list, criteria:list, recommendation:dict, implementation_plan:dict #}
+{# @examples: [{"project_name": "Open WebUI MCP", "repository_url": "https://github.com/open-webui/mcpo", "license": "MIT", "primary_language": "Python", "options": [{"name": "Full Integration", "description": "Fully integrate as a core component"}]}] #}
+
+# {{ project_name }} Integration Decision Matrix
+
+## Project Information
+
+**Project Name:** {{ project_name }}
+**GitHub Repository:** [{{ project_name }}]({{ repository_url }})
+**License:** {{ license }}
+**Primary Language:** {{ primary_language }}
+{% if project_website %}**Project Website:** [{{ project_website }}]({{ project_website }}){% endif %}
+
+## Decision Matrix
+
+| Criterion | Weight | {% for option in options %}Option {{ loop.index }}: {{ option.name }} | {% endfor %}Notes |
+|-----------|--------|{% for option in options %}----------------------------|{% endfor %}-------|
+{% for category in criteria %}
+| **{{ category.name }}** | | {% for option in options %} | {% endfor %} |
+{% for criterion in category.criteria %}
+| {{ criterion.name }} | {{ criterion.weight }} | {% for option in options %}{{ criterion.scores[loop.index0] }} | {% endfor %}{{ criterion.notes }} |
+{% endfor %}
+{% endfor %}
+| **TOTAL SCORE** | | {% for option in options %}{{ option.total_score }} | {% endfor %} |
+
+### Scoring Guide
+
+For each criterion, scores range from 1-5:
+- 5: Excellent - Exceeds requirements with significant advantages
+- 4: Good - Fully meets requirements with some advantages
+- 3: Acceptable - Meets minimum requirements
+- 2: Poor - Falls short of requirements but workable
+- 1: Unacceptable - Fails to meet requirements
+
+Weighted scores are calculated by multiplying each score by the criterion weight.
+
+## Integration Options
+
+{% for option in options %}
+### Option {{ loop.index }}: {{ option.name }}
+
+**Description:** {{ option.description }}
+
+**Pros:**
+{% for pro in option.pros %}
+- {{ pro }}
+{% endfor %}
+
+**Cons:**
+{% for con in option.cons %}
+- {{ con }}
+{% endfor %}
+
+**Technical Approach:**
+{% for approach in option.technical_approach %}
+- {{ approach }}
+{% endfor %}
+
+{% endfor %}
+
+## Recommendation
+
+Based on the decision matrix, the recommended approach is: **{{ recommendation.option }}**
+
+**Rationale:**
+{% for reason in recommendation.rationale %}
+- {{ reason }}
+{% endfor %}
+
+**Next Steps:**
+{% for step in recommendation.next_steps %}
+1. {{ step }}
+{% endfor %}
+
+## Implementation Plan
+
+**Timeline:**
+{% for timeline_item in implementation_plan.timeline %}
+- {{ timeline_item }}
+{% endfor %}
+
+**Resources Required:**
+{% for resource in implementation_plan.resources %}
+- {{ resource }}
+{% endfor %}
+
+**Success Metrics:**
+{% for metric in implementation_plan.success_metrics %}
+- {{ metric }}
+{% endfor %}
+
+**Risks and Mitigations:**
+{% for risk in implementation_plan.risks %}
+- **{{ risk.name }}**: {{ risk.mitigation }}
+{% endfor %}

@@ -1,0 +1,84 @@
+{# Template for generating proof-of-concept integration plans #}
+{# @tags: documentation, integration, poc, plan, markdown #}
+{# @description: This template is used to generate proof-of-concept integration plans for open-source AI projects #}
+{# @variables: title:str, description:str, projects:list, phases:list, resource_requirements:list, evaluation_process:list, documentation_requirements:list, next_steps:list #}
+{# @examples: [{"title": "Proof-of-Concept Integration Plan", "description": "This document outlines our plan for creating proof-of-concept integrations with selected open-source AI projects."}] #}
+
+# {{ title }}
+
+## Overview
+
+{{ description }}
+
+## Integration Priorities
+
+Based on compatibility scores and strategic alignment, we will prioritize the following integrations:
+
+| Priority | Project | Compatibility | Primary Value |
+|----------|---------|---------------|--------------|
+{% for project in projects %}
+| {{ loop.index }} | {{ project.name }} | {{ project.compatibility }} | {{ project.primary_value }} |
+{% endfor %}
+
+{% for phase in phases %}
+## Phase {{ loop.index }}: {{ phase.name }}
+
+{% for integration in phase.integrations %}
+### {{ integration.project_name }} Integration
+
+**Goal:** {{ integration.goal }}
+
+**Technical Requirements:**
+{% for requirement in integration.technical_requirements %}
+- {{ requirement }}
+{% endfor %}
+
+**Success Criteria:**
+{% for criterion in integration.success_criteria %}
+- {{ criterion }}
+{% endfor %}
+
+**Implementation Steps:**
+{% for step in integration.implementation_steps %}
+{{ loop.index }}. {{ step }}
+{% endfor %}
+
+**Testing Methodology:**
+{% for test in integration.testing_methodology %}
+- {{ test }}
+{% endfor %}
+
+**Timeline:** {{ integration.timeline }}
+
+{% endfor %}
+{% endfor %}
+
+## Resource Requirements
+
+| Resource | Description | Quantity |
+|----------|-------------|----------|
+{% for resource in resource_requirements %}
+| {{ resource.name }} | {{ resource.description }} | {{ resource.quantity }} |
+{% endfor %}
+
+## Evaluation Process
+
+Each integration will follow this evaluation process:
+
+{% for step in evaluation_process %}
+{{ loop.index }}. **{{ step.name }}:** {{ step.description }}
+{% endfor %}
+
+## Documentation Requirements
+
+For each integration, we will produce:
+
+{% for doc in documentation_requirements %}
+{{ loop.index }}. **{{ doc.name }}:** {{ doc.description }}
+{% endfor %}
+
+## Next Steps
+
+{% for step in next_steps %}
+{{ loop.index }}. {{ step }}
+{% endfor %}
