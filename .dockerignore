@@ -1,31 +1,39 @@
-# 1. Python-specific ignores
+# Git
+.git
+.gitignore
+.github
+
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 *.pyc
 *.pyo
 *.pyd
-.pytest_cache/
-.coverage
-*.egg-info/
-*.eggs/
-dist/
-build/
 
-# 2. Node.js (not detected, but safe to include for completeness)
-node_modules/
-npm-debug.log
-yarn-debug.log
+# Virtual environments
+venv/
+env/
+ENV/
 
-# 3. Go (not detected, but safe to include for completeness)
-/vendor/
-*.test
-.go-cache/
-
-# 4. Java (not detected, but safe to include for completeness)
-target/
-*.class
-.gradle/
-
-# 5. IDE/editor files
+# IDE
 .idea/
 .vscode/
 *.swp
@@ -33,25 +41,14 @@ target/
 *.swn
 *.bak
 
-# 6. Build and output directories
+# Build and output directories
 out/
 
-# 7. Test files and directories
-test/
-tests/
-*_test.go
-
-# 8. Debug and log files
+# Debug and log files
 debug/
 *.log
 
-# 9. Version control
-.git/
-.gitignore
-.svn/
-.hg/
-
-# 10. Environment and secrets
+# Environment and secrets
 .env
 .env.*
 *.env
@@ -61,28 +58,22 @@ debug/
 config.local.*
 *.local.yml
 
-# 11. Project-specific patterns
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+
 # Documentation
-/docs/
-*.md
-README*
+site/
+docs/_build/
 
-# Docker files
-Dockerfile*
-docker-compose*
-compose.yaml
-
-# Temporary and local files
-tmp/
-temp/
-*.tmp
-.local/
-local/
-.cache/
-
-# Miscellaneous
-*.DS_Store
-*.orig
+# Misc
+.DS_Store
+*.log
+*.sqlite
+*.db
 
 # Exclude files/folders that should always be included (negation)
 !requirements.txt

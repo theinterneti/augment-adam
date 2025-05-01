@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   # Redis for vector search - optimized for real-time queries
@@ -7,11 +7,11 @@ services:
     container_name: redis-vector
     ports:
       - "6379:6379"
-      - "8001:8001"  # RedisInsight
+      - "8001:8001" # RedisInsight
     volumes:
       - redis-vector-data:/data
     command: >
-      redis-server 
+      redis-server
       --loadmodule /opt/redis-stack/lib/redisearch.so
       --loadmodule /opt/redis-stack/lib/rejson.so
       --save 60 1
@@ -23,10 +23,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 8G
         reservations:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
 
   # Neo4j for graph database with vector capabilities
@@ -34,8 +34,8 @@ services:
     image: neo4j:5.13.0
     container_name: neo4j-vector
     ports:
-      - "7474:7474"  # HTTP
-      - "7687:7687"  # Bolt
+      - "7474:7474" # HTTP
+      - "7687:7687" # Bolt
     volumes:
       - neo4j-data:/data
       - neo4j-logs:/logs
@@ -50,10 +50,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 8G
         reservations:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
 
   # Sphinx for auto documentation
@@ -70,10 +70,10 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: "1"
           memory: 512M
         reservations:
-          cpus: '0.5'
+          cpus: "0.5"
           memory: 256M
 
   # API service for the context engine
@@ -100,7 +100,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '2'
+          cpus: "2"
           memory: 4G
 
   # Worker service for background processing
@@ -126,11 +126,28 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '4'
+          cpus: "4"
           memory: 8G
+
+  # Augment Adam server
+  augment-adam:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+      - model-cache:/cache
+    environment:
+      - AUGMENT_CACHE_DIR=/cache
+      - HF_TOKEN=${HF_TOKEN}
+    ports:
+      - "8000:8000"
+    command: python -m augment_adam.server
 
 volumes:
   redis-vector-data:
   neo4j-data:
   neo4j-logs:
   neo4j-conf:
+  model-cache:
+    name: augment-adam-model-cache
