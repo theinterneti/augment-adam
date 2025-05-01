@@ -51,37 +51,47 @@ print(response)
 
 ## Running with Docker
 
-You can run Augment Adam and its legacy version using Docker Compose. This setup also provides an optional Neo4j service for graph-based memory.
+Augment Adam uses Docker for both development and deployment. The project includes a comprehensive Docker setup with multiple services for different components of the system.
 
-### Requirements
-- Docker and Docker Compose installed
-- No special environment variables are required by default, but you may provide a `.env` file if needed for custom configuration
-- The main service uses Python 3.10 (current) or Python 3.11 (legacy) as specified in the Dockerfiles
+### Development Environment
 
-### Build and Run
+The project uses VS Code's Dev Containers extension to provide a consistent development environment. This environment includes:
 
-From the project root directory, run:
+- Python 3.10 with all required dependencies
+- Ollama for local LLM inference
+- ChromaDB for vector storage
+- Neo4j for graph relationships
+- Redis for caching
+- Redis Vector for embeddings search
+- GPU support for NVIDIA GPUs (optional)
+
+To start the development environment:
+
+1. Install Docker and VS Code with the Dev Containers extension
+2. Open the project in VS Code
+3. When prompted, click "Reopen in Container"
+
+### Testing Services
+
+The repository includes a test script to verify connectivity to all services:
 
 ```bash
-docker compose up --build
+python test_services.py
 ```
 
-This will build and start the following services:
+This script checks connectivity to all services and reports their status.
 
-- **python-augment-adam**: Main application (FastAPI server, Python 3.10, port 8000)
-- **python-augment-adam-legacy**: Legacy version (FastAPI server, Python 3.11, port 8001)
-- **neo4j**: Optional, for graph memory (Neo4j database, ports 7474 (HTTP), 7687 (Bolt))
+### Detailed Documentation
 
-### Ports
-- `python-augment-adam`: [http://localhost:8000](http://localhost:8000)
-- `python-augment-adam-legacy`: [http://localhost:8001](http://localhost:8001)
-- `neo4j`: [http://localhost:7474](http://localhost:7474) (HTTP), `7687` (Bolt)
+For detailed information about the Docker configuration, including:
 
-### Special Configuration
-- If you use Neo4j-based memory, the Neo4j service is required. The default password is set to `testpassword` (change for production).
-- To use environment variables, create a `.env` file in the relevant service directory and uncomment the `env_file` line in the `docker-compose.yml`.
-- The main application exposes a FastAPI server. The entrypoint is `python -m augment_adam.server`.
-- Persistent Neo4j data is stored in the `neo4j-data` Docker volume.
+- Service descriptions
+- Persistent volumes
+- GPU support
+- Environment variables
+- Troubleshooting
+
+See the [Docker Configuration](docs/docker_configuration.md) documentation.
 
 For more details on advanced configuration, see the [Memory System](docs/memory_system.md) and [Architecture Overview](docs/ARCHITECTURE.md).
 
@@ -94,6 +104,7 @@ For more detailed information, check out the documentation in the `docs/` direct
 - [Memory System](docs/architecture/memory_system.md)
 - [Plugin System](docs/architecture/plugin_system.md)
 - [Tagging System](docs/architecture/TAGGING_SYSTEM.md)
+- [Docker Configuration](docs/docker_configuration.md)
 - [Agent Coordination](docs/guides/agent_coordination.md)
 - [Monte Carlo Techniques](docs/guides/parallel_monte_carlo.md)
 - [Template Engine](docs/architecture/TEMPLATE_ENGINE.md)
