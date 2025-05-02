@@ -43,39 +43,39 @@ class TestGenerator:
         self.module_name = ""
         self.class_info = []
         self.function_info = []
-        
+
         # Load the file content
         self._load_file()
-        
+
     def _load_file(self) -> None:
         """Load the file content and parse the AST."""
         try:
             with open(self.file_path, "r", encoding="utf-8") as f:
                 self.file_content = f.read()
-            
+
             self.ast_tree = ast.parse(self.file_content)
-            
+
             # Extract the module name from the file path
             file_name = os.path.basename(self.file_path)
             self.module_name = os.path.splitext(file_name)[0]
-            
+
             # Extract information about classes and functions
             self._extract_class_info()
             self._extract_function_info()
-            
+
         except Exception as e:
             print(f"Error loading file: {e}")
             sys.exit(1)
-    
+
     def _extract_class_info(self) -> None:
         """Extract information about classes in the module."""
         if not self.ast_tree:
             return
-            
+
         for node in ast.walk(self.ast_tree):
             if isinstance(node, ast.ClassDef):
                 methods = []
-                
+
                 for child in node.body:
                     if isinstance(child, ast.FunctionDef):
                         methods.append({
@@ -84,41 +84,42 @@ class TestGenerator:
                             'docstring': ast.get_docstring(child) or "",
                             'is_async': isinstance(child, ast.AsyncFunctionDef),
                         })
-                
+
                 self.class_info.append({
                     'name': node.name,
                     'docstring': ast.get_docstring(node) or "",
                     'methods': methods,
                 })
-    
+
     def _extract_function_info(self) -> None:
         """Extract information about functions in the module."""
         if not self.ast_tree:
             return
-            
-        for node in ast.walk(self.ast_tree):
-            if isinstance(node, ast.FunctionDef) and node.parent_field == 'body':
+
+        # Get top-level functions
+        for node in self.ast_tree.body:
+            if isinstance(node, ast.FunctionDef):
                 self.function_info.append({
                     'name': node.name,
                     'args': [arg.arg for arg in node.args.args if arg.arg not in ('self', 'cls')],
                     'docstring': ast.get_docstring(node) or "",
                     'is_async': isinstance(node, ast.AsyncFunctionDef),
                 })
-    
+
     def generate_unit_test(self) -> str:
         """
         Generate a unit test file for the module.
-        
+
         Returns:
             The content of the unit test file
         """
         # Determine the import path
         relative_path = os.path.relpath(self.file_path, Path(__file__).parent.parent)
         import_path = os.path.splitext(relative_path)[0].replace(os.path.sep, '.')
-        
+
         if import_path.startswith('src.'):
             import_path = import_path[4:]  # Remove 'src.' prefix
-        
+
         # Generate the test file content
         content = [
             '"""',
@@ -133,7 +134,7 @@ class TestGenerator:
             '',
             '',
         ]
-        
+
         # Add test classes for each class in the module
         for cls_info in self.class_info:
             content.extend([
@@ -151,13 +152,13 @@ class TestGenerator:
                 '        pass',
                 '',
             ])
-            
+
             # Add test methods for each method in the class
             for method_info in cls_info['methods']:
                 # Skip special methods
                 if method_info['name'].startswith('__') and method_info['name'].endswith('__'):
                     continue
-                    
+
                 content.extend([
                     f'    def test_{method_info["name"]}(self):',
                     f'        """Test {method_info["name"]} method."""',
@@ -168,9 +169,9 @@ class TestGenerator:
                     '        pass',
                     '',
                 ])
-            
+
             content.append('')
-        
+
         # Add test functions for each function in the module
         if self.function_info:
             content.extend([
@@ -178,12 +179,12 @@ class TestGenerator:
                 '    """Test cases for module-level functions."""',
                 '',
             ])
-            
+
             for func_info in self.function_info:
                 # Skip special functions
                 if func_info['name'].startswith('__') and func_info['name'].endswith('__'):
                     continue
-                    
+
                 content.extend([
                     f'    def test_{func_info["name"]}(self):',
                     f'        """Test {func_info["name"]} function."""',
@@ -193,32 +194,32 @@ class TestGenerator:
                     '        pass',
                     '',
                 ])
-            
+
             content.append('')
-        
+
         # Add main block
         content.extend([
             "if __name__ == '__main__':",
             '    unittest.main()',
             '',
         ])
-        
+
         return '\n'.join(content)
-    
+
     def generate_integration_test(self) -> str:
         """
         Generate an integration test file for the module.
-        
+
         Returns:
             The content of the integration test file
         """
         # Determine the import path
         relative_path = os.path.relpath(self.file_path, Path(__file__).parent.parent)
         import_path = os.path.splitext(relative_path)[0].replace(os.path.sep, '.')
-        
+
         if import_path.startswith('src.'):
             import_path = import_path[4:]  # Remove 'src.' prefix
-        
+
         # Generate the test file content
         content = [
             '"""',
@@ -256,23 +257,23 @@ class TestGenerator:
             '    unittest.main()',
             '',
         ]
-        
+
         return '\n'.join(content)
-    
+
     def generate_e2e_test(self) -> str:
         """
         Generate an end-to-end test file for the module.
-        
+
         Returns:
             The content of the end-to-end test file
         """
         # Determine the import path
         relative_path = os.path.relpath(self.file_path, Path(__file__).parent.parent)
         import_path = os.path.splitext(relative_path)[0].replace(os.path.sep, '.')
-        
+
         if import_path.startswith('src.'):
             import_path = import_path[4:]  # Remove 'src.' prefix
-        
+
         # Generate the test file content
         content = [
             '"""',
@@ -310,42 +311,42 @@ class TestGenerator:
             '    unittest.main()',
             '',
         ]
-        
+
         return '\n'.join(content)
-    
+
     def save_test_files(self, output_dir: str) -> List[str]:
         """
         Save the generated test files to the output directory.
-        
+
         Args:
             output_dir: Directory to save the test files
-            
+
         Returns:
             List of paths to the saved test files
         """
         # Create the output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
-        
+
         saved_files = []
-        
+
         # Save the unit test file
         unit_test_path = os.path.join(output_dir, f'test_{self.module_name}.py')
         with open(unit_test_path, 'w', encoding='utf-8') as f:
             f.write(self.generate_unit_test())
         saved_files.append(unit_test_path)
-        
+
         # Save the integration test file
         integration_test_path = os.path.join(output_dir, f'test_{self.module_name}_integration.py')
         with open(integration_test_path, 'w', encoding='utf-8') as f:
             f.write(self.generate_integration_test())
         saved_files.append(integration_test_path)
-        
+
         # Save the end-to-end test file
         e2e_test_path = os.path.join(output_dir, f'test_{self.module_name}_e2e.py')
         with open(e2e_test_path, 'w', encoding='utf-8') as f:
             f.write(self.generate_e2e_test())
         saved_files.append(e2e_test_path)
-        
+
         return saved_files
 
 
@@ -358,9 +359,9 @@ def main():
     parser.add_argument("--integration-only", action="store_true", help="Generate only integration tests")
     parser.add_argument("--e2e-only", action="store_true", help="Generate only end-to-end tests")
     args = parser.parse_args()
-    
+
     generator = TestGenerator(args.file)
-    
+
     if args.unit_only:
         unit_test_content = generator.generate_unit_test()
         unit_test_path = os.path.join(args.output_dir, f'test_{generator.module_name}.py')

@@ -27,7 +27,7 @@ from augment_adam.parallel.process import (
     ProcessTask,
 )
 
-from augment_adam.parallel.async import (
+from augment_adam.parallel.async_module import (
     AsyncExecutor,
     AsyncTask,
 )
@@ -53,25 +53,25 @@ __all__ = [
     "TaskResult",
     "TaskExecutor",
     "ParallelExecutor",
-    
+
     # Thread
     "ThreadPoolExecutor",
     "ThreadTask",
-    
+
     # Process
     "ProcessPoolExecutor",
     "ProcessTask",
-    
+
     # Async
     "AsyncExecutor",
     "AsyncTask",
-    
+
     # Workflow
     "Workflow",
     "WorkflowExecutor",
     "WorkflowTask",
     "TaskDependency",
-    
+
     # Utils
     "ResourceMonitor",
     "ResourceThrottler",
