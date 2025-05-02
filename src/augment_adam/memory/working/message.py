@@ -5,15 +5,19 @@ This module provides the Message class for representing messages in a conversati
 
 from typing import Dict, Any, Optional
 import time
+import uuid
+import datetime
 
 
 class Message:
     """Message in a conversation.
 
     Attributes:
+        id: Unique identifier for the message.
         content: The content of the message.
         role: The role of the sender (user, assistant, system).
-        timestamp: The time the message was created.
+        created_at: The time the message was created.
+        updated_at: The time the message was last updated.
         metadata: Additional metadata for the message.
     """
 
@@ -21,7 +25,9 @@ class Message:
         self,
         content: str,
         role: str = "user",
-        timestamp: Optional[float] = None,
+        id: Optional[str] = None,
+        created_at: Optional[str] = None,
+        updated_at: Optional[str] = None,
         metadata: Optional[Dict[str, Any]] = None,
     ):
         """Initialize the message.
@@ -29,12 +35,16 @@ class Message:
         Args:
             content: The content of the message.
             role: The role of the sender (user, assistant, system).
-            timestamp: The time the message was created.
+            id: Unique identifier for the message.
+            created_at: The time the message was created.
+            updated_at: The time the message was last updated.
             metadata: Additional metadata for the message.
         """
+        self.id = id or f"msg-{str(uuid.uuid4())}"
         self.content = content
         self.role = role
-        self.timestamp = timestamp or time.time()
+        self.created_at = created_at or datetime.datetime.now().isoformat()
+        self.updated_at = updated_at or self.created_at
         self.metadata = metadata or {}
 
     def to_dict(self) -> Dict[str, Any]:
@@ -44,9 +54,11 @@ class Message:
             A dictionary representation of the message.
         """
         return {
+            "id": self.id,
             "content": self.content,
             "role": self.role,
-            "timestamp": self.timestamp,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
             "metadata": self.metadata,
         }
 
@@ -61,8 +73,18 @@ class Message:
             A Message instance.
         """
         return cls(
+            id=data.get("id"),
             content=data["content"],
             role=data["role"],
-            timestamp=data["timestamp"],
-            metadata=data["metadata"],
+            created_at=data.get("created_at"),
+            updated_at=data.get("updated_at"),
+            metadata=data.get("metadata", {}),
         )
+
+    def format_for_conversation(self) -> str:
+        """Format the message for display in a conversation.
+
+        Returns:
+            A string representation of the message in the format "role: content".
+        """
+        return f"{self.role}: {self.content}"

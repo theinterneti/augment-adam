@@ -7,17 +7,22 @@ project_status:
   status: active
   phase: development
   next_milestone: "v1.0.0 Release"
+  last_updated: "2023-11-15"
+  current_focus: "Testing and documentation improvements"
 
 # Development Priorities
 priorities:
   current:
-    - Testing improvements
-    - CI/CD pipeline enhancements
-    - Documentation refinement
+    - Testing improvements with focus on memory system and context engine
+    - CI/CD pipeline enhancements for faster feedback
+    - Documentation refinement with emphasis on developer guides
+    - Monte Carlo methods test coverage improvement
   upcoming:
-    - Performance optimization
-    - Additional memory backends
+    - Performance optimization for large-scale deployments
+    - Additional memory backends (Pinecone, Weaviate)
     - Enhanced agent coordination patterns
+    - Parallel processing optimizations
+    - Workflow execution components
 
 # Core Components
 components:
@@ -81,6 +86,17 @@ testing:
   ci_integration: required
   test_isolation: required
   tag_registry_isolation: required
+  priority_components:
+    - memory_system
+    - context_engine
+    - monte_carlo_methods
+    - parallel_processing
+    - async_executor
+    - workflow_execution
+  test_generation: use_test_templates_when_possible
+  test_documentation: update_tests_TASKS_after_each_atomic_change
+  test_approach: focus_on_actual_functionality_not_frivolous_tests
+  incremental_development: acceptable_for_test_coverage
 
 # Git Guidelines
 git:
@@ -151,6 +167,16 @@ memory:
   default_backend: faiss
   persistence: required
   thread_safety: required
+  testing_priorities:
+    - vector_memory_integration
+    - graph_memory_integration
+    - hybrid_memory_systems
+    - memory_persistence
+    - memory_indexing
+  utility_classes:
+    - memory_manager
+    - memory_factory
+    - memory_connector
 
 # Agent Guidelines
 agents:
@@ -163,3 +189,34 @@ agents:
     validation: required
   versioning: required
   discovery: dynamic
+
+# Workflow Execution Guidelines
+workflow:
+  components:
+    - workflow: task_definition_and_dependencies
+    - workflow_executor: execution_orchestration
+    - workflow_task: atomic_task_unit
+    - task_dependency: dependency_management
+  execution_modes:
+    - sequential
+    - parallel
+    - conditional
+  error_handling: required
+  monitoring: required
+
+# Utility Components
+utilities:
+  resource_management:
+    - resource_monitor: system_resource_tracking
+    - resource_throttler: prevent_overutilization
+  result_handling:
+    - result_aggregator: combine_multiple_results
+    - error_handler: graceful_error_management
+
+# Development Workflow
+development_workflow:
+  task_tracking: github_compatible_TASKS_files
+  task_limit: maximum_10_tasks_per_file
+  task_organization: one_TASKS_file_per_directory
+  planning_reference: all_tasks_must_reference_PLANNING_items
+  testing_reference: all_tasks_must_reference_TESTING_items

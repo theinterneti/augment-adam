@@ -1,0 +1,16 @@
+Test Generation Report
+=====================
+
+Generated on: 2025-05-02 21:46:30
+Directory: src/augment_adam/context/chunking
+Output directory: tests
+Test type: unit
+Batch size: 1
+Max workers: 1
+
+Summary:
+- Total files: 1
+- Succeeded: 1
+- Failed: 0
+- Elapsed time: 0.08 seconds
+

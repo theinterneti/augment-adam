@@ -11,7 +11,7 @@ services:
     volumes:
       - redis-vector-data:/data
     command: >
-      redis-server 
+      redis-server
       --loadmodule /opt/redis-stack/lib/redisearch.so
       --loadmodule /opt/redis-stack/lib/rejson.so
       --save 60 1
@@ -129,8 +129,32 @@ services:
           cpus: '4'
           memory: 8G
 
+  # Ollama service for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+      - ./ollama:/ollama
+    deploy:
+      resources:
+        limits:
+          cpus: '8'
+          memory: 16G
+        reservations:
+          cpus: '4'
+          memory: 8G
+    # Fix socket permission issues
+    user: "${UID:-1000}:${GID:-1000}"
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_MODELS=/ollama/models
+
 volumes:
   redis-vector-data:
   neo4j-data:
   neo4j-logs:
   neo4j-conf:
+  ollama-data:
