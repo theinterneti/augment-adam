@@ -1,0 +1,222 @@
+{# Template for creating a service that exposes both FastMCP tools and FastAPI REST endpoints #}
+{# @tags: code, api, mcp, fastmcp, fastapi #}
+{# @description: This template is used to generate a service that exposes functionality as both MCP tools and REST API endpoints using FastMCP and FastAPI #}
+{# @variables: service_name:str, service_description:str, tools:list, resources:list, version:str #}
+{# @examples: [{"service_name": "Memory Service", "service_description": "A service for managing memory storage and retrieval", "tools": [{"name": "add_memory", "description": "Add a new memory", "parameters": [{"name": "text", "type": "str", "description": "The text content of the memory"}, {"name": "metadata", "type": "dict", "description": "Additional metadata for the memory"}], "returns": {"type": "dict", "description": "The created memory with ID"}}], "resources": [{"name": "get_memory", "uri": "memory://{memory_id}", "description": "Get a memory by ID", "parameters": [{"name": "memory_id", "type": "str", "description": "The ID of the memory to retrieve"}], "returns": {"type": "dict", "description": "The memory with the specified ID"}}], "version": "0.1.0"}] #}
+#!/usr/bin/env python3
+"""
+{{ service_description }}
+
+This module provides a service that exposes functionality as both MCP tools
+and REST API endpoints using FastMCP and FastAPI.
+
+Version: {{ version }}
+"""
+
+import logging
+import asyncio
+import threading
+from typing import Dict, List, Any, Optional, Union
+from fastapi import FastAPI, APIRouter, HTTPException, Depends
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field
+import uvicorn
+from fastmcp import FastMCP, Client
+from fastmcp.client.transports import FastMCPTransport
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Create FastMCP server
+mcp = FastMCP("{{ service_name }}")
+
+# Create FastAPI app
+app = FastAPI(
+    title="{{ service_name }} API",
+    description="{{ service_description }}",
+    version="{{ version }}"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Create router
+router = APIRouter()
+
+# Define service implementation
+class {{ service_name|replace(' ', '') }}Service:
+    """Implementation of the {{ service_name }} service."""
+    
+    def __init__(self):
+        """Initialize the service."""
+        # Add your initialization code here
+        pass
+    
+    {% for tool in tools %}
+    async def {{ tool.name }}(self, {% for param in tool.parameters %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ tool.returns.type }}:
+        """{{ tool.description }}
+        
+        {% for param in tool.parameters %}
+        Args:
+            {{ param.name }}: {{ param.description }}
+        {% endfor %}
+        
+        Returns:
+            {{ tool.returns.description }}
+        """
+        # Implementation goes here
+        logger.info(f"Processing {{ tool.name }} request")
+        
+        # Example implementation
+        result = {
+            {% for param in tool.parameters %}
+            "{{ param.name }}": {{ param.name }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+        
+        return result
+    {% endfor %}
+    
+    {% for resource in resources %}
+    async def {{ resource.name }}(self, {% for param in resource.parameters %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ resource.returns.type }}:
+        """{{ resource.description }}
+        
+        {% for param in resource.parameters %}
+        Args:
+            {{ param.name }}: {{ param.description }}
+        {% endfor %}
+        
+        Returns:
+            {{ resource.returns.description }}
+        """
+        # Implementation goes here
+        logger.info(f"Processing {{ resource.name }} request")
+        
+        # Example implementation
+        result = {
+            {% for param in resource.parameters %}
+            "{{ param.name }}": {{ param.name }}{% if not loop.last %},{% endif %}
+            {% endfor %}
+        }
+        
+        return result
+    {% endfor %}
+
+# Create service instance
+service = {{ service_name|replace(' ', '') }}Service()
+
+# Define MCP tools
+{% for tool in tools %}
+@mcp.tool()
+async def {{ tool.name }}({% for param in tool.parameters %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ tool.returns.type }}:
+    """{{ tool.description }}
+    
+    {% for param in tool.parameters %}
+    Args:
+        {{ param.name }}: {{ param.description }}
+    {% endfor %}
+    
+    Returns:
+        {{ tool.returns.description }}
+    """
+    return await service.{{ tool.name }}({% for param in tool.parameters %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+{% endfor %}
+
+# Define MCP resources
+{% for resource in resources %}
+@mcp.resource("{{ resource.uri }}")
+async def {{ resource.name }}({% for param in resource.parameters %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}) -> {{ resource.returns.type }}:
+    """{{ resource.description }}
+    
+    {% for param in resource.parameters %}
+    Args:
+        {{ param.name }}: {{ param.description }}
+    {% endfor %}
+    
+    Returns:
+        {{ resource.returns.description }}
+    """
+    return await service.{{ resource.name }}({% for param in resource.parameters %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+{% endfor %}
+
+# Define API models
+{% for tool in tools %}
+class {{ tool.name|capitalize }}Request(BaseModel):
+    """Request model for {{ tool.name }}."""
+    {% for param in tool.parameters %}
+    {{ param.name }}: {{ param.type }} = Field(..., description="{{ param.description }}")
+    {% endfor %}
+
+class {{ tool.name|capitalize }}Response(BaseModel):
+    """Response model for {{ tool.name }}."""
+    # Customize this based on your actual response structure
+    result: {{ tool.returns.type }} = Field(..., description="{{ tool.returns.description }}")
+{% endfor %}
+
+# Define API endpoints
+{% for tool in tools %}
+@router.post("/{{ tool.name|replace('_', '-') }}", response_model={{ tool.name|capitalize }}Response, tags=["{{ tool.name }}"])
+async def api_{{ tool.name }}(request: {{ tool.name|capitalize }}Request):
+    """{{ tool.description }}"""
+    try:
+        result = await service.{{ tool.name }}({% for param in tool.parameters %}request.{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+        return {"result": result}
+    except Exception as e:
+        logger.error(f"Error in {{ tool.name }}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+{% endfor %}
+
+{% for resource in resources %}
+@router.get("/{{ resource.name|replace('_', '-') }}/{% for param in resource.parameters %}{{ '{' }}{{ param.name }}{{ '}' }}{% if not loop.last %}/{% endif %}{% endfor %}", tags=["{{ resource.name }}"])
+async def api_{{ resource.name }}({% for param in resource.parameters %}{{ param.name }}: {{ param.type }}{% if not loop.last %}, {% endif %}{% endfor %}):
+    """{{ resource.description }}"""
+    try:
+        result = await service.{{ resource.name }}({% for param in resource.parameters %}{{ param.name }}{% if not loop.last %}, {% endif %}{% endfor %})
+        return result
+    except Exception as e:
+        logger.error(f"Error in {{ resource.name }}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+{% endfor %}
+
+# Include router in app
+app.include_router(router)
+
+# Generate FastAPI app from FastMCP
+fastapi_app = FastMCP.from_fastmcp(mcp)
+
+# Merge the two FastAPI apps
+for route in fastapi_app.routes:
+    app.routes.append(route)
+
+# Start both servers
+def start_mcp_server():
+    """Start the MCP server."""
+    asyncio.run(mcp.run_async(transport="sse", port=8001))
+
+def start_server(host: str = "0.0.0.0", port: int = 8000):
+    """Start the server.
+    
+    Args:
+        host: Host to bind to
+        port: Port to bind to for the REST API
+    """
+    # Start MCP server in a separate thread
+    mcp_thread = threading.Thread(target=start_mcp_server)
+    mcp_thread.daemon = True
+    mcp_thread.start()
+    
+    # Start FastAPI server
+    uvicorn.run(app, host=host, port=port)
+
+if __name__ == "__main__":
+    start_server()

@@ -36,6 +36,9 @@ redis = ">=4.0.0"
 # Web and API
 fastapi = ">=0.95.0"
 uvicorn = ">=0.20.0"
+fastapi-mcp = ">=0.1.0"
+fastmcp = ">=0.1.0"
+# Note: mcpo requires Python 3.11+
 # Utilities
 tqdm = ">=4.65.0"
 aiohttp = ">=3.8.0"
@@ -69,6 +72,9 @@ mkdocs-jupyter = ">=0.24.0"
 pytest = ">=7.0.0"
 pytest-asyncio = ">=0.20.0"
 pytest-cov = ">=4.0.0"
+pytest-mock = ">=3.10.0"
+pytest-xdist = ">=3.3.0"
+pytest-benchmark = ">=4.0.0"
 black = ">=23.0.0"
 isort = ">=5.0.0"
 flake8 = ">=6.0.0"
@@ -77,6 +83,15 @@ sphinx = ">=7.2.6"
 sphinx-rtd-theme = ">=1.3.0"
 pre-commit = ">=3.5.0"
 ruff = ">=0.1.6"
+fastapi-mcp = ">=0.1.0"
+# Test generation dependencies
+transformers = ">=4.30.0"
+accelerate = ">=0.20.0"
+bitsandbytes = ">=0.39.0"
+hypothesis = ">=6.0.0"
+aiohttp = ">=3.8.0"
+jinja2 = ">=3.1.0"
+psutil = ">=5.9.0"
 
 [tool.poetry.extras]
 neo4j = ["neo4j"]
@@ -84,6 +99,8 @@ gpu = ["accelerate", "bitsandbytes", "optimum", "flash-attn"]
 
 [tool.poetry.scripts]
 augment-adam = "augment_adam.cli:app"
+augment-mcp-server = "augment_adam.server.run_mcp_server:main"
+augment-mcp-client = "augment_adam.server.run_mcp_client:main"
 
 [tool.black]
 line-length = 88
@@ -109,3 +126,12 @@ python_files = "test_*.py"
 python_functions = "test_*"
 python_classes = "Test*"
 addopts = "--cov=augment_adam --cov-report=term-missing"
+markers = [
+    "asyncio: mark a test as an asyncio test",
+    "unit: mark a test as a unit test",
+    "integration: mark a test as an integration test",
+    "e2e: mark a test as an end-to-end test",
+    "performance: mark a test as a performance test",
+    "stress: mark a test as a stress test",
+    "compatibility: mark a test as a compatibility test",
+]

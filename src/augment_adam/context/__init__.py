@@ -52,7 +52,7 @@ from augment_adam.context.storage.base import (
     HybridStorage,
 )
 
-from augment_adam.context.async.base import (
+from augment_adam.context.async_module.base import (
     AsyncContextBuilder,
     AsyncContextTask,
     AsyncContextManager,
@@ -66,36 +66,36 @@ __all__ = [
     "ContextEngine",
     "ContextManager",
     "get_context_manager",
-    
+
     # Chunking
     "Chunker",
     "TextChunker",
     "CodeChunker",
     "SemanticChunker",
-    
+
     # Composition
     "ContextComposer",
     "SequentialComposer",
     "HierarchicalComposer",
     "SemanticComposer",
-    
+
     # Retrieval
     "ContextRetriever",
     "VectorRetriever",
     "GraphRetriever",
     "HybridRetriever",
-    
+
     # Prompt
     "PromptTemplate",
     "PromptManager",
     "get_prompt_manager",
-    
+
     # Storage
     "ContextStorage",
     "RedisStorage",
     "ChromaStorage",
     "HybridStorage",
-    
+
     # Async
     "AsyncContextBuilder",
     "AsyncContextTask",

@@ -6,18 +6,29 @@ by resetting the tag registry before tests run.
 """
 
 import os
+import sys
 import tempfile
 import pytest
 from unittest.mock import patch, MagicMock
 
-# Import our tag utilities
-from augment_adam.testing.utils.tag_utils import reset_tag_registry
+# Add the src directory to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
 
-@pytest.fixture(scope="session", autouse=True)
-def reset_tags():
-    """Reset the tag registry before running tests."""
-    reset_tag_registry()
-    yield
+# Import our tag utilities
+try:
+    from augment_adam.testing.utils.tag_utils import reset_tag_registry
+
+    @pytest.fixture(scope="session", autouse=True)
+    def reset_tags():
+        """Reset the tag registry before running tests."""
+        reset_tag_registry()
+        yield
+except ImportError:
+    # If the tag utilities aren't available, provide a dummy fixture
+    @pytest.fixture(scope="session", autouse=True)
+    def reset_tags():
+        """Dummy fixture for when tag utilities aren't available."""
+        yield
 
 @pytest.fixture
 def temp_dir():
@@ -43,3 +54,9 @@ def mock_neo4j_memory():
     mock_memory.search.return_value = []
     mock_memory.delete.return_value = None
     yield mock_memory
+
+# MCP server fixtures
+@pytest.fixture
+def mcp_api_key():
+    """Get the MCP API key for tests."""
+    return "test-api-key"
