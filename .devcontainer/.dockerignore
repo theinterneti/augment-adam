@@ -3,3 +3,4 @@
 !Dockerfile
 !entrypoint.sh
 !post-start.sh
+!docker-compose.yml

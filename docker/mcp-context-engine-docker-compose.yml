@@ -1,17 +1,25 @@
 version: '3.8'
 
+networks:
+  augment-network:
+    driver: bridge
+    internal: true  # This makes it a closed network not accessible from outside
+
 services:
   # Redis for vector search - optimized for real-time queries
   redis-vector:
     image: redis/redis-stack:latest
     container_name: redis-vector
-    ports:
-      - "6379:6379"
-      - "8001:8001"  # RedisInsight
+    # Only expose internally, not to host
+    expose:
+      - "6379"
+      - "8001"  # RedisInsight
     volumes:
       - redis-vector-data:/data
     environment:
       - REDIS_ARGS=--requirepass redispassword
+    networks:
+      - augment-network
     deploy:
       resources:
         limits:
@@ -25,9 +33,12 @@ services:
   neo4j:
     image: neo4j:5.13.0
     container_name: neo4j-vector
-    ports:
-      - "7474:7474"  # HTTP
-      - "7687:7687"  # Bolt
+    # Only expose internally, not to host
+    expose:
+      - "7474"  # HTTP
+      - "7687"  # Bolt
+    networks:
+      - augment-network
     volumes:
       - neo4j-data:/data
       - neo4j-logs:/logs
@@ -53,11 +64,15 @@ services:
       context: .
       dockerfile: Dockerfile.mcp-context-engine
     container_name: mcp-context-engine
+    # This service is exposed to the host
     ports:
       - "8080:8080"  # API
     depends_on:
       - redis-vector
       - neo4j
+    networks:
+      - augment-network
+      - default  # Connect to both networks to allow external access
     environment:
       - REDIS_HOST=redis-vector
       - REDIS_PORT=6379

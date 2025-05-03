@@ -1,0 +1,98 @@
+# Augment Guidelines for VS Code Extension Project
+# This file provides guidelines for Augment Code when working with this project
+
+# Reference files that should be consulted when working on this project
+REFERENCES:
+  - vscode-extension/PLANNING.md
+  - vscode-extension/TASKS.md
+  - vscode-extension/TESTING.md
+  - vscode-extension/STEPS.md
+  - vscode-extension/STEPS_TESTING.md
+  - vscode-extension/ISSUES.md
+  - vscode-extension/IMPLEMENTATION.md
+  - vscode-extension/CHANGELOG.md
+  - vscode-extension/README.md
+
+# VS Code Extension specific guidelines
+VSCODE_EXTENSION:
+  # Guidelines for working with VS Code Extension API
+  API_USAGE:
+    - Always use the VS Code Extension API as documented in the official VS Code API documentation
+    - Use the appropriate VS Code namespaces (vscode, window, workspace, etc.)
+    - Follow VS Code extension activation patterns and lifecycle management
+    - Use VS Code's built-in UI components (webviews, tree views, etc.) rather than custom implementations
+    - Respect VS Code's theming and styling guidelines
+
+  # Guidelines for testing VS Code extensions
+  TESTING:
+    - Use the VS Code Extension Testing API for all tests
+    - Follow the test structure in src/test/suite/
+    - Use Mocha as the test runner with the TDD (Test-Driven Development) UI
+    - Use Sinon for mocking external dependencies
+    - Test extension activation, command registration, and other core functionality
+    - Create proper mocks for VS Code API components
+
+  # Guidelines for working with MCP (Model Context Protocol)
+  MCP_INTEGRATION:
+    - Follow the Model Context Protocol specification
+    - Use the official MCP TypeScript SDK for integration
+    - Implement proper error handling for MCP server communication
+    - Follow the container-based approach for MCP tools
+    - Use the MCP server discovery mechanism for finding available servers
+
+# Problem-solving approach guidelines
+PROBLEM_SOLVING:
+  # Priority order for solving problems
+  PRIORITY_ORDER:
+    1: "WORKSPACE_CODE: Always look at existing code in the workspace first"
+    2: "INSTALLED_LIBRARIES: Check installed libraries and dependencies before writing new code"
+    3: "OPEN_SOURCE_REPOS: Reference open source repositories only when necessary"
+    4: "CUSTOM_CODE: Write custom code only as a last resort"
+
+  # Guidelines for working with tests
+  TEST_APPROACH:
+    - Never modify tests just to make them pass - fix the underlying code instead
+    - Understand the test requirements before implementing solutions
+    - Follow test-driven development: write tests first, then implement code to pass them
+    - Use the VS Code Extension Testing API rather than creating standalone test implementations
+    - Fix root causes of problems rather than symptoms
+    - Document unfixed issues as GitHub issues tagged with TODO
+
+  # Guidelines for implementing features
+  IMPLEMENTATION_APPROACH:
+    - Follow the modular architecture described in IMPLEMENTATION.md
+    - Implement features incrementally, focusing on one component at a time
+    - Use TypeScript best practices and follow the project's coding style
+    - Fix TypeScript errors as described in ISSUES.md before adding new features
+    - Document all new features in the appropriate reference files
+
+# TypeScript specific guidelines
+TYPESCRIPT:
+  # Guidelines for fixing TypeScript errors
+  ERROR_FIXING:
+    - Fix naming convention issues by following consistent naming patterns
+    - Remove or use unused variables and parameters
+    - Fix type inference issues by removing redundant type annotations
+    - Add missing type declarations for external libraries
+    - Replace non-null assertions with proper null checks
+    - Fix case declarations in switch statements by moving them outside case blocks
+
+  # Guidelines for writing TypeScript code
+  BEST_PRACTICES:
+    - Use strong typing and avoid 'any' type when possible
+    - Follow the TypeScript naming conventions (camelCase for variables, PascalCase for classes)
+    - Use interfaces for defining complex types
+    - Use enums for defining constants
+    - Use async/await for asynchronous code
+    - Use proper error handling with try/catch blocks
+
+# Documentation guidelines
+DOCUMENTATION:
+  # Guidelines for updating documentation
+  UPDATE_APPROACH:
+    - Update all relevant reference files when implementing new features
+    - Keep TASKS.md updated with current development tasks
+    - Update TESTING.md with new test coverage information
+    - Update CHANGELOG.md with notable changes
+    - Update IMPLEMENTATION.md with architectural changes
+    - Use consistent formatting across all documentation files

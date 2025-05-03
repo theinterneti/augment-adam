@@ -1,0 +1,189 @@
+/* Base styles for the webview */
+body {
+  padding: 20px;
+  line-height: 1.6;
+  font-family: var(--vscode-font-family);
+  color: var(--vscode-editor-foreground);
+  background-color: var(--vscode-editor-background);
+  font-size: var(--vscode-font-size);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: var(--vscode-editor-foreground);
+  margin-top: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+h1 {
+  font-size: 2em;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  padding-bottom: 0.3em;
+}
+
+h2 {
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--vscode-panel-border);
+  padding-bottom: 0.3em;
+}
+
+h3 {
+  font-size: 1.25em;
+}
+
+p {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+ul, ol {
+  margin-top: 0;
+  margin-bottom: 16px;
+  padding-left: 2em;
+}
+
+li {
+  margin-bottom: 0.25em;
+}
+
+a {
+  color: var(--vscode-textLink-foreground);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code {
+  font-family: var(--vscode-editor-font-family, 'Consolas, "Courier New", monospace');
+  font-size: var(--vscode-editor-font-size);
+  padding: 0.2em 0.4em;
+  margin: 0;
+  border-radius: 3px;
+  background-color: var(--vscode-textCodeBlock-background);
+}
+
+pre {
+  font-family: var(--vscode-editor-font-family, 'Consolas, "Courier New", monospace');
+  font-size: var(--vscode-editor-font-size);
+  padding: 16px;
+  overflow: auto;
+  line-height: 1.45;
+  background-color: var(--vscode-textCodeBlock-background);
+  border-radius: 3px;
+  margin-top: 0;
+  margin-bottom: 16px;
+  word-wrap: normal;
+}
+
+pre code {
+  background-color: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 100%;
+  word-break: normal;
+  white-space: pre;
+  border: 0;
+}
+
+.code-block-container {
+  position: relative;
+  margin-bottom: 16px;
+}
+
+.copy-button, .insert-button {
+  position: absolute;
+  top: 5px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 20px;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  background-color: var(--vscode-button-background);
+  color: var(--vscode-button-foreground);
+  z-index: 1;
+}
+
+.copy-button {
+  right: 5px;
+}
+
+.insert-button {
+  right: 70px;
+}
+
+.copy-button:hover, .insert-button:hover {
+  background-color: var(--vscode-button-hoverBackground);
+}
+
+.response-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+/* Syntax highlighting */
+.hljs-keyword {
+  color: var(--vscode-symbolIcon-keywordForeground, #569cd6);
+}
+
+.hljs-string {
+  color: var(--vscode-symbolIcon-stringForeground, #ce9178);
+}
+
+.hljs-comment {
+  color: var(--vscode-symbolIcon-textForeground, #6a9955);
+}
+
+.hljs-operator {
+  color: var(--vscode-symbolIcon-operatorForeground, #d4d4d4);
+}
+
+.hljs-symbol {
+  color: var(--vscode-symbolIcon-operatorForeground, #d4d4d4);
+}
+
+/* Dark theme adjustments */
+.vscode-dark .hljs-keyword {
+  color: #569cd6;
+}
+
+.vscode-dark .hljs-string {
+  color: #ce9178;
+}
+
+.vscode-dark .hljs-comment {
+  color: #6a9955;
+}
+
+.vscode-dark .hljs-operator {
+  color: #d4d4d4;
+}
+
+.vscode-dark .hljs-symbol {
+  color: #d4d4d4;
+}
+
+/* Light theme adjustments */
+.vscode-light .hljs-keyword {
+  color: #0000ff;
+}
+
+.vscode-light .hljs-string {
+  color: #a31515;
+}
+
+.vscode-light .hljs-comment {
+  color: #008000;
+}
+
+.vscode-light .hljs-operator {
+  color: #000000;
+}
+
+.vscode-light .hljs-symbol {
+  color: #000000;
+}

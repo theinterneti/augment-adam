@@ -1,0 +1,195 @@
+services:
+  # Main development container
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        BUILDKIT_INLINE_CACHE: 1
+    volumes:
+      # Mount the root folder that contains .devcontainer folder
+      - ../..:/workspace:cached
+
+      # Mount existing volumes for large files and models
+      - ollama-models:/root/.ollama:cached
+      - model-cache:/workspace/.cache/models:cached
+      - huggingface-cache:/workspace/.cache/huggingface:cached
+
+      # Cache volumes for faster builds and package installations
+      - pip-cache:/root/.cache/pip:cached
+      - apt-cache:/var/cache/apt:cached
+      - torch-cache:/root/.cache/torch:cached
+
+      # Mount Git config
+      - ~/.gitconfig:/home/vscode/.gitconfig:ro
+
+    # Overrides default command so things don't shut down after the process ends
+    command: sleep infinity
+
+    # Forward ports for services
+    ports:
+      - "8890:8888" # Jupyter (changed to avoid port conflict)
+
+    # Set environment variables
+    environment:
+      - PYTHONPATH=/workspace
+      - HF_HOME=/workspace/.cache/huggingface
+      - OLLAMA_HOST=http://ollama:11434
+      - CHROMA_HOST=http://chroma:8000
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=augmentpassword
+      - REDIS_HOST=redis
+      - REDIS_VECTOR_HOST=redis-vector
+      - REDIS_VECTOR_PASSWORD=redispassword
+
+    # Use the "remoteUser" property in devcontainer.json to specify a non-root user
+    # Commented out to let the Dockerfile and devcontainer.json handle user setup
+    # user: vscode
+
+    depends_on:
+      - ollama
+      - chroma
+      - neo4j
+      - redis
+      - redis-vector
+
+    # GPU configuration for NVIDIA GPU
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  # Ollama for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama-models:/root/.ollama
+    # Only expose to internal network, not to host
+    expose:
+      - "11434"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # ChromaDB for vector storage
+  chroma:
+    image: chromadb/chroma:latest
+    volumes:
+      - chroma-data:/chroma/chroma
+    # Only expose to internal network, not to host
+    expose:
+      - "8000"
+    environment:
+      - ALLOW_RESET=true
+      - ANONYMIZED_TELEMETRY=false
+
+  # Neo4j for graph relationships
+  neo4j:
+    image: neo4j:5.13.0
+    environment:
+      - NEO4J_AUTH=neo4j/augmentpassword
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=2G
+    volumes:
+      - neo4j-data:/data
+    # Only expose to internal network, not to host
+    expose:
+      - "7474" # HTTP
+      - "7687" # Bolt
+
+  # Redis for caching
+  redis:
+    image: redis:latest
+    volumes:
+      - redis-data:/data
+    # Only expose to internal network, not to host
+    expose:
+      - "6379"
+    command: redis-server --appendonly yes
+
+  # Redis Vector for embeddings search
+  redis-vector:
+    image: redis/redis-stack:latest
+    # Only expose to internal network, not to host
+    expose:
+      - "6379" # Redis port
+      - "8001" # RedisInsight
+    volumes:
+      - redis-vector-data:/data
+    command: >
+      redis-server
+      --loadmodule /opt/redis-stack/lib/redisearch.so
+      --loadmodule /opt/redis-stack/lib/rejson.so
+      --save 60 1
+      --appendonly yes
+      --requirepass redispassword
+      --protected-mode no
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: 8G
+
+  # Context Engine API - Commented out until API directory is created
+  # context-engine-api:
+  #   build:
+  #     context: ../api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - redis-vector
+  #     - neo4j
+  #   environment:
+  #     - REDIS_HOST=redis-vector
+  #     - REDIS_PORT=6379
+  #     - REDIS_PASSWORD=redispassword
+  #     - NEO4J_URI=bolt://neo4j:7687
+  #     - NEO4J_USER=neo4j
+  #     - NEO4J_PASSWORD=augmentpassword
+  #     - LOG_LEVEL=info
+
+volumes:
+  # Define named volumes
+  ollama-models:
+    name: augment-adam-ollama-models # Ollama models
+    external: true # Use existing volume
+  model-cache:
+    name: augment-adam-model-cache # General model cache
+    external: true # Use existing volume
+  huggingface-cache:
+    name: augment-adam-huggingface-cache # HuggingFace models
+    external: true # Use existing volume
+
+  # Cache volumes for faster builds
+  pip-cache:
+    name: augment-adam-pip-cache # Cache pip packages
+    external: true # Use existing volume
+  apt-cache:
+    name: augment-adam-apt-cache # Cache apt packages
+    external: true # Use existing volume
+  torch-cache:
+    name: augment-adam-torch-cache # Cache PyTorch models and weights
+    external: true # Use existing volume
+
+  # Service data volumes
+  chroma-data:
+    name: augment-adam-chroma-data # ChromaDB data
+    external: true # Use existing volume
+  neo4j-data:
+    name: augment-adam-neo4j-data # Neo4j data
+    external: true # Use existing volume
+  redis-data:
+    name: augment-adam-redis-data # Redis data
+    external: true # Use existing volume
+  redis-vector-data:
+    name: augment-adam-redis-vector-data # Redis Vector data
+    external: true # Use existing volume

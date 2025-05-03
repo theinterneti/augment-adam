@@ -3,6 +3,16 @@ set -e
 
 echo "Running post-start setup..."
 
+# Fix Docker socket permissions
+if [ -S /var/run/docker.sock ]; then
+    echo "Setting Docker socket permissions..."
+    sudo chmod 666 /var/run/docker.sock || echo "Failed to set Docker socket permissions"
+
+    # Verify Docker access
+    echo "Verifying Docker access..."
+    docker ps &>/dev/null && echo "Docker access is working!" || echo "Docker access is still not working"
+fi
+
 # Make sure scripts are executable
 chmod +x /workspace/scripts/*.py 2>/dev/null || echo "Warning: Could not make scripts executable"
 
@@ -65,6 +75,25 @@ python /workspace/scripts/setup_models.py --domains docker wsl devcontainer || e
 if command -v nvidia-smi &> /dev/null; then
     echo "Running a simple PyTorch GPU test..."
     python -c "import torch; print('CUDA available:', torch.cuda.is_available()); print('CUDA device count:', torch.cuda.device_count()); print('CUDA device name:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'N/A')" || echo "Failed to run PyTorch GPU test"
+fi
+
+# Set up Docker network for MCP Context Engine if it doesn't exist
+if ! docker network ls | grep -q "augment-network"; then
+    echo "Creating Docker network for MCP Context Engine..."
+    docker network create augment-network || echo "Failed to create network (it may already exist)"
+fi
+
+# Check if MCP Context Engine services are running
+if docker ps | grep -q "mcp-context-engine"; then
+    echo "MCP Context Engine services are running."
+    # Try to set up integration
+    if [ -f /workspace/.devcontainer/setup_mcp_integration.sh ]; then
+        echo "Setting up MCP Context Engine integration..."
+        bash /workspace/.devcontainer/setup_mcp_integration.sh || echo "Failed to set up MCP Context Engine integration"
+    fi
+else
+    echo "MCP Context Engine services are not running."
+    echo "You can start them with: ./scripts/manage_mcp_context_engine.sh start"
 fi
 
 echo "Post-start setup completed"

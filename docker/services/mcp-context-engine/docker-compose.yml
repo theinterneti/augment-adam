@@ -1,0 +1,101 @@
+networks:
+  augment-network:
+    driver: bridge
+    internal: true  # This makes it a closed network not accessible from outside
+
+services:
+  # Redis for vector search - optimized for real-time queries
+  redis-vector:
+    image: redis/redis-stack:latest
+    container_name: redis-vector
+    # Only expose internally, not to host
+    expose:
+      - "6379"
+      - "8001"  # RedisInsight
+    volumes:
+      - redis-vector-data:/data
+    environment:
+      - REDIS_ARGS=--requirepass redispassword
+    networks:
+      - augment-network
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  # Neo4j for graph database with vector capabilities
+  neo4j:
+    image: neo4j:5.13.0
+    container_name: neo4j-vector
+    # Only expose internally, not to host
+    expose:
+      - "7474"  # HTTP
+      - "7687"  # Bolt
+    networks:
+      - augment-network
+    volumes:
+      - neo4j-data:/data
+      - neo4j-logs:/logs
+    environment:
+      - NEO4J_AUTH=neo4j/neopassword
+      - NEO4J_dbms_memory_heap_initial__size=1G
+      - NEO4J_dbms_memory_heap_max__size=4G
+      - NEO4J_dbms_memory_pagecache_size=2G
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,algo.*,gds.*
+      - NEO4J_dbms_security_procedures_allowlist=apoc.*,algo.*,gds.*
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 8G
+        reservations:
+          cpus: '2'
+          memory: 4G
+
+  # MCP-enabled context engine API
+  mcp-context-engine:
+    build:
+      context: ../../../
+      dockerfile: docker/services/mcp-context-engine/Dockerfile
+    container_name: mcp-context-engine
+    # This service is exposed to the host
+    ports:
+      - "8080:8080"  # API
+    depends_on:
+      - redis-vector
+      - neo4j
+    networks:
+      - augment-network
+      - default  # Connect to both networks to allow external access
+    environment:
+      - REDIS_HOST=redis-vector
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=redispassword
+      - NEO4J_URI=bolt://neo4j:7687
+      - NEO4J_USER=neo4j
+      - NEO4J_PASSWORD=neopassword
+      - API_KEY=test-api-key
+      - PORT=8080
+      - LOG_LEVEL=info
+    volumes:
+      - ../../../mcp_context_engine:/app/mcp_context_engine
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+
+volumes:
+  redis-vector-data:
+    name: augment-adam-redis-vector-data
+    external: true
+  neo4j-data:
+    name: augment-adam-neo4j-data
+    external: true
+  neo4j-logs:
+    name: augment-adam-neo4j-logs
+    external: true

@@ -1,0 +1,276 @@
+{
+  "name": "qwen-coder-assistant",
+  "displayName": "Qwen Coder Assistant",
+  "description": "VS Code extension that uses Qwen 3 coder model for AI-assisted coding",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "qwen-coder-assistant.askQwen",
+        "title": "Ask Qwen Coder"
+      },
+      {
+        "command": "qwen-coder-assistant.explainCode",
+        "title": "Explain Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.generateCode",
+        "title": "Generate Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.refactorCode",
+        "title": "Refactor Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.documentCode",
+        "title": "Document Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.fixIssues",
+        "title": "Fix Issues with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.clearCache",
+        "title": "Clear Qwen Coder Cache"
+      },
+      {
+        "command": "qwen-coder-assistant.hierarchicalAgent",
+        "title": "Use Hierarchical Agent System"
+      },
+      {
+        "command": "qwen-coder-assistant.mcpTool",
+        "title": "Use MCP Tool"
+      },
+      {
+        "command": "qwenCoder.showContainerStatus",
+        "title": "Show MCP Container Status"
+      },
+      {
+        "command": "qwenCoder.devops",
+        "title": "DevOps Guidance"
+      },
+      {
+        "command": "qwen-coder-assistant.openConversation",
+        "title": "Open Conversation"
+      },
+      {
+        "command": "qwen-coder-assistant.deleteConversation",
+        "title": "Delete Conversation",
+        "icon": "$(trash)"
+      },
+      {
+        "command": "qwen-coder-assistant.clearConversations",
+        "title": "Clear All Conversations",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "qwen-coder-assistant.refreshConversationHistory",
+        "title": "Refresh Conversation History",
+        "icon": "$(refresh)"
+      }
+    ],
+    "configuration": {
+      "title": "Qwen Coder Assistant",
+      "properties": {
+        "qwen-coder-assistant.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:8000/v1",
+          "description": "API endpoint for the Qwen 3 coder model"
+        },
+        "qwen-coder-assistant.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for the Qwen 3 coder model (if required)"
+        },
+        "qwen-coder-assistant.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "Maximum number of tokens to generate"
+        },
+        "qwen-coder-assistant.temperature": {
+          "type": "number",
+          "default": 0.7,
+          "description": "Temperature for the model's response generation"
+        },
+        "qwen-coder-assistant.contextEngine.persistEmbeddings": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whether to persist embeddings to disk"
+        },
+        "qwen-coder-assistant.contextEngine.databasePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the database file for persistent embeddings (leave empty for default location)"
+        },
+        "qwen-coder-assistant.contextEngine.autoSaveIntervalMs": {
+          "type": "number",
+          "default": 60000,
+          "description": "Interval in milliseconds to auto-save embeddings (set to 0 to disable auto-save)"
+        },
+        "qwen-coder-assistant.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable caching of API responses to reduce API calls"
+        },
+        "qwen-coder-assistant.cacheTTLMinutes": {
+          "type": "number",
+          "default": 30,
+          "description": "Time to live for cached responses in minutes"
+        },
+        "qwen-coder-assistant.cacheMaxEntries": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of responses to cache"
+        },
+        "qwen-coder-assistant.streamingEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable streaming responses for a more interactive experience"
+        },
+        "qwen-coder-assistant.preferredModel": {
+          "type": "string",
+          "default": "auto",
+          "enum": ["auto", "tiny", "small", "medium", "large", "xlarge", "xxlarge", "moesmall", "moelarge"],
+          "description": "Preferred model size for the hierarchical agent system"
+        },
+        "qwen-coder-assistant.preferThinkingMode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Prefer thinking mode for the hierarchical agent system"
+        },
+        "qwen-coder-assistant.autoStartContainers": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically start MCP containers on extension activation"
+        },
+        "qwen-coder-assistant.autoStartContainerList": {
+          "type": "array",
+          "default": ["github", "docker"],
+          "description": "List of MCP containers to auto-start if enabled"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "qwen-coder-assistant.explainCode",
+          "when": "editorHasSelection",
+          "group": "qwen-coder-assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.refactorCode",
+          "when": "editorHasSelection",
+          "group": "qwen-coder-assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.documentCode",
+          "when": "editorHasSelection",
+          "group": "qwen-coder-assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.fixIssues",
+          "when": "editorHasSelection",
+          "group": "qwen-coder-assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.generateCode",
+          "group": "qwen-coder-assistant"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "qwen-coder-assistant.refreshConversationHistory",
+          "when": "view == qwenConversationHistory",
+          "group": "navigation"
+        },
+        {
+          "command": "qwen-coder-assistant.clearConversations",
+          "when": "view == qwenConversationHistory",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "qwen-coder-assistant.deleteConversation",
+          "when": "view == qwenConversationHistory && viewItem == conversation",
+          "group": "inline"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "qwenConversationHistory",
+          "name": "Qwen Conversations",
+          "icon": "$(comment-discussion)",
+          "contextualTitle": "Qwen Conversations"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "qwenConversationHistory",
+        "contents": "No conversations yet. Start a conversation by using the 'Ask Qwen Coder' command."
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "package": "node ./scripts/package-extension.js",
+    "dev": "NODE_ENV=development npm run watch"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.80.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.2.5",
+    "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.1.3",
+    "@vscode/test-electron": "^2.3.2"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "uuid": "^9.0.0",
+    "sqlite": "^5.0.1",
+    "sqlite3": "^5.1.6"
+  },
+  "keywords": [
+    "ai",
+    "code-generation",
+    "qwen",
+    "coding-assistant",
+    "machine-learning"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/qwen-coder-assistant"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/qwen-coder-assistant/issues"
+  },
+  "homepage": "https://github.com/yourusername/qwen-coder-assistant#readme"
+}

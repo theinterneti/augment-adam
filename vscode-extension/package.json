@@ -1,0 +1,293 @@
+{
+  "name": "qwen-coder-assistant",
+  "displayName": "Qwen Coder Assistant",
+  "description": "VS Code extension that uses Qwen 3 coder model for AI-assisted coding",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Other",
+    "Programming Languages",
+    "Machine Learning",
+    "Snippets"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "qwen-coder-assistant.askQwen",
+        "title": "Ask Qwen Coder"
+      },
+      {
+        "command": "qwen-coder-assistant.explainCode",
+        "title": "Explain Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.generateCode",
+        "title": "Generate Code with Qwen"
+      },
+      {
+        "command": "qwen-coder-assistant.testApiConnection",
+        "title": "Test Qwen API Connection"
+      },
+      {
+        "command": "qwen-coder-assistant.verifyConfiguration",
+        "title": "Verify Extension Configuration"
+      },
+      {
+        "command": "qwen-coder-assistant.addMcpRepo",
+        "title": "Add MCP Server from GitHub"
+      },
+      {
+        "command": "qwen-coder-assistant.manageMcpServers",
+        "title": "Manage MCP Servers"
+      },
+      {
+        "command": "qwen-coder-assistant.startMcpServer",
+        "title": "Start MCP Server"
+      },
+      {
+        "command": "qwen-coder-assistant.stopMcpServer",
+        "title": "Stop MCP Server"
+      },
+      {
+        "command": "qwen-coder-assistant.restartMcpServer",
+        "title": "Restart MCP Server"
+      },
+      {
+        "command": "qwen-coder-assistant.viewMcpServerLogs",
+        "title": "View MCP Server Logs"
+      },
+      {
+        "command": "qwen-coder-assistant.viewMcpServerSchema",
+        "title": "View MCP Server Schema"
+      },
+      {
+        "command": "qwen-coder-assistant.refreshMcpServers",
+        "title": "Refresh MCP Servers",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "qwen-coder-assistant.testMcpTool",
+        "title": "Test MCP Tool"
+      },
+      {
+        "command": "qwen-coder-assistant.testMcpQwenBridge",
+        "title": "Test MCP-Qwen Bridge"
+      },
+      {
+        "command": "qwen-coder-assistant.testMcpQwenIntegration",
+        "title": "Test MCP-Qwen Integration"
+      }
+    ],
+    "configuration": {
+      "title": "Qwen Coder Assistant",
+      "properties": {
+        "qwen-coder-assistant.apiEndpoint": {
+          "type": "string",
+          "default": "http://localhost:8000/v1",
+          "description": "API endpoint for the Qwen 3 coder model"
+        },
+        "qwen-coder-assistant.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for the Qwen 3 coder model (if required)"
+        },
+        "qwen-coder-assistant.maxTokens": {
+          "type": "number",
+          "default": 2048,
+          "description": "Maximum number of tokens to generate"
+        },
+        "qwen-coder-assistant.temperature": {
+          "type": "number",
+          "default": 0.7,
+          "description": "Temperature for the model's response generation"
+        },
+        "qwen-coder-assistant.cacheEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable caching of API responses"
+        },
+        "qwen-coder-assistant.cacheTTLMinutes": {
+          "type": "number",
+          "default": 30,
+          "description": "Time to live for cached responses in minutes"
+        },
+        "qwen-coder-assistant.cacheMaxEntries": {
+          "type": "number",
+          "default": 100,
+          "description": "Maximum number of entries in the cache"
+        },
+        "qwen-coder-assistant.mcpServers.storagePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to store MCP server data (leave empty for default location)"
+        },
+        "qwen-coder-assistant.mcpServers.autoStart": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically start MCP servers on extension activation"
+        },
+        "qwen-coder-assistant.mcpServers.autoStartList": {
+          "type": "array",
+          "default": [],
+          "description": "List of MCP servers to auto-start if enabled"
+        },
+        "qwen-coder-assistant.mcpServers.dockerOptions": {
+          "type": "object",
+          "default": {
+            "socketPath": "/var/run/docker.sock",
+            "memory": 2048,
+            "cpus": 2
+          },
+          "description": "Docker options for running MCP servers"
+        },
+        "qwen-coder-assistant.mcpServers.githubOptions": {
+          "type": "object",
+          "default": {
+            "token": "",
+            "timeout": 30000
+          },
+          "description": "GitHub options for cloning MCP server repositories"
+        }
+      }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "command": "qwen-coder-assistant.explainCode",
+          "when": "editorHasSelection",
+          "group": "qwen-coder-assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.generateCode",
+          "group": "qwen-coder-assistant"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "qwen-coder-assistant.testMcpQwenBridge",
+          "group": "Qwen Coder Assistant"
+        },
+        {
+          "command": "qwen-coder-assistant.testMcpQwenIntegration",
+          "group": "Qwen Coder Assistant"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "qwen-coder-assistant.addMcpRepo",
+          "when": "view == qwenMcpServers",
+          "group": "navigation"
+        },
+        {
+          "command": "qwen-coder-assistant.refreshMcpServers",
+          "when": "view == qwenMcpServers",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "qwen-coder-assistant.startMcpServer",
+          "when": "view == qwenMcpServers && viewItem == mcpServer-stopped",
+          "group": "inline"
+        },
+        {
+          "command": "qwen-coder-assistant.stopMcpServer",
+          "when": "view == qwenMcpServers && viewItem == mcpServer-running",
+          "group": "inline"
+        },
+        {
+          "command": "qwen-coder-assistant.restartMcpServer",
+          "when": "view == qwenMcpServers && viewItem == mcpServer-running",
+          "group": "inline"
+        },
+        {
+          "command": "qwen-coder-assistant.viewMcpServerLogs",
+          "when": "view == qwenMcpServers && viewItem =~ /mcpServer-/",
+          "group": "inline"
+        },
+        {
+          "command": "qwen-coder-assistant.testMcpTool",
+          "when": "view == qwenMcpServers && viewItem == mcpServer-running",
+          "group": "inline"
+        },
+        {
+          "command": "qwen-coder-assistant.viewMcpServerSchema",
+          "when": "view == qwenMcpServers && viewItem == mcpServer-running",
+          "group": "inline"
+        }
+      ]
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "qwenMcpServers",
+          "name": "MCP Servers",
+          "icon": "$(server)",
+          "contextualTitle": "MCP Servers"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "qwenMcpServers",
+        "contents": "No MCP servers added yet. [Add MCP Server from GitHub](command:qwen-coder-assistant.addMcpRepo)"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js",
+    "test:agent-selector": "npm run compile && node ./out/test/runDynamicAgentSelectorTest.js",
+    "package": "node ./scripts/package-extension.js",
+    "dev": "NODE_ENV=development npm run watch"
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.2.5",
+    "@types/uuid": "^9.0.1",
+    "@types/vscode": "^1.80.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "@vscode/test-electron": "^2.3.2",
+    "eslint": "^8.41.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "sinon": "^20.0.0",
+    "typescript": "^5.1.3"
+  },
+  "dependencies": {
+    "axios": "^1.4.0",
+    "dockerode": "^3.3.5",
+    "simple-git": "^3.19.1",
+    "uuid": "^9.0.0",
+    "ws": "^8.13.0",
+    "yaml": "^2.3.1"
+  },
+  "keywords": [
+    "ai",
+    "code-generation",
+    "qwen",
+    "coding-assistant",
+    "machine-learning"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/qwen-coder-assistant"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/qwen-coder-assistant/issues"
+  },
+  "homepage": "https://github.com/yourusername/qwen-coder-assistant#readme"
+}

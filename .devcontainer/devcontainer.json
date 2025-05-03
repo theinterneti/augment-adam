@@ -1,6 +1,6 @@
 {
   "name": "Augment Adam: Development Environment",
-  "dockerComposeFile": "docker-compose.yml",
+  "dockerComposeFile": "../docker/devcontainer/docker-compose.yml",
   "service": "dev",
   "workspaceFolder": "/workspace",
 
@@ -10,6 +10,12 @@
     "ghcr.io/devcontainers/features/github-cli:1": {},
     "ghcr.io/devcontainers/features/python:1": {
       "version": "3.10"
+    },
+    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {
+      "moby": true,
+      "installDockerBuildx": true,
+      "version": "latest",
+      "dockerDashComposeVersion": "v2"
     }
   },
 
@@ -164,7 +170,7 @@
   "forwardPorts": [8890],
 
   // Run commands after the container is created and started
-  "postStartCommand": "bash .devcontainer/post-start.sh",
+  "postStartCommand": "bash /workspace/docker/devcontainer/scripts/post-start.sh",
 
   // Comment out to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root
   "remoteUser": "vscode",
